@@ -19,16 +19,16 @@ export class IntermediatePositionProfessorController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.intermediatePositionProfessorService.findOne(+id);
+    return this.intermediatePositionProfessorService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateIntermediatePositionProfessorDto: UpdateIntermediatePositionProfessorDto) {
-    return this.intermediatePositionProfessorService.update(+id, updateIntermediatePositionProfessorDto);
+    return this.intermediatePositionProfessorService.update(id, updateIntermediatePositionProfessorDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.intermediatePositionProfessorService.remove(+id);
+    return this.intermediatePositionProfessorService.remove(id);
   }
 }

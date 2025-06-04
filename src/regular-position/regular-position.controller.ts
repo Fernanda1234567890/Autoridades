@@ -19,16 +19,19 @@ export class RegularPositionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.regularPositionService.findOne(+id);
+    return this.regularPositionService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRegularPositionDto: UpdateRegularPositionDto) {
-    return this.regularPositionService.update(+id, updateRegularPositionDto);
+  update(
+    @Param('id') id: string, 
+    @Body() updateRegularPositionDto: UpdateRegularPositionDto
+  ) {
+    return this.regularPositionService.update(id, updateRegularPositionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.regularPositionService.remove(+id);
+    return this.regularPositionService.remove(id);
   }
 }

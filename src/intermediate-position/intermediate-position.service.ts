@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { IntermediatePosition } from './entities/intermediate-position.entity';
 import { CreateIntermediatePositionDto } from './dto/create-intermediate-position.dto';
 import { UpdateIntermediatePositionDto } from './dto/update-intermediate-position.dto';
 
 @Injectable()
 export class IntermediatePositionService {
-  create(createIntermediatePositionDto: CreateIntermediatePositionDto) {
-    return 'This action adds a new intermediatePosition';
+  constructor(
+    @InjectRepository(IntermediatePosition)
+    private readonly intermediatePositionRepository: Repository<IntermediatePosition>,
+  ) {}
+
+  async create(createDto: CreateIntermediatePositionDto): Promise<IntermediatePosition> {
+    const position = this.intermediatePositionRepository.create(createDto);
+    return await this.intermediatePositionRepository.save(position);
   }
 
-  findAll() {
-    return `This action returns all intermediatePosition`;
+  async findAll(): Promise<IntermediatePosition[]> {
+    return await this.intermediatePositionRepository.find({
+      relations: ['unit', 'intermediatePositionProfessors'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} intermediatePosition`;
+  async findOne(id: string): Promise<IntermediatePosition> {
+    const position = await this.intermediatePositionRepository.findOne({
+      where: { id },
+      relations: ['unit', 'intermediatePositionProfessors'],
+    });
+    if (!position) {
+      throw new NotFoundException(`IntermediatePosition with id ${id} not found`);
+    }
+    return position;
   }
 
-  update(id: number, updateIntermediatePositionDto: UpdateIntermediatePositionDto) {
-    return `This action updates a #${id} intermediatePosition`;
+  async update(id: string, updateDto: UpdateIntermediatePositionDto): Promise<IntermediatePosition> {
+    await this.intermediatePositionRepository.update(id, updateDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} intermediatePosition`;
+  async remove(id: string): Promise<void> {
+    await this.intermediatePositionRepository.delete(id);
   }
 }

@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Administrative } from './entities/administrative.entity';
 import { CreateAdministrativeDto } from './dto/create-administrative.dto';
 import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @Injectable()
 export class AdministrativeService {
-  create(createAdministrativeDto: CreateAdministrativeDto) {
-    return 'This action adds a new administrative';
+  constructor(
+    @InjectRepository(Administrative)
+    private readonly adminRepo: Repository<Administrative>,
+  ) {}
+
+  async create(dto: CreateAdministrativeDto): Promise<Administrative> {
+    const administrative = this.adminRepo.create(dto);
+    return await this.adminRepo.save(administrative);
   }
 
-  findAll() {
-    return `This action returns all administrative`;
+  async findAll(): Promise<Administrative[]> {
+    return await this.adminRepo.find({
+      relations: ['person'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} administrative`;
+  async findOne(id: string): Promise<Administrative> {
+    const admin = await this.adminRepo.findOne({
+      where: { id },
+      relations: ['person'],
+    });
+
+    if (!admin) {
+      throw new NotFoundException(`No se encontró Administrative con ID ${id}`);
+    }
+
+    return admin;
   }
 
-  update(id: number, updateAdministrativeDto: UpdateAdministrativeDto) {
-    return `This action updates a #${id} administrative`;
+  async update(id: string, dto: UpdateAdministrativeDto): Promise<Administrative> {
+    await this.adminRepo.update(id, dto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} administrative`;
+  async remove(id: string): Promise<void> {
+    await this.adminRepo.delete(id);
   }
 }
