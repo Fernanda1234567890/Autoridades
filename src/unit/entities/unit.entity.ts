@@ -32,7 +32,7 @@ export class Unit {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => UnitType, (unitType) => unitType.unit)
+    @OneToMany(() => UnitType, (unitType) => unitType.unit)
     unitType: UnitType;
 
     @OneToOne(() => IntermediatePosition, (intermediatePosition) => intermediatePosition.unit)

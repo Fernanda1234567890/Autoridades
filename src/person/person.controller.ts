@@ -19,7 +19,7 @@ export class PersonController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.personService.findOne(id);
+    return this.personService.findOneFlexible(id);
   }
 
   @Patch(':id')
@@ -27,8 +27,8 @@ export class PersonController {
     return this.personService.update(id, updatePersonDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.personService.remove(id);
+ @Delete(':identifier')
+  remove(@Param('identifier') identifier: string): Promise<void> {
+    return this.personService.remove(identifier);
   }
 }

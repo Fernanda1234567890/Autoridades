@@ -17,9 +17,10 @@ export class AdministrativeRegularPositionUnitController {
     return this.administrativeRegularPositionUnitService.findAll();
   }
 
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.administrativeRegularPositionUnitService.findOne(id);
+    return this.administrativeRegularPositionUnitService.findOne({ id });
   }
 
   @Patch(':id')

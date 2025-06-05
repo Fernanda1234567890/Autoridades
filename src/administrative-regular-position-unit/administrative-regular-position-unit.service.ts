@@ -23,20 +23,22 @@ export class AdministrativeRegularPositionUnitService {
     });
   }
 
-  async findOne(id: string): Promise<AdministrativeRegularPositionUnit> {
+  async findOne(options: { id?: string; name?: string }): Promise<AdministrativeRegularPositionUnit> {
     const arpu = await this.arpuRepository.findOne({
-      where: { id },
+      where: options,
       relations: ['administrative', 'regularPosition', 'unit'],
     });
     if (!arpu) {
-      throw new NotFoundException(`AdministrativeRegularPositionUnit with id ${id} not found`);
+      throw new NotFoundException(
+        `AdministrativeRegularPositionUnit not found with criteria: ${JSON.stringify(options)}`
+      );
     }
     return arpu;
   }
 
   async update(id: string, updateDto: UpdateAdministrativeRegularPositionUnitDto): Promise<AdministrativeRegularPositionUnit> {
     await this.arpuRepository.update(id, updateDto);
-    return this.findOne(id);
+    return this.findOne({ id });
   }
 
   async remove(id: string): Promise<void> {

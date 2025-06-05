@@ -23,15 +23,15 @@ export class UnitService {
         'unitType', // Relación ManyToOne
         'intermediatePosition', // Relación OneToOne
         'administrativeRegularPositionUnit', // Relación OneToOne
-        'parentUnit', // Si manejas jerarquía
-        'subunits',   // Si manejas jerarquía inversa
+        'parentUnit', // Si maneja jerarquía
+        'subunits',   // Si maneja jerarquía inversa
       ],
     });
   }
 
-async findOne(id: string): Promise<Unit> {
+async findOne(options: { id?: string; name?: string; type?: string }): Promise<Unit> {
   const unit = await this.unitRepository.findOne({
-    where: { id },
+    where: options,
     relations: [
       'unitType',
       'intermediatePosition',
@@ -41,14 +41,16 @@ async findOne(id: string): Promise<Unit> {
     ],
   });
   if (!unit) {
-    throw new NotFoundException(`Unit with id ${id} not found`);
+    throw new NotFoundException(
+      `Unit not found with criteria: ${JSON.stringify(options)}`
+    );
   }
   return unit;
 }
 
   async update(id: string, updateUnitDto: UpdateUnitDto): Promise<Unit> {
     await this.unitRepository.update(id, updateUnitDto);
-    return this.findOne(id);
+    return this.findOne({ id });
   }
 
   async remove(id: string): Promise<void> {

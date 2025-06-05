@@ -1,5 +1,5 @@
 import { Unit } from "src/unit/entities/unit.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class UnitType {
@@ -21,7 +21,7 @@ export class UnitType {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => Unit, (unit) => unit.unitType)
+    @ManyToOne(() => Unit, (unit) => unit.unitType)
     unit: Unit;
 
 }
