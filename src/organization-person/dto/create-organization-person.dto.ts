@@ -6,5 +6,5 @@ export class CreateOrganizationPersonDto {
 
     @IsNumber()
     @IsOptional()
-    person_id: number;
+    person_id: string;
 }

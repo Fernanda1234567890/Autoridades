@@ -1,11 +1,11 @@
-import { IsString, IsInt, IsOptional } from "class-validator";
+import { IsString, IsOptional } from "class-validator";
 export class CreateAdministrativeDto {
 
-        @IsString()
-        @IsOptional()
-        area:string;
-    
-        @IsInt()
-        @IsOptional()
-        person_id: number;
+    @IsString()
+    @IsOptional()
+    area: string;
+
+    @IsString()
+    @IsOptional()
+    person_id: string;
 }

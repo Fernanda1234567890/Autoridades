@@ -1,5 +1,5 @@
-import { IntermediatePosition } from "src/intermediate-position/entities/intermediate-position.entity";
-import { Professor } from "src/professor/entities/professor.entity";
+import { IntermediatePosition } from "../../intermediate-position/entities/intermediate-position.entity";
+import { Professor } from "../../professor/entities/professor.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()

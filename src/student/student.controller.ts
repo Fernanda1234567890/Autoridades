@@ -17,9 +17,15 @@ export class StudentController {
     return this.studentService.findAll();
   }
 
+    @Get('/seed')
+  seedUnits() {
+    return this.studentService.seed();
+  }
+
+
   @Get(':ru')
   findOne(@Param('ru') ru: number) {
-    return this.studentService.findOne(ru);
+    return this.studentService.findOne({ru});
   }
 
   @Patch(':ru')

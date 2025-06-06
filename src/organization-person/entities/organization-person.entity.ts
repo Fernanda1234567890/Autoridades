@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Person } from "src/person/entities/person.entity";
-import { Organization } from "src/organization/entities/organization.entity";
+import { Person } from "../../person/entities/person.entity";
+import { Organization } from "../../organization/entities/organization.entity";
 
 @Entity()
 export class OrganizationPerson {
@@ -12,7 +12,7 @@ export class OrganizationPerson {
     organization_id: number;
 
     @Column({ nullable: true })
-    person_id: number;
+    person_id: string;
 
     @CreateDateColumn()
     createAt: Date;

@@ -7,41 +7,71 @@ import { UpdateAdministrativeDto } from './dto/update-administrative.dto';
 
 @Injectable()
 export class AdministrativeService {
+  
+  seedAdministrativeData: any = [
+    {
+      area: 'Recursos Humanos',
+      person_id: '11111111-1111-1111-1111-111111111111',
+    },
+    {
+      area: 'Finanzas',
+      person_id: '22222222-2222-2222-2222-222222222222',
+    },
+    {
+      area: 'Infraestructura',
+      person_id: '33333333-3333-3333-3333-333333333333',
+    },
+    {
+      area: 'Secretaría',
+      person_id: '44444444-4444-4444-4444-444444444444',
+    }
+  ];
+  
   constructor(
     @InjectRepository(Administrative)
-    private readonly adminRepo: Repository<Administrative>,
+    private readonly administrativeRepo: Repository<Administrative>,
   ) {}
 
   async create(dto: CreateAdministrativeDto): Promise<Administrative> {
-    const administrative = this.adminRepo.create(dto);
-    return await this.adminRepo.save(administrative);
+    const administrative = this.administrativeRepo.create(dto);
+    return await this.administrativeRepo.save(administrative);
+  }
+
+  // Método para insertar varios administrativos de prueba
+  async seed(): Promise<Administrative[]> {
+    const created = this.seedAdministrativeData.map(dto => this.administrativeRepo.create(dto));
+    return await this.administrativeRepo.save(created);
   }
 
   async findAll(): Promise<Administrative[]> {
-    return await this.adminRepo.find({
-      relations: ['person'],
+    return this.administrativeRepo.find({
+      relations: [
+        'person', // Relación ManyToOne o OneToOne con la entidad Person
+      ],
     });
   }
 
-  async findOne(id: string): Promise<Administrative> {
-    const admin = await this.adminRepo.findOne({
-      where: { id },
-      relations: ['person'],
+  async findOne(options: { id?: string; area?: string; person_id?: string }): Promise<Administrative> {
+    const administrative = await this.administrativeRepo.findOne({
+      where: options,
+      relations: [
+        'person', // Relación con la entidad Person
+      ],
     });
-
-    if (!admin) {
-      throw new NotFoundException(`No se encontró Administrative con ID ${id}`);
+    if (!administrative) {
+      throw new NotFoundException(
+        `Administrative not found with criteria: ${JSON.stringify(options)}`
+      );
     }
-
-    return admin;
+    return administrative;
   }
 
   async update(id: string, dto: UpdateAdministrativeDto): Promise<Administrative> {
-    await this.adminRepo.update(id, dto);
-    return this.findOne(id);
+    await this.administrativeRepo.update({ id }, dto);
+    return this.findOne({ id });
   }
 
   async remove(id: string): Promise<void> {
-    await this.adminRepo.delete(id);
+    await this.administrativeRepo.delete({ id });
   }
 }

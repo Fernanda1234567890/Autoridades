@@ -6,5 +6,5 @@ export class CreateProfessorDto {
 
     @IsNumber()
     @IsOptional()
-    person_id: number;
+    person_id: string;
 }

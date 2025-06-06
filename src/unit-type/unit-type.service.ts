@@ -19,7 +19,7 @@ export class UnitTypeService {
 
   async findAll(): Promise<UnitType[]> { //obtener todas las instancias de unittype, recupera los registros
     return await this.unitTypeRepository.find({
-      relations: ['unit'], // si quieres incluir unidades relacionadas con unit
+      relations: ['units'], // si quieres incluir unidades relacionadas con unit
     });
   }
 

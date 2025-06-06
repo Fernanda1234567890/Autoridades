@@ -1,5 +1,5 @@
-import { IntermediatePositionProfessor } from "src/intermediate-position-professor/entities/intermediate-position-professor.entity";
-import { Person } from "src/person/entities/person.entity";
+import { IntermediatePositionProfessor } from "../../intermediate-position-professor/entities/intermediate-position-professor.entity";
+import { Person } from "../../person/entities/person.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
@@ -12,7 +12,7 @@ export class Professor {
     career: string;
 
     @Column({ nullable: true })
-    person_id: number;
+    person_id: string;
 
     @CreateDateColumn()
     createAt: Date;

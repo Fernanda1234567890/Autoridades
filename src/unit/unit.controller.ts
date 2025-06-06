@@ -17,6 +17,14 @@ export class UnitController {
     return this.unitService.findAll();
   }
 
+
+  @Get('/seed')
+  seedUnits() {
+    return this.unitService.seed();
+  }
+
+
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.unitService.findOne({ id });

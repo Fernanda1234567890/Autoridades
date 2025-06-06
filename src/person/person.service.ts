@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Person } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -8,6 +7,37 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PersonService {
+seedPersonData: any = [
+  {
+    name: 'Juan',
+    lastName: 'Pérez',
+    email: 'juan.perez@example.com',
+    image: 'https://example.com/image1.png',
+    type: 'docente'
+  },
+  {
+    name: 'Ana',
+    lastName: 'López',
+    email: 'ana.lopez@example.com',
+    image: 'https://example.com/image2.png',
+    type: 'estudiante'
+  },
+  {
+    name: 'Carlos',
+    lastName: 'Ruiz',
+    email: 'carlos.ruiz@example.com',
+    image: 'https://example.com/image3.png',
+    type: 'administrativo'
+  },
+  {
+    name: 'María',
+    lastName: 'Gómez',
+    email: 'maria.gomez@example.com',
+    image: 'https://example.com/image4.png',
+    type: 'docente'
+  }
+];
+
   constructor(
     @InjectRepository(Person)
     private readonly personRepository: Repository<Person>,
@@ -18,13 +48,19 @@ export class PersonService {
     return await this.personRepository.save(newPerson);
   }
 
+  // En person.service.ts
+  async seed(): Promise<Person[]> {
+    const created = this.seedPersonData.map(dto => this.personRepository.create(dto));
+    return await this.personRepository.save(created);
+  }
+
   async findAll(): Promise<Person[]> {
     return await this.personRepository.find({
       relations: ['student', 'professor', 'administrative', 'organizationPersons'],
     });
   }
 
-async findOneFlexible(search: string): Promise<Person> {
+async findOne(search: string): Promise<Person> {
   const person = await this.personRepository
     .createQueryBuilder('person')
     .leftJoinAndSelect('person.student', 'student')
@@ -47,7 +83,7 @@ async findOneFlexible(search: string): Promise<Person> {
 
   async update(id: string, updatePersonDto: UpdatePersonDto): Promise<Person> {
     await this.personRepository.update(id, updatePersonDto);
-    return this.findOneFlexible(id);
+    return this.findOne(id);
   }
 
   async remove(identifier: string): Promise<void> {

@@ -17,9 +17,14 @@ export class AdministrativeController {
     return this.administrativeService.findAll();
   }
 
+  @Get('/seed')
+  seedAdministratives() {
+    return this.administrativeService.seed();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.administrativeService.findOne(id);
+    return this.administrativeService.findOne({ id });
   }
 
   @Patch(':id')

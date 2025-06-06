@@ -1,8 +1,8 @@
-import { Student } from "src/student/entities/student.entity";
-import { Administrative } from "src/administrative/entities/administrative.entity";
-import { Professor } from "src/professor/entities/professor.entity";
+import { Student } from "../../student/entities/student.entity";
+import { Administrative } from "../../administrative/entities/administrative.entity";
+import { Professor } from "../../professor/entities/professor.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { OrganizationPerson } from "src/organization-person/entities/organization-person.entity";
+import { OrganizationPerson } from "../../organization-person/entities/organization-person.entity";
 
 @Entity()
 export class Person {

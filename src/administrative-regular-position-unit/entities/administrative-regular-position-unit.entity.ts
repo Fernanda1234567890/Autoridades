@@ -1,7 +1,7 @@
-import { Unit } from "src/unit/entities/unit.entity";
+import { Unit } from "../../unit/entities/unit.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Administrative } from "src/administrative/entities/administrative.entity";
-import { RegularPosition } from "src/regular-position/entities/regular-position.entity";
+import { Administrative } from "../../administrative/entities/administrative.entity";
+import { RegularPosition } from "../../regular-position/entities/regular-position.entity";
 
 @Entity()   
 export class AdministrativeRegularPositionUnit {

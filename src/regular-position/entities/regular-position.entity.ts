@@ -1,5 +1,5 @@
 
-import { AdministrativeRegularPositionUnit } from "src/administrative-regular-position-unit/entities/administrative-regular-position-unit.entity";
+import { AdministrativeRegularPositionUnit } from "../../administrative-regular-position-unit/entities/administrative-regular-position-unit.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()

@@ -1,4 +1,4 @@
-import { OrganizationPerson } from "src/organization-person/entities/organization-person.entity";
+import { OrganizationPerson } from "../../organization-person/entities/organization-person.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()

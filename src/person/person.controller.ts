@@ -17,9 +17,14 @@ export class PersonController {
     return this.personService.findAll();
   }
 
+  @Get('/seed')
+  seedPersons() {
+    return this.personService.seed();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.personService.findOneFlexible(id);
+    return this.personService.findOne(id);
   }
 
   @Patch(':id')
@@ -27,8 +32,8 @@ export class PersonController {
     return this.personService.update(id, updatePersonDto);
   }
 
- @Delete(':identifier')
-  remove(@Param('identifier') identifier: string): Promise<void> {
-    return this.personService.remove(identifier);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.personService.remove(id);
   }
 }

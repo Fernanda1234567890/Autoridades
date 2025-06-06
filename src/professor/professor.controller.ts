@@ -17,9 +17,14 @@ export class ProfessorController {
     return this.professorService.findAll();
   }
 
+  @Get('/seed')
+  seedProfessors() {
+    return this.professorService.seed();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.professorService.findOne(id);
+    return this.professorService.findOne({ id });
   }
 
   @Patch(':id')

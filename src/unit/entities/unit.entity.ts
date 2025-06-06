@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UnitType } from "src/unit-type/entities/unit-type.entity";
-import { IntermediatePosition } from "src/intermediate-position/entities/intermediate-position.entity";
-import { AdministrativeRegularPositionUnit } from "src/administrative-regular-position-unit/entities/administrative-regular-position-unit.entity";
+import { UnitType } from "../../unit-type/entities/unit-type.entity";
+import { IntermediatePosition } from "../../intermediate-position/entities/intermediate-position.entity";
+import { AdministrativeRegularPositionUnit } from "../../administrative-regular-position-unit/entities/administrative-regular-position-unit.entity";
 @Entity()
 export class Unit {
 
@@ -23,7 +23,7 @@ export class Unit {
     @Column({ nullable:false })    
     responsible: string;
 
-    @Column({ type: 'uuid' })
+    @Column({ type: 'uuid' , nullable: true })
     depends_on: string;
 
     @CreateDateColumn()
@@ -32,7 +32,7 @@ export class Unit {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => UnitType, (unitType) => unitType.unit)
+    @ManyToOne(() => UnitType, (unitType) => unitType.units)
     unitType: UnitType;
 
     @OneToOne(() => IntermediatePosition, (intermediatePosition) => intermediatePosition.unit)
@@ -49,7 +49,7 @@ export class Unit {
 
   
     @OneToMany(() => Unit, (unit) => unit.parentUnit)
-    subunits: Unit;
+    subunits: Unit[];	
     ////////
     
 
