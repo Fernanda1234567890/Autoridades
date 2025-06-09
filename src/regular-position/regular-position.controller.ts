@@ -17,6 +17,11 @@ export class RegularPositionController {
     return this.regularPositionService.findAll();
   }
 
+  @Get('/seed')
+  seedPositions() {
+    return this.regularPositionService.seed();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.regularPositionService.findOne(id);

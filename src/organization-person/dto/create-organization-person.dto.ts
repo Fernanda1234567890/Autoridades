@@ -2,7 +2,7 @@ import { IsNumber, IsOptional } from "class-validator";
 
 export class CreateOrganizationPersonDto {
     @IsNumber()
-    organization_id: number;
+    organization_id: string;
 
     @IsNumber()
     @IsOptional()

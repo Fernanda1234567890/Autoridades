@@ -7,6 +7,28 @@ import { UpdateRegularPositionDto } from './dto/update-regular-position.dto';
 
 @Injectable()
 export class RegularPositionService {
+
+    seedRegularPositionData: any = [
+    {
+      id: 'a1b2c3d4-e5f6-7890-1234-56789abcdef0',
+      name: 'Jefe de Departamento',
+      description: 'Responsable del área de sistemas',
+      hierachical_level: 'Alto',
+    },
+    {
+      id: 'b2c3d4e5-f6a1-8901-2345-6789abcdef01',
+      name: 'Analista',
+      description: 'Analiza procesos y sistemas',
+      hierachical_level: 'Medio',
+    },
+    {
+      id: 'c3d4e5f6-a1b2-9012-3456-789abcdef012',
+      name: 'Asistente',
+      description: 'Asiste en tareas administrativas',
+      hierachical_level: 'Bajo',
+    }
+  ];
+
   constructor(
     @InjectRepository(RegularPosition)
     private readonly regularPositionRepository: Repository<RegularPosition>,
@@ -17,9 +39,18 @@ export class RegularPositionService {
     return await this.regularPositionRepository.save(position);
   } //crea y guarda una nueva instancia 
 
+    async seed(): Promise<RegularPosition[]> {
+    const promiseMapped = this.seedRegularPositionData.map(async (positionData) => {
+      const position = this.regularPositionRepository.create(positionData);
+      return this.regularPositionRepository.save(position);
+    });
+
+    return await Promise.all(promiseMapped);
+  }
+
   async findAll(): Promise<RegularPosition[]> {
     return await this.regularPositionRepository.find({
-      relations: ['administrativeRegularPositionUnit'], // si tienes relaciones, cámbialo//////////
+      relations: ['administrativeRegularPositionUnits'], // si tienes relaciones, cámbialo//////////
     });
   } //Recupera todos los RegularPosition.
 

@@ -38,4 +38,5 @@ export class AdministrativeRegularPositionUnit {
     @ManyToOne(() => RegularPosition, regularPosition => regularPosition.administrativeRegularPositionUnits)
     @JoinColumn({ name: 'regular_position_id' })
     regularPosition: RegularPosition;
+
 }

@@ -12,22 +12,22 @@ export class Person {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   last_name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   ci: string;
 
   @Column({ nullable: true })
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   phone_number: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   address: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   date_of_birth: Date;
 
   @Column()

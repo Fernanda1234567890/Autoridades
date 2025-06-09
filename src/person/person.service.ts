@@ -10,31 +10,47 @@ export class PersonService {
 seedPersonData: any = [
   {
     name: 'Juan',
-    lastName: 'Pérez',
-    email: 'juan.perez@example.com',
+    last_name: 'Pérez',
+    ci: '5071789',
+    phone_number: 19345678,
+    address: 'Calle 1',
+    date_of_birth: new Date('1990-01-02'),
     image: 'https://example.com/image1.png',
-    type: 'docente'
+    type: 'docente',
+    email: 'juan.perez@example.com'
   },
   {
     name: 'Ana',
-    lastName: 'López',
-    email: 'ana.lopez@example.com',
+    last_name: 'López',
+    ci: '6611094',
+    phone_number: 12345678,
+    address: 'Calle alba',
+    date_of_birth: new Date('1990-01-09'),
     image: 'https://example.com/image2.png',
-    type: 'estudiante'
+    type: 'estudiante',
+    email: 'ana.lopez@example.com'
   },
   {
     name: 'Carlos',
-    lastName: 'Ruiz',
-    email: 'carlos.ruiz@example.com',
+    last_name: 'Ruiz',
+    ci: '3681459',
+    phone_number: 12340678,
+    address: 'Calle 98',
+    date_of_birth: new Date('1990-01-07'),
     image: 'https://example.com/image3.png',
-    type: 'administrativo'
+    type: 'administrativo',
+    email: 'carlos.ruiz@example.com'
   },
   {
     name: 'María',
-    lastName: 'Gómez',
-    email: 'maria.gomez@example.com',
+    last_name: 'Gómez',
+    ci: '7894563',
+    phone_number: 12345678,
+    address: 'Calle 1589',
+    date_of_birth: new Date('1990-01-26'),
     image: 'https://example.com/image4.png',
-    type: 'docente'
+    type: 'docente',
+    email: 'maria.gomez@example.com'
   }
 ];
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'; // el notF... regresa error 404 cuando no encuentra el registro
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './entities/organization.entity';
@@ -7,26 +7,47 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
 @Injectable()
 export class OrganizationService {
-  constructor( // inyecta el repo para que se pueda ejecutar find, create, save , delete.
+  seedOrganizationData: any = [
+    {
+      name: 'Organización Alpha',
+      description: 'Organización principal',
+      type: 'principal',
+    },
+    {
+      name: 'Organización Beta',
+      description: 'Organización secundaria',
+      type: 'secundaria',
+    }
+  ];
+
+  constructor(
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
   ) {}
 
   async create(createDto: CreateOrganizationDto): Promise<Organization> {
-    const organization = this.organizationRepository.create(createDto);
-    return await this.organizationRepository.save(organization);
+    const org = this.organizationRepository.create(createDto);
+    return this.organizationRepository.save(org);
+  }
+
+  async seed(): Promise<Organization[]> {
+    const promiseMapped = this.seedOrganizationData.map(async (orgData) => {
+      const org = this.organizationRepository.create(orgData);
+      return this.organizationRepository.save(org);
+    });
+    return await Promise.all(promiseMapped);
   }
 
   async findAll(): Promise<Organization[]> { //Busca todas las organizaciones en la base de datos.
     return await this.organizationRepository.find({
-      relations: ['organizationPerson'], 
+      relations: ['organizationPersons'], 
     });
   }
 
   async findOne(id: string): Promise<Organization> { //busca por id
     const organization = await this.organizationRepository.findOne({
       where: { id },
-      relations: ['organizationPerson'], 
+      relations: ['organizationPersons'], 
     });
 
     if (!organization) {

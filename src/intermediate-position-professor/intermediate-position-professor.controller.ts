@@ -17,6 +17,12 @@ export class IntermediatePositionProfessorController {
     return this.intermediatePositionProfessorService.findAll();
   }
 
+  @Get('/seed')
+  seedUnits() {
+  return this.intermediatePositionProfessorService.seed();
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.intermediatePositionProfessorService.findOne(id);

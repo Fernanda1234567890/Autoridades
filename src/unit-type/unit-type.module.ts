@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UnitType } from './entities/unit-type.entity';
 
 @Module({
+  
   imports: [TypeOrmModule.forFeature([UnitType])], // Importa el repositorio de UnitType para poder usarlo en el servicio		
   controllers: [UnitTypeController],
   providers: [UnitTypeService],

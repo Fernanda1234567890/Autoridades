@@ -17,6 +17,11 @@ export class OrganizationPersonController {
     return this.organizationPersonService.findAll();
   }
 
+  @Get('/seed')
+  seedUnits() {
+    return this.organizationPersonService.seed();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.organizationPersonService.findOne(id);

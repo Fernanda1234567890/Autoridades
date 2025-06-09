@@ -17,6 +17,12 @@ export class IntermediatePositionController {
     return this.intermediatePositionService.findAll();
   }
 
+     @Get('/seed')
+  seedUnits() {
+    return this.intermediatePositionService.seed();
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.intermediatePositionService.findOne(id);

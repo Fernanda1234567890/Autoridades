@@ -17,6 +17,11 @@ export class AdministrativeRegularPositionUnitController {
     return this.administrativeRegularPositionUnitService.findAll();
   }
 
+    @Get('/seed')
+  seedUnits() {
+    return this.administrativeRegularPositionUnitService.seed();
+  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

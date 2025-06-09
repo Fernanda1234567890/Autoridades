@@ -5,13 +5,13 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, Prim
 @Entity()
 export class Professor {
 
-    @PrimaryGeneratedColumn('uuid') 
+    @PrimaryGeneratedColumn() 
     id: string;
 
     @Column({ nullable: false })
     career: string;
 
-    @Column({ nullable: true })
+    @Column('uuid')
     person_id: string;
 
     @CreateDateColumn()

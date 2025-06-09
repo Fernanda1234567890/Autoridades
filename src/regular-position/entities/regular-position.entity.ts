@@ -23,7 +23,7 @@ export class RegularPosition {
     updatedAt: Date;
 
     @OneToMany(() => AdministrativeRegularPositionUnit,administrativeRegularPositionUnit => administrativeRegularPositionUnit.regularPosition)
-    administrativeRegularPositionUnits: AdministrativeRegularPositionUnit;
+    administrativeRegularPositionUnits: AdministrativeRegularPositionUnit[];
 
 }
  

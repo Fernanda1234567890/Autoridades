@@ -7,11 +7,11 @@ export class Student {
      @PrimaryGeneratedColumn() 
      ru: number;
 
+     @Column('uuid')
+     person_id: string;
+
      @Column({ nullable: false })
      career: string;
-
-     @Column()
-     person_id: string;
 
      @CreateDateColumn()
      createAt: Date;

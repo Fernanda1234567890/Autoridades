@@ -8,6 +8,6 @@ import { IntermediatePosition } from './entities/intermediate-position.entity';
   imports: [TypeOrmModule.forFeature([IntermediatePosition])],
   controllers: [IntermediatePositionController],
   providers: [IntermediatePositionService],
-  exports: [TypeOrmModule], // Opcional, solo si necesitas el repositorio fuera de este módulo
+  exports: [TypeOrmModule],
 })
 export class IntermediatePositionModule {}

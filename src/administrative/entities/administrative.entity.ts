@@ -5,13 +5,13 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, One
 @Entity()
 export class Administrative {
           
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id:string;
 
   @Column({ nullable: false })
   area:string;
 
-  @Column({ nullable: false })
+  @Column('uuid')
   person_id:string;
 
   @CreateDateColumn()

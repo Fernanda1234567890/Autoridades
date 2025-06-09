@@ -15,5 +15,5 @@ export class CreateIntermediatePositionDto {
 
     @IsNumber()
     @IsOptional()
-    unit_id: number;
+    unit_id: string;
 }

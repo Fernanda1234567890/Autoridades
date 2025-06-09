@@ -7,6 +7,25 @@ import { UpdateIntermediatePositionProfessorDto } from './dto/update-intermediat
 
 @Injectable()
 export class IntermediatePositionProfessorService {
+  seedIntermediatePositionProfessorData: any = [
+    {
+      regular_position_id: 'regular-position-uuid-1',
+      unit_id: 1, // Ajusta según tu modelo (number o string)
+      administrative_id: 1,
+      entry_date: new Date('2023-01-01'),
+      // intermediate_position_id y professor_id pueden ser requeridos en tu DTO
+      intermediate_position_id: 'intermediate-position-uuid-1',
+      professor_id: 'professor-uuid-1',
+    },
+    {
+      regular_position_id: 'regular-position-uuid-2',
+      unit_id: 2,
+      administrative_id: 2,
+      entry_date: new Date('2023-02-01'),
+      intermediate_position_id: 'intermediate-position-uuid-2',
+      professor_id: 'professor-uuid-2',
+    }
+  ];
   constructor(
     @InjectRepository(IntermediatePositionProfessor)
     private readonly ippRepository: Repository<IntermediatePositionProfessor>,
@@ -15,6 +34,14 @@ export class IntermediatePositionProfessorService {
   async create(createDto: CreateIntermediatePositionProfessorDto): Promise<IntermediatePositionProfessor> {
     const ipp = this.ippRepository.create(createDto);
     return await this.ippRepository.save(ipp);
+  }
+
+    async seed(): Promise<IntermediatePositionProfessor[]> {
+    const promiseMapped = this.seedIntermediatePositionProfessorData.map(async (data) => {
+      const ipp = this.ippRepository.create(data);
+      return this.ippRepository.save(ipp);
+    });
+    return (await Promise.all(promiseMapped)).filter(Boolean);
   }
 
   async findAll(): Promise<IntermediatePositionProfessor[]> {

@@ -9,9 +9,9 @@ export class OrganizationPerson {
     id: string
     
     @Column({ nullable: false })
-    organization_id: number;
+    organization_id: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     person_id: string;
 
     @CreateDateColumn()

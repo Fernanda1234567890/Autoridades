@@ -8,7 +8,7 @@ export class IntermediatePosition {
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     name: string;
 
     @Column({ nullable: true })
@@ -17,8 +17,8 @@ export class IntermediatePosition {
     @Column({ nullable: true })
     hierachical_level: string;
 
-    @Column({nullable: true })
-    unit_id: number;
+    @Column({nullable: false })
+    unit_id: string;
 
     @CreateDateColumn()
     createAt: Date;

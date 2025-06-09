@@ -7,6 +7,21 @@ import { UpdateIntermediatePositionDto } from './dto/update-intermediate-positio
 
 @Injectable()
 export class IntermediatePositionService {
+  seedIntermediatePositionData: any = [
+    {
+      name: 'Coordinador Académico',
+      description: 'Responsable de la coordinación académica',
+       hierachical_level: 'Alto',
+       unit_id: 'a1b2c3d4-e5f6-7890-1234-56789abcdef0',
+    },
+    {
+      name: 'Jefe de Laboratorio',
+      description: 'Encargado del laboratorio principal',
+       hierachical_level: 'Medio',
+        unit_id: 'b2c3d4e5-f6a1-8901-2345-6789abcdef01',
+    }
+  ];
+
   constructor(
     @InjectRepository(IntermediatePosition)
     private readonly intermediatePositionRepository: Repository<IntermediatePosition>,
@@ -17,19 +32,27 @@ export class IntermediatePositionService {
     return await this.intermediatePositionRepository.save(position);
   }
 
+  async seed(): Promise<IntermediatePosition[]> {
+    const promiseMapped = this.seedIntermediatePositionData.map(async (data) => {
+      const record = this.intermediatePositionRepository.create(data);
+      return this.intermediatePositionRepository.save(record);
+    });
+    return await Promise.all(promiseMapped);
+  }
+
   async findAll(): Promise<IntermediatePosition[]> {
     return await this.intermediatePositionRepository.find({
-      relations: ['unit', 'intermediatePositionProfessors'],
+      relations: ['intermediatePosition', 'person'], // Ajusta según tus relaciones reales
     });
   }
 
   async findOne(id: string): Promise<IntermediatePosition> {
     const position = await this.intermediatePositionRepository.findOne({
       where: { id },
-      relations: ['unit', 'intermediatePositionProfessors'],
+      relations: ['intermediatePosition', 'person'], // Ajusta según tus relaciones reales
     });
     if (!position) {
-      throw new NotFoundException(`IntermediatePosition with id ${id} not found`);
+      throw new NotFoundException(`IntermediatePositionPerson with id ${id} not found`);
     }
     return position;
   }

@@ -10,7 +10,7 @@ async function seedPersons() {
   await service.create({
     name: 'Juan',
     last_name: 'Pérez',
-    ci: '1111111',
+    ci: '5071789',
     phone_number: 19345678,
     address: 'Calle 1',
     date_of_birth: new Date('1990-01-02'),
@@ -21,7 +21,7 @@ async function seedPersons() {
   await service.create({
     name: 'Ana',
     last_name: 'López',
-    ci: '2222222',
+    ci: '6611094',
     phone_number: 12345678,
     address: 'Calle 1',
     date_of_birth: new Date('1990-01-09'),
@@ -32,7 +32,7 @@ async function seedPersons() {
   await service.create({
     name: 'Carlos',
     last_name: 'Ruiz',
-    ci: '3333333',
+    ci: '3681459',
     phone_number: 12340678,
     address: 'Calle 1',
     date_of_birth: new Date('1990-01-07'),
@@ -43,7 +43,7 @@ async function seedPersons() {
   await service.create({
     name: 'María',
     last_name: 'Gómez',
-    ci: '4444444',
+    ci: '7894563',
     phone_number: 12345678,
     address: 'Calle 1',
     date_of_birth: new Date('1990-01-26'),
