@@ -13,6 +13,7 @@ import { jwtConstants } from './constantes';
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
+      
     }),
   ],
   providers: [AuthService],

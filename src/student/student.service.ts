@@ -9,22 +9,23 @@ import { Person } from 'src/person/entities/person.entity';
 @Injectable()
 export class StudentService {
   
+  
   seedStudentData: any  =  [
   {
     career: 'Ingeniería de Sistemas',
-    person_id: 'Juan',
+    person_id: person.id,
   },
   {
     career: 'Derecho',
-    person_id: 'Ana',
+    person_id: person.id,
   },
   {
     career: 'Medicina',
-    person_id: 'Carlos',
+    person_id: person.id,
   },
   {
     career: 'Arquitectura',
-    person_id: 'María',
+    person_id: person.id,
   }
 ];
   

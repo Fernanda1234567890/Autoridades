@@ -4,36 +4,39 @@ import { Repository } from 'typeorm';
 import { AdministrativeRegularPositionUnit } from './entities/administrative-regular-position-unit.entity';
 import { CreateAdministrativeRegularPositionUnitDto } from './dto/create-administrative-regular-position-unit.dto';
 import { UpdateAdministrativeRegularPositionUnitDto } from './dto/update-administrative-regular-position-unit.dto';
+import { RegularPosition } from 'src/regular-position/entities/regular-position.entity';
+import { Unit } from 'src/unit/entities/unit.entity';
+import { Administrative } from 'src/administrative/entities/administrative.entity';
 
 @Injectable()
 export class AdministrativeRegularPositionUnitService {
   [x: string]: any;
-  seedAdministrativeRegularPositionUnitData: any = [
-    {
-      regular_position_id: 'regular-position-uuid-1',
-      units_id: 'unit-uuid-1',
-      administrative_id: 'administrative-uuid-1',
-      entry_date: new Date('2023-01-01'),
-    },
-    {
-      regular_position_id: 'regular-position-uuid-2',
-      units_id: 'unit-uuid-2',
-      administrative_id: 'administrative-uuid-2',
-      entry_date: new Date('2023-02-01'),
-    },
-    {
-      regular_position_id: 'regular-position-uuid-3',
-      units_id: 'unit-uuid-3',
-      administrative_id: 'administrative-uuid-3',
-      entry_date: new Date('2023-03-01'),
-    },
-    {
-      regular_position_id: 'regular-position-uuid-4',
-      units_id: 'unit-uuid-4',
-      administrative_id: 'administrative-uuid-4',
-      entry_date: new Date('2023-04-01'),
-    }
-  ];
+  // seedAdministrativeRegularPositionUnitData: any = [
+  //   {
+  //     regular_position_id: regularPosition.id ,
+  //     units_id: unit.id,
+  //     administrative_id: administrative.id,
+  //     entry_date: new Date('2023-01-01'),
+  //   },
+  //   {
+  //     regular_position_id: regularPosition.id ,
+  //     units_id: unit.id,
+  //     administrative_id: administrative.id,
+  //     entry_date: new Date('2023-02-01'),
+  //   },
+  //   {
+  //     regular_position_id: regularPosition.id ,
+  //     units_id: unit.id,
+  //     administrative_id: administrative.id,
+  //     entry_date: new Date('2023-03-01'),
+  //   },
+  //   {
+  //     regular_position_id: regularPosition.id ,
+  //     units_id: unit.id,
+  //     administrative_id: administrative.id,
+  //     entry_date: new Date('2023-04-01'),
+  //   }
+  // ];
 
   constructor(
     @InjectRepository(AdministrativeRegularPositionUnit)

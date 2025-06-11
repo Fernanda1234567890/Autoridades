@@ -5,22 +5,24 @@ import { IntermediatePosition } from './entities/intermediate-position.entity';
 import { CreateIntermediatePositionDto } from './dto/create-intermediate-position.dto';
 import { UpdateIntermediatePositionDto } from './dto/update-intermediate-position.dto';
 
+
 @Injectable()
 export class IntermediatePositionService {
-  seedIntermediatePositionData: any = [
-    {
-      name: 'Coordinador Académico',
-      description: 'Responsable de la coordinación académica',
-       hierachical_level: 'Alto',
-       unit_id: 'a1b2c3d4-e5f6-7890-1234-56789abcdef0',
-    },
-    {
-      name: 'Jefe de Laboratorio',
-      description: 'Encargado del laboratorio principal',
-       hierachical_level: 'Medio',
-        unit_id: 'b2c3d4e5-f6a1-8901-2345-6789abcdef01',
-    }
-  ];
+  [x: string]: any;
+  // seedIntermediatePositionData: any = [
+  //   {
+  //     name: 'Coordinador Académico',
+  //     description: 'Responsable de la coordinación académica',
+  //      hierachical_level: 'Alto',
+  //      unit_id: unit.id
+  //   },
+  //   {
+  //     name: 'Jefe de Laboratorio',
+  //     description: 'Encargado del laboratorio principal',
+  //      hierachical_level: 'Medio',
+  //       unit_id: unit.id
+  //   }
+  // ];
 
   constructor(
     @InjectRepository(IntermediatePosition)

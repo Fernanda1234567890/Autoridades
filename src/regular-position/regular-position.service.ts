@@ -18,7 +18,7 @@ export class RegularPositionService {
     {
       id: 'b2c3d4e5-f6a1-8901-2345-6789abcdef01',
       name: 'Analista',
-      description: 'Analiza procesos y sistemas',
+      description: 'Analiza procesos y sistemas',  
       hierachical_level: 'Medio',
     },
     {

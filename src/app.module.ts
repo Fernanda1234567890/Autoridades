@@ -32,6 +32,7 @@ import { AdministrativeRegularPositionUnit } from './administrative-regular-posi
 import { IntermediatePositionProfessor } from './intermediate-position-professor/entities/intermediate-position-professor.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { Users1Module } from './users1/users1.module';
 
 @Module({
   imports: [
@@ -45,35 +46,38 @@ import { UsersModule } from './users/users.module';
       
       entities: [ 
         UnitType,
+        Unit,
+        IntermediatePosition,
+        IntermediatePositionProfessor,
         RegularPosition,
-        Organization,
-        Person,
-        OrganizationPerson,
+        AdministrativeRegularPositionUnit,
         Student,
         Administrative,
         Professor,
-        Unit,
-        IntermediatePosition,
-        AdministrativeRegularPositionUnit,
-        IntermediatePositionProfessor,
+        Person,
+        OrganizationPerson,
+        Organization,
         
       ],
       synchronize: true,
     }),
     UnitTypeModule,
+    UnitModule,
+    IntermediatePositionModule,
+    IntermediatePositionProfessorModule,
     RegularPositionModule,
-    OrganizationModule,
-    PersonModule,
-    OrganizationPersonModule,
+    AdministrativeRegularPositionUnitModule,
     StudentModule,
     AdministrativeModule,
     ProfessorModule,
-    UnitModule,
-    IntermediatePositionModule,
-    AdministrativeRegularPositionUnitModule,
-    IntermediatePositionProfessorModule,
-    AuthModule,
-    UsersModule,
+    PersonModule,
+    OrganizationPersonModule,
+    OrganizationModule,
+   
+    
+    
+    
+
   ],
   controllers: [AppController],
   providers: [AppService],
