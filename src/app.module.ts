@@ -29,6 +29,9 @@ import { IntermediatePosition } from './intermediate-position/entities/intermedi
 //import { AdministrativeRegularPositionUnitService } from './administrative-regular-position-unit/administrative-regular-position-unit.service';
 import { AdministrativeRegularPositionUnit } from './administrative-regular-position-unit/entities/administrative-regular-position-unit.entity';
 import { IntermediatePositionProfessor } from './intermediate-position-professor/entities/intermediate-position-professor.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -41,6 +44,7 @@ import { IntermediatePositionProfessor } from './intermediate-position-professor
       database: 'uatf_autoridades',
       
       entities: [ 
+        User,
         UnitType,
         RegularPosition,
         Organization,
@@ -57,6 +61,8 @@ import { IntermediatePositionProfessor } from './intermediate-position-professor
       ],
       synchronize: true,
     }),
+    AuthModule,
+    UsersModule,
     UnitTypeModule,
     RegularPositionModule,
     OrganizationModule,
@@ -69,6 +75,8 @@ import { IntermediatePositionProfessor } from './intermediate-position-professor
     IntermediatePositionModule,
     AdministrativeRegularPositionUnitModule,
     IntermediatePositionProfessorModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

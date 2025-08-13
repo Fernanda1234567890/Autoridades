@@ -1,45 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { IntermediatePositionProfessor } from './entities/intermediate-position-professor.entity';
+import { Injectable } from '@nestjs/common';
 import { CreateIntermediatePositionProfessorDto } from './dto/create-intermediate-position-professor.dto';
 import { UpdateIntermediatePositionProfessorDto } from './dto/update-intermediate-position-professor.dto';
 
 @Injectable()
 export class IntermediatePositionProfessorService {
-  constructor(
-    @InjectRepository(IntermediatePositionProfessor)
-    private readonly ippRepository: Repository<IntermediatePositionProfessor>,
-  ) {}
-
-  async create(createDto: CreateIntermediatePositionProfessorDto): Promise<IntermediatePositionProfessor> {
-    const ipp = this.ippRepository.create(createDto);
-    return await this.ippRepository.save(ipp);
+  create(createIntermediatePositionProfessorDto: CreateIntermediatePositionProfessorDto) {
+    return 'This action adds a new intermediatePositionProfessor';
   }
 
-  async findAll(): Promise<IntermediatePositionProfessor[]> {
-    return await this.ippRepository.find({
-      relations: ['intermediatePosition', 'professor'],
-    });
+  findAll() {
+    return `This action returns all intermediatePositionProfessor`;
   }
 
-  async findOne(id: string): Promise<IntermediatePositionProfessor> {
-    const ipp = await this.ippRepository.findOne({
-      where: { id },
-      relations: ['intermediatePosition', 'professor'],
-    });
-    if (!ipp) {
-      throw new NotFoundException(`IntermediatePositionProfessor with id ${id} not found`);
-    }
-    return ipp;
+  findOne(id: number) {
+    return `This action returns a #${id} intermediatePositionProfessor`;
   }
 
-  async update(id: string, updateDto: UpdateIntermediatePositionProfessorDto): Promise<IntermediatePositionProfessor> {
-    await this.ippRepository.update(id, updateDto);
-    return this.findOne(id);
+  update(id: number, updateIntermediatePositionProfessorDto: UpdateIntermediatePositionProfessorDto) {
+    return `This action updates a #${id} intermediatePositionProfessor`;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.ippRepository.delete(id);
+  remove(id: number) {
+    return `This action removes a #${id} intermediatePositionProfessor`;
   }
 }

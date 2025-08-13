@@ -19,16 +19,16 @@ export class AdministrativeController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.administrativeService.findOne(id);
+    return this.administrativeService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdministrativeDto: UpdateAdministrativeDto) {
-    return this.administrativeService.update(id, updateAdministrativeDto);
+    return this.administrativeService.update(+id, updateAdministrativeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.administrativeService.remove(id);
+    return this.administrativeService.remove(+id);
   }
 }

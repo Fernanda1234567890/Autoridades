@@ -1,47 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Student } from './entities/student.entity';
+import { Injectable } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Injectable()
 export class StudentService {
-  constructor(
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>,
-  ) {}
-
-  async create(dto: CreateStudentDto): Promise<Student> {
-    const student = this.studentRepo.create(dto);
-    return await this.studentRepo.save(student);
+  create(createStudentDto: CreateStudentDto) {
+    return 'This action adds a new student';
   }
 
-  async findAll(): Promise<Student[]> {
-    return await this.studentRepo.find({
-      relations: ['person'],
-    });
+  findAll() {
+    return `This action returns all student`;
   }
 
-  async findOne(ru: number): Promise<Student> {
-    const student = await this.studentRepo.findOne({
-      where: { ru },
-      relations: ['person'],
-    });
-
-    if (!student) {
-      throw new NotFoundException(`No se encontró Student con RU ${ru}`);
-    }
-
-    return student;
+  findOne(id: number) {
+    return `This action returns a #${id} student`;
   }
 
-  async update(ru: number, dto: UpdateStudentDto): Promise<Student> {
-    await this.studentRepo.update(ru, dto);
-    return this.findOne(ru);
+  update(id: number, updateStudentDto: UpdateStudentDto) {
+    return `This action updates a #${id} student`;
   }
 
-  async remove(ru: number): Promise<void> {
-    await this.studentRepo.delete(ru);
+  remove(id: number) {
+    return `This action removes a #${id} student`;
   }
 }

@@ -1,49 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { OrganizationPerson } from './entities/organization-person.entity';
+import { Injectable } from '@nestjs/common';
 import { CreateOrganizationPersonDto } from './dto/create-organization-person.dto';
 import { UpdateOrganizationPersonDto } from './dto/update-organization-person.dto';
-import { Organization } from 'src/organization/entities/organization.entity';
-import { Person } from 'src/person/entities/person.entity';
 
 @Injectable()
 export class OrganizationPersonService {
-  constructor(
-    @InjectRepository(OrganizationPerson)
-    private readonly orgPersonRepo: Repository<OrganizationPerson>,
-  ) {}
-
-  async create(dto: CreateOrganizationPersonDto): Promise<OrganizationPerson> {
-    const orgPerson = this.orgPersonRepo.create(dto);
-    return await this.orgPersonRepo.save(orgPerson);
+  create(createOrganizationPersonDto: CreateOrganizationPersonDto) {
+    return 'This action adds a new organizationPerson';
   }
 
-  async findAll(): Promise<OrganizationPerson[]> {
-    return await this.orgPersonRepo.find({
-      relations: ['organization', 'person'],
-    });
+  findAll() {
+    return `This action returns all organizationPerson`;
   }
 
-  async findOne(id: string): Promise<OrganizationPerson> {
-    const entity = await this.orgPersonRepo.findOne({
-      where: { id },
-      relations: ['organization', 'person'],
-    });
-
-    if (!entity) {
-      throw new NotFoundException(`No se encontró OrganizationPerson con ID ${id}`);
-    }
-
-    return entity;
+  findOne(id: number) {
+    return `This action returns a #${id} organizationPerson`;
   }
 
-  async update(id: string, dto: UpdateOrganizationPersonDto): Promise<OrganizationPerson> {
-    await this.orgPersonRepo.update(id, dto);
-    return this.findOne(id);
+  update(id: number, updateOrganizationPersonDto: UpdateOrganizationPersonDto) {
+    return `This action updates a #${id} organizationPerson`;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.orgPersonRepo.delete(id);
+  remove(id: number) {
+    return `This action removes a #${id} organizationPerson`;
   }
 }

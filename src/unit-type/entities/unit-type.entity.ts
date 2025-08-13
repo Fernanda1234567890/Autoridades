@@ -12,8 +12,8 @@ export class UnitType {
     @Column({ nullable:true })    
     description: string;
 
-    @Column({ nullable: false })
-    type: string;
+    // @Column({ nullable: false })
+    // type: string;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -19,16 +19,16 @@ export class AdministrativeRegularPositionUnitController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.administrativeRegularPositionUnitService.findOne(id);
+    return this.administrativeRegularPositionUnitService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdministrativeRegularPositionUnitDto: UpdateAdministrativeRegularPositionUnitDto) {
-    return this.administrativeRegularPositionUnitService.update(id, updateAdministrativeRegularPositionUnitDto);
+    return this.administrativeRegularPositionUnitService.update(+id, updateAdministrativeRegularPositionUnitDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.administrativeRegularPositionUnitService.remove(id);
+    return this.administrativeRegularPositionUnitService.remove(+id);
   }
 }

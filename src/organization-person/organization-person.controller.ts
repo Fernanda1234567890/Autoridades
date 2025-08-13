@@ -19,16 +19,16 @@ export class OrganizationPersonController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.organizationPersonService.findOne(id);
+    return this.organizationPersonService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrganizationPersonDto: UpdateOrganizationPersonDto) {
-    return this.organizationPersonService.update(id, updateOrganizationPersonDto);
+    return this.organizationPersonService.update(+id, updateOrganizationPersonDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.organizationPersonService.remove(id);
+    return this.organizationPersonService.remove(+id);
   }
 }

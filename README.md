@@ -96,3 +96,20 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+ORDEN DE CREACION DE DATABASE
+
+unit-type +
+regular-position -> cargos regular_charges  +
+organization +
+person  +
+organization_person  +
+student  +
+administrative +
+professor +
+unit +
+intermediate-position  +
+administrative-regular-position-unit
+intermediate-position-professor
+
+
