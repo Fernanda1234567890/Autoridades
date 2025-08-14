@@ -1,0 +1,36 @@
+import { Administrativo } from "src/administrativo/entities/administrativo.entity";
+import { CargoIntermedio } from "src/cargo-intermedio/entities/cargo-intermedio.entity";
+import { CargoRegular } from "src/cargo-regular/entities/cargo-regular.entity";
+import { Unidad } from "src/unidad/entities/unidad.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity('administrativo-cargo-regular-unidad')
+export class AdministrativoCargoRegularUnidad {
+    @PrimaryGeneratedColumn()
+    id:number; 
+
+    @Column({type: 'integer'})
+    id_cargo: number;
+
+    @Column({type: 'integer'})
+    id_unidad: number;
+    
+    @Column({type: 'integer'})
+    id_administrativo: number;
+    
+    @Column({type: 'date'})
+    fecha_ingreso: Date;
+
+    @JoinColumn({name: 'id_cargo'})
+    @ManyToOne(()=>CargoRegular, cargoRegular=>cargoRegular.administrativo_cargo_regular_unidades)
+    cargo_regular: CargoRegular;
+
+    @JoinColumn({name: 'id_unidad'})
+    @ManyToOne(()=>Unidad, unidad=>unidad.administrativo_cargo_regular_unidades)
+    unidad: Unidad;
+
+    @JoinColumn({name: 'id_administrativo'})
+    @ManyToOne(()=>Administrativo, administrativo=>administrativo.administrativo_cargo_regular_unidades)
+    administrativo: Administrativo;
+
+}
