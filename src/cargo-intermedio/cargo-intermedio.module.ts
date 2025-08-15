@@ -8,5 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([CargoIntermedio])],
   controllers: [CargoIntermedioController],
   providers: [CargoIntermedioService],
+  exports: [CargoIntermedioService],
+  
 })
 export class CargoIntermedioModule { }

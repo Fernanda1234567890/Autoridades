@@ -20,6 +20,11 @@ export class CargoIntermedioService {
   }
 
   async seed(){
+
+    //await this.cargoIntermedioRepository.query(`TRUNCATE TABLE cargos-intermedios CASCADE`);
+    //await this.cargoIntermedioRepository.clear()
+    //await this.cargoIntermedioRepository.query(`ALTER SEQUENCE "cargos-intermedios_id_seq" RESTART WITH 1`)
+    
     const datos: CreateCargoIntermedioDto[] = [
       {
         id: 1,

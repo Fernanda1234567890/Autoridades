@@ -22,15 +22,15 @@ export class AdministrativoCargoRegularUnidad {
     fecha_ingreso: Date;
 
     @JoinColumn({name: 'id_cargo'})
-    @ManyToOne(()=>CargoRegular, cargoRegular=>cargoRegular.administrativo_cargo_regular_unidades)
+    @ManyToOne(()=>CargoRegular, cargoRegular=>cargoRegular.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
     cargo_regular: CargoRegular;
 
     @JoinColumn({name: 'id_unidad'})
-    @ManyToOne(()=>Unidad, unidad=>unidad.administrativo_cargo_regular_unidades)
+    @ManyToOne(()=>Unidad, unidad=>unidad.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
     unidad: Unidad;
 
     @JoinColumn({name: 'id_administrativo'})
-    @ManyToOne(()=>Administrativo, administrativo=>administrativo.administrativo_cargo_regular_unidades)
+    @ManyToOne(()=>Administrativo, administrativo=>administrativo.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
     administrativo: Administrativo;
 
 }

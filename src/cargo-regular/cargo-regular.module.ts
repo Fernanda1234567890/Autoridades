@@ -8,5 +8,7 @@ import { CargoRegular } from './entities/cargo-regular.entity';
   imports: [TypeOrmModule.forFeature([CargoRegular])],
   controllers: [CargoRegularController],
   providers: [CargoRegularService],
+  exports: [CargoRegularService],
+  
 })
 export class CargoRegularModule {}

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizacionDto } from './dto/create-organizacion.dto';
 import { UpdateOrganizacionDto } from './dto/update-organizacion.dto';
 import { Repository } from 'typeorm';
@@ -11,6 +11,13 @@ export class OrganizacionService {
     private readonly organizacionRepository: Repository<Organizacion>
   ){}
   async create(createOrganizacionDto: CreateOrganizacionDto) {
+    const existe = await this.organizacionRepository.findOne({
+      where: { tipo: createOrganizacionDto.tipo },
+    });
+    if (existe) {
+      throw new BadRequestException(`Ya existe una organización con tipo ${createOrganizacionDto.tipo}`);
+    }
+    
     const nuevaOrganizacion = this.organizacionRepository.create(createOrganizacionDto);
     return await this.organizacionRepository.save(nuevaOrganizacion) 
   }
@@ -21,6 +28,11 @@ export class OrganizacionService {
   }
 
   async seed(){
+
+    //await this.organizacionRepository.query(`TRUNCATE TABLE organizaciones CASCADE`);
+    //await this.organizacionRepository.clear()
+    //await this.organizacionRepository.query(`ALTER SEQUENCE organizaciones_id_seq RESTART WITH 1`)
+
     const datos = [
       {
         id: 1,
@@ -43,15 +55,26 @@ export class OrganizacionService {
     return await this.organizacionRepository.save(mapeados)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} organizacion`;
+ //busqueda por id
+  async findOne(id: number) {
+    const organizacion = await this.organizacionRepository.findOne({
+      where: { id },
+      relations: ['organizacion_personas'] //incorporar mas relaciones si existe
+    });
+    if (!organizacion){
+      throw new NotFoundException(`Organización con id ${id} no encontrada`);
+    }
+    return organizacion;
   }
-
-  update(id: number, updateOrganizacionDto: UpdateOrganizacionDto) {
-    return `This action updates a #${id} organizacion`;
+  //actualizar  
+  async update(id: number, updateOrganizacionDto: UpdateOrganizacionDto) {
+    const organizacion = await this.findOne(id);
+    Object.assign(organizacion, updateOrganizacionDto);
+    return await this.organizacionRepository.save(organizacion);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} organizacion`;
+  //eliminar
+  async remove(id: number) {
+    // const organizacion = await this.findOne(id);
+    // return await this.organizacionRepository.remove(organizacion);
   }
 }

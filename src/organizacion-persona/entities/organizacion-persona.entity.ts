@@ -15,12 +15,12 @@ export class OrganizacionPersona {
 
 
     @JoinColumn({name: 'id_organizacion'})
-    @ManyToOne(()=>Organizacion, organizacion => organizacion.organizacion_personas)
+    @ManyToOne(()=>Organizacion, organizacion => organizacion.organizacion_personas,{onDelete:'CASCADE'})
     organizacion: Organizacion;
 
 
     @JoinColumn({name: 'id_persona'})
-    @ManyToOne(()=>Persona, persona => persona.organizacion_personas)
+    @ManyToOne(()=>Persona, persona => persona.organizacion_personas,{onDelete:'CASCADE'})
     persona: Persona;
 
     

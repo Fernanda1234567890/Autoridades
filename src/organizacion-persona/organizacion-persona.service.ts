@@ -17,6 +17,11 @@ export class OrganizacionPersonaService {
   }
 
   async seed(){
+
+    //await this.organizacionPersonaRepository.query(`TRUNCATE TABLE organizacion-persona CASCADE`);
+    //await this.organizacionPersonaRepository.clear()
+    //await this.organizacionPersonaRepository.query(`ALTER SEQUENCE "organizacion-persona_id_seq" RESTART WITH 1`)
+    
     const datos: CreateOrganizacionPersonaDto[] = [
       {
         id: 1,

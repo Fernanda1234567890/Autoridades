@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCargoRegularDto } from './dto/create-cargo-regular.dto';
 import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 import { CargoRegular } from './entities/cargo-regular.entity';
 import { Repository } from 'typeorm';
+import { Organizacion } from 'src/organizacion/entities/organizacion.entity';
 
 @Injectable()
 export class CargoRegularService {
@@ -11,6 +12,12 @@ export class CargoRegularService {
     private readonly cargoRegularRepository: Repository<CargoRegular>
   ){}
   async create(createCargoRegularDto: CreateCargoRegularDto) {
+    const existe = await this.cargoRegularRepository.findOne({
+      where: { nombre: createCargoRegularDto.nombre },
+    })
+    if (existe){
+      throw new BadRequestException(`Ya existe un cargo con nombre ${createCargoRegularDto.nombre}`);
+    }
     const nuevoCargoRegular = this.cargoRegularRepository.create(createCargoRegularDto);
     return await this.cargoRegularRepository.save(nuevoCargoRegular);
   }
@@ -20,6 +27,11 @@ export class CargoRegularService {
   }
 
   async seed(){
+
+    //await this.cargoRegularRepository.query(`TRUNCATE TABLE cargos-regulares CASCADE`);
+    //await this.cargoRegularRepository.clear()
+    //await this.cargoRegularRepository.query(`ALTER SEQUENCE "cargos-regulares_id_seq" RESTART WITH 1`)
+
     const datos: CreateCargoRegularDto[] = [
       {
         id: 1,
@@ -51,12 +63,21 @@ export class CargoRegularService {
         return await this.cargoRegularRepository.save(mapeados)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cargoRegular`;
+  async findOne(id: number) {
+    const cargoRegular = await this.cargoRegularRepository.findOne({
+      where: { id },
+      relations: ['cargos_regulares']
+    });
+    if (!cargoRegular){
+      throw new NotFoundException(`Organizacion con id ${id} no encontrada`);
+    }
+    return cargoRegular;
   }
 
-  update(id: number, updateCargoRegularDto: UpdateCargoRegularDto) {
-    return `This action updates a #${id} cargoRegular`;
+  async update(id: number, updateCargoRegularDto: UpdateCargoRegularDto) {
+    const cargoRegular = await this.findOne(id);
+    Object.assign(cargoRegular, updateCargoRegularDto);
+    return await this.cargoRegularRepository.save(cargoRegular);
   }
 
   remove(id: number) {

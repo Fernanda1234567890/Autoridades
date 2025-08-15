@@ -9,7 +9,7 @@ export class AdministrativoService {
   constructor(
     @Inject('AdministrativoRepository')
     private readonly administrativoRepository: Repository<Administrativo>
-  ){}
+  ) { }
   async create(createAdministrativoDto: CreateAdministrativoDto) {
     const nuevoAdministrativo = this.administrativoRepository.create(createAdministrativoDto);
     return await this.administrativoRepository.save(nuevoAdministrativo)
@@ -19,14 +19,18 @@ export class AdministrativoService {
     const administrativos = await this.administrativoRepository.find({ relations: ['persona'] })
     return administrativos.map((administrativo) => ({
       ...administrativos,
-      persona:{
+      persona: {
         nombres: administrativo.persona.nombres,
         apellidos: administrativo.persona.apellidos
       }
     }))
-    
+
   }
   async seed() {
+
+    //await this.administrativoRepository.query(`TRUNCATE TABLE administrativo CASCADE`);
+    //await this.administrativoRepository.clear()
+    //await this.administrativoRepository.query(`ALTER SEQUENCE administrativo_id_seq RESTART WITH 1`)
     const datos: CreateAdministrativoDto[] = [
       {
         id: 1,
@@ -34,7 +38,7 @@ export class AdministrativoService {
       },
       {
         id: 2,
-        id_persona: 5
+        id_persona: 3
       }
     ]
 

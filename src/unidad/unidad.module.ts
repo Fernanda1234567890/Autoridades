@@ -8,5 +8,6 @@ import { Unidad } from './entities/unidad.entity';
   imports: [TypeOrmModule.forFeature([Unidad])],
   controllers: [UnidadController],
   providers: [UnidadService],
+  exports: [UnidadService],
 })
 export class UnidadModule {}

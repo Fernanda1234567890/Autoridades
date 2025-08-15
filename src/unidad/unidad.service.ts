@@ -9,39 +9,43 @@ export class UnidadService {
   constructor(
     @Inject('UnidadRepository')
     private readonly unidadRepository: Repository<Unidad>
-  ) {}
+  ) { }
   async create(createUnidadDto: CreateUnidadDto) {
     const nuevaUnidad = this.unidadRepository.create(createUnidadDto);
     return await this.unidadRepository.save(nuevaUnidad);
   }
 
-  findAll() {
-    return `This action returns all unidad`;
+  async findAll() {
+    return await this.unidadRepository.find({ relations: ['depende_de']})
   }
 
-   async seed(){
-      const datos: CreateUnidadDto[] = [
-        {
-          id: 1,
-          nombre: 'Unidad de Data Center',
-          descripcion: 'Unidad encargada de los sistemas informáticos',
-          responsable: 'Juan Perez',
-          id_unidad: '1',
-          id_tipo_unidad: 2
-        },
-        {
-          id: 2,
-          nombre: 'Unidad Administrativa',
-          descripcion: 'Unidad encargada de la administración general',
-          responsable: 'Maria Lopez',
-          id_unidad: '2',
-          id_tipo_unidad: 2
-        }
-      ]
-  
-      const mapeados = datos.map((e)=> this.unidadRepository.create(e))
-      return await this.unidadRepository.save(mapeados)
-    }
+  async seed() {
+
+    //await this.unidadRepository.query(`TRUNCATE TABLE unidades CASCADE`);
+    //await this.unidadRepository.clear()
+    //await this.unidadRepository.query(`ALTER SEQUENCE unidades_id_seq RESTART WITH 1`)
+    
+    const datos: CreateUnidadDto[] = [
+      {
+        id: 1,
+        nombre: 'Rectorado',
+        descripcion: 'Unidad del Rector',
+        responsable: 'Juan Perez',
+        id_tipo_unidad: 2
+      },
+      {
+        id: 2,
+        nombre: 'Data Center',
+        descripcion: 'Unidad encargada de la administración de sistemas',
+        responsable: 'Maria Lopez',
+        id_unidad: 1,
+        id_tipo_unidad: 2
+      }
+    ]
+
+    const mapeados = datos.map((e: CreateUnidadDto) => this.unidadRepository.create(e))
+    return await this.unidadRepository.save(mapeados)
+  }
   findOne(id: number) {
     return `This action returns a #${id} unidad`;
   }

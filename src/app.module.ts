@@ -27,6 +27,7 @@ import { CargoIntermedio } from './cargo-intermedio/entities/cargo-intermedio.en
 import { OrganizacionPersona } from './organizacion-persona/entities/organizacion-persona.entity';
 //import { AdministrativoCargoRegularUnidadService } from './administrativo-cargo-regular-unidad/administrativo-cargo-regular-unidad.service';
 import { CargoIntermedioDocente } from './cargo-intermedio-docente/entities/cargo-intermedio-docente.entity';
+import { SeedModule } from './seed/seed.module';
 
 
 @Module({
@@ -67,6 +68,7 @@ import { CargoIntermedioDocente } from './cargo-intermedio-docente/entities/carg
     OrganizacionPersonaModule,
     AdministrativoCargoRegularUnidadModule,
     CargoIntermedioDocenteModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

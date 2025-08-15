@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateTipoUnidadDto } from './dto/create-tipo-unidad.dto';
 import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
 import { Repository } from 'typeorm';
@@ -11,8 +11,13 @@ export class TipoUnidadService {
     private readonly tipoUnidadRepository: Repository<TipoUnidad>
   ){}
 
-  create(createTipoUnidadDto: CreateTipoUnidadDto) {
-    return 'This action adds a new tipoUnidad';
+  async create(createTipoUnidadDto: CreateTipoUnidadDto) {
+    const existe = await this.tipoUnidadRepository.findOne({
+      where: { tipo: createTipoUnidadDto.tipo },
+    });
+    if (existe){
+      throw new BadRequestException(`Ya existe un tipo ed unidad con tipo ${createTipoUnidadDto.tipo}`);
+    }
   }
 
   async findAll() {
@@ -20,6 +25,11 @@ export class TipoUnidadService {
   }
 
   async seed(){
+
+    //await this.tipoUnidadRepository.query(`TRUNCATE TABLE tipo-unidades CASCADE`);
+    //await this.tipoUnidadRepository.clear()
+    //await this.tipoUnidadRepository.query(`ALTER SEQUENCE "tipo-unidades_id_seq" RESTART WITH 1`)
+    
     const datos: CreateTipoUnidadDto[] = [
       { id: 1, tipo: 'mayor', descripcion: 'Descripción del Tipo A' },
       { id: 2, tipo: 'unidad intermedia', descripcion: 'Descripción del Tipo B' },

@@ -8,5 +8,8 @@ import { CargoIntermedioDocente } from './entities/cargo-intermedio-docente.enti
   imports: [TypeOrmModule.forFeature([CargoIntermedioDocente])],
   controllers: [CargoIntermedioDocenteController],
   providers: [CargoIntermedioDocenteService],
+  exports: [CargoIntermedioDocenteService],
+  
 })
 export class CargoIntermedioDocenteModule { }
+   

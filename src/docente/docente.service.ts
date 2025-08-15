@@ -8,8 +8,8 @@ import { Docente } from './entities/docente.entity';
 export class DocenteService {
   constructor(
     @Inject('DocenteRepository')
-    private readonly docenteRepository: Repository<Docente> 
-  ){}
+    private readonly docenteRepository: Repository<Docente>
+  ) { }
   async create(createDocenteDto: CreateDocenteDto) {
     const nuevoDocente = this.docenteRepository.create(createDocenteDto);
     return await this.docenteRepository.save(nuevoDocente);
@@ -17,18 +17,22 @@ export class DocenteService {
 
   async findAll() {
     //obtener los docentes y los mdatos de la relacion persona
-    const docentes =  await this.docenteRepository.find({relations: ['persona']})
-    return docentes.map((docente)=>({
+    const docentes = await this.docenteRepository.find({ relations: ['persona'] })
+    return docentes.map((docente) => ({
       ...docente,
-      persona:{
+      persona: {
         nombres: docente.persona.nombres,
         apellidos: docente.persona.apellidos
       }
     }))
-    
+
   }
 
-  async seed(){
+  async seed() {
+
+    //await this.docenteRepository.query(`TRUNCATE TABLE docentes CASCADE`);
+    //await this.docenteRepository.clear()
+    //await this.docenteRepository.query(`ALTER SEQUENCE docentes_id_seq RESTART WITH 1`)
     const datos: CreateDocenteDto[] = [
       {
         id: 1,
@@ -42,7 +46,7 @@ export class DocenteService {
       }
     ]
 
-    const mapeados = datos.map((e)=> this.docenteRepository.create(e))
+    const mapeados = datos.map((e) => this.docenteRepository.create(e))
     return await this.docenteRepository.save(mapeados)
   }
 

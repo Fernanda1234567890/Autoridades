@@ -17,6 +17,11 @@ export class CargoIntermedioDocenteService {
     return `This action returns all cargoIntermedioDocente`;
   }
   async seed() {
+
+    //await this.cargoIntermedioDocenteRepository.query(`TRUNCATE TABLE cargo-intermadio-docente CASCADE`);
+    //await this.cargoIntermedioDocenteRepository.clear()
+    //await this.cargoIntermedioDocenteRepository.query(`ALTER SEQUENCE "cargo-intermadio-docente_id_seq" RESTART WITH 1`)
+    
     const datos: CreateCargoIntermedioDocenteDto[] = [
       {
         id: 1,

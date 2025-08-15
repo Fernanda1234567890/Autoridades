@@ -20,20 +20,20 @@ export class Unidad {
     @Column({ type: 'varchar', length: 150 })
     responsable: string;
 
-    @Column({ type: 'integer' })
-    id_unidad: string;
+    @Column({ type: 'integer', nullable: true })
+    id_unidad: number;
 
     @Column({ type: 'integer' })
     id_tipo_unidad: number;
 
     @JoinColumn({ name: 'id_unidad' })
-    @ManyToOne(() => Unidad, unidad => unidad.dependencias)
+    @ManyToOne(() => Unidad, unidad => unidad.dependencias, { onDelete: 'CASCADE'})
     depende_de: Unidad;
 
     @OneToMany(() => Unidad, unidad => unidad.depende_de)
     dependencias: Unidad[];
 
-    @ManyToOne(() => TipoUnidad, tipoUnidad => tipoUnidad.unidades)
+    @ManyToOne(() => TipoUnidad, tipoUnidad => tipoUnidad.unidades, { onDelete: 'CASCADE' })
     tipo_unidad: TipoUnidad;
 
     @OneToMany(() => CargoIntermedio, cargos_intermedios => cargos_intermedios.unidad)

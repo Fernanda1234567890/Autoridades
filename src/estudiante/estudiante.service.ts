@@ -27,7 +27,11 @@ export class EstudianteService {
  
   }
 
-  seed(){
+  async seed(){
+
+    //await this.estudianteRepository.query(`TRUNCATE TABLE estudiantes CASCADE`);
+    //await this.estudianteRepository.clear()
+    //await this.estudianteRepository.query(`ALTER SEQUENCE estudiantes_id_seq RESTART WITH 1`)
     const datos: CreateEstudianteDto[] = [
       {
         id: 1,

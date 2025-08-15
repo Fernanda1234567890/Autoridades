@@ -17,19 +17,24 @@ export class AdministrativoCargoRegularUnidadService {
     return `This action returns all administrativoCargoRegularUnidad`;
   }
   async seed(){
+
+    //await this.adimnistrativoCargoRegularUnidadRepository.query(`TRUNCATE TABLE administrativo-cargo-regular-unidad CASCADE`);
+    //await this.adimnistrativoCargoRegularUnidadRepository.clear()
+    //await this.adimnistrativoCargoRegularUnidadRepository.query(`ALTER SEQUENCE "administrativo-cargo-regular-unidad_id_seq" RESTART WITH 1`)
+    
     const datos: CreateAdministrativoCargoRegularUnidadDto[] = [
       {
         id: 1,
         id_cargo: 1,
         id_unidad: 1,
-        id_administrativo: 13,
+        id_administrativo: 1,
         fecha_ingreso: new Date('2023-01-01')
       },
       {
         id: 2,
         id_cargo: 2,
         id_unidad: 2,
-        id_administrativo: 14,
+        id_administrativo: 2,
         fecha_ingreso: new Date('2023-02-01')
       }
     ];

@@ -21,7 +21,7 @@ export class CargoIntermedio {
         id_unidad: number;
 
         @JoinColumn({ name: 'id_unidad' })
-        @ManyToOne(() => Unidad, unidad => unidad.cargos_intermedios)
+        @ManyToOne(() => Unidad, unidad => unidad.cargos_intermedios,{onDelete:'CASCADE'})
         unidad: Unidad;
 
         @OneToMany(() => CargoIntermedioDocente, cargo_intermedio_docente => cargo_intermedio_docente.cargo_intermedio)

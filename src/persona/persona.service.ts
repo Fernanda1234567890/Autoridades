@@ -11,6 +11,7 @@ export class PersonaService {
     private readonly personaRepository: Repository<Persona>
   ){}
   async create(createPersonaDto: CreatePersonaDto) {
+  
     const nuevaPersona = this.personaRepository.create(createPersonaDto)
     return await this.personaRepository.save(nuevaPersona);
   }
@@ -20,6 +21,10 @@ export class PersonaService {
   }
 
   async seed(){
+
+    //await this.personaRepository.query(`TRUNCATE TABLE personas CASCADE`);
+    //await this.personaRepository.clear()
+    //await this.personaRepository.query(`ALTER SEQUENCE personas_id_seq RESTART WITH 1`)
       const datos: CreatePersonaDto[] = [
         {
           id: 1,

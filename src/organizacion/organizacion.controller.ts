@@ -23,20 +23,25 @@ export class OrganizacionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.organizacionService.findOne(+id);
   }
 
 
   
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrganizacionDto: UpdateOrganizacionDto) {
-    return this.organizacionService.update(+id, updateOrganizacionDto);
+  // @Patch(':id')
+  // update(@Param('id') id: number, @Body() updateOrganizacionDto: UpdateOrganizacionDto) {
+  //   return this.organizacionService.update(+id, updateOrganizacionDto);
+  // }
+
+   @Patch(':id')
+  update(@Param('id') id: number, @Body() dto: UpdateOrganizacionDto) {
+    return this.organizacionService.update(+id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.organizacionService.remove(+id);
   }
 }
