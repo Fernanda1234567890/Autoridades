@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { Repository } from 'typeorm';
 import { Persona } from './entities/persona.entity';
+import { console } from 'inspector';
 
 @Injectable()
 export class PersonaService {
@@ -73,15 +74,45 @@ export class PersonaService {
 
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} persona`;
+  async findOne(id: number) {
+    const persona = await this.personaRepository.findOne({
+      where: { id },
+      relations: ['persona']// adminbiustraivo docente
+    });
+    if(!persona){
+      throw new NotAcceptableException(`Persona con id ${id} no encontrada`);
+    }
+    return persona
   }
 
-  update(id: number, updatePersonaDto: UpdatePersonaDto) {
-    return `This action updates a #${id} persona`;
+    // 🔹 Búsqueda dinámica (filtros opcionales)
+  async search(params: { nombres?: string; apellidos?: string; ci?: string; fecha_nac?: string }) {
+    const query = this.personaRepository.createQueryBuilder('persona');
+
+    if (params.nombres) {
+      query.andWhere('LOWER(persona.nombres) LIKE :nombres', { nombres: `%${params.nombres.toLowerCase()}%` });
+    }
+    if (params.apellidos) {
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellidos', { apellidos: `%${params.apellidos.toLowerCase()}%` });
+    }
+    if (params.ci) {
+      query.andWhere('persona.ci LIKE :ci', { ci: `%${params.ci}%` });
+    }
+    if (params.fecha_nac) {
+      query.andWhere('persona.fecha_nac = :fecha_nac', { fecha_nac: params.fecha_nac });
+    }
+
+    return await query.getMany();
+  }
+
+  async update(id: number, updatePersonaDto: UpdatePersonaDto) {
+    const persona = await this.findOne(id);
+    Object.assign(persona, updatePersonaDto);
+    return await this.personaRepository.save(persona);
   }
 
   remove(id: number) {
     return `This action removes a #${id} persona`;
   }
 }
+ 

@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
 import { Repository } from 'typeorm';
 import { Unidad } from './entities/unidad.entity';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UnidadService {
@@ -46,12 +47,41 @@ export class UnidadService {
     const mapeados = datos.map((e: CreateUnidadDto) => this.unidadRepository.create(e))
     return await this.unidadRepository.save(mapeados)
   }
-  findOne(id: number) {
-    return `This action returns a #${id} unidad`;
+  async findOne(id: number) {
+    const unidad = await this.unidadRepository.findOne({
+      where: { id },
+      relations: ['unidades']
+    });
+    if(!unidad){
+      throw new NotFoundException(`Administrativo con id ${id} no encontrado`)
+    }
+    return unidad;
   }
 
-  update(id: number, updateUnidadDto: UpdateUnidadDto) {
-    return `This action updates a #${id} unidad`;
+  async search(params: { nombre?: string; responsable?: string; id_tipo_unidad?: number }) {
+    const query = this.unidadRepository
+      .createQueryBuilder('unidad')
+      .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad'); // join con la relación tipo_unidad
+
+    if (params.nombre) {
+      query.andWhere('unidad.nombre ILIKE :nombre', { nombre: `%${params.nombre}%` });
+    }
+
+    if (params.responsable) {
+      query.andWhere('unidad.responsable ILIKE :responsable', { responsable: `%${params.responsable}%` });
+    }
+
+    if (params.id_tipo_unidad) {
+      query.andWhere('tipo_unidad.id = :id_tipo_unidad', { id_tipo_unidad: params.id_tipo_unidad });
+    }
+
+    return await query.getMany();
+  }
+
+  async update(id: number, updateUnidadDto: UpdateUnidadDto) {
+   const unidad = await this.findOne(id);
+   Object.assign(unidad, updateUnidadDto);
+   return await this.unidadRepository.save(unidad);
   }
 
   remove(id: number) {

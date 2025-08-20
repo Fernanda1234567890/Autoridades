@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAdministrativoDto } from './dto/create-administrativo.dto';
 import { UpdateAdministrativoDto } from './dto/update-administrativo.dto';
 import { Repository } from 'typeorm';
@@ -16,9 +16,9 @@ export class AdministrativoService {
   }
 
   async findAll() {
-    const administrativos = await this.administrativoRepository.find({ relations: ['persona'] })
-    return administrativos.map((administrativo) => ({
-      ...administrativos,
+    const administrativo = await this.administrativoRepository.find({ relations: ['persona'] })
+    return administrativo.map((administrativo) => ({
+      ...administrativo,
       persona: {
         nombres: administrativo.persona.nombres,
         apellidos: administrativo.persona.apellidos
@@ -46,12 +46,37 @@ export class AdministrativoService {
     return await this.administrativoRepository.save(mapeados)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} administrativo`;
+  async findOne(id: number) {
+    const administrativo = await this. administrativoRepository.findOne ({
+      where: { id },
+      relations: ['administrativos']
+    });
+    if(!administrativo){
+      throw new NotFoundException(`administrativo con id ${id} no encontrado`);
+    }
+    return administrativo;
   }
 
-  update(id: number, updateAdministrativoDto: UpdateAdministrativoDto) {
-    return `This action updates a #${id} administrativo`;
+// Búsqueda avanzada con filtros opcionales
+  async search(params: { nombres?: string; apellidos?: string }) {
+    const query = this.administrativoRepository
+      .createQueryBuilder('administrativo')
+      .leftJoinAndSelect('administrativo.persona', 'persona');
+
+    if (params.nombres) {
+      query.andWhere('LOWER(persona.nombres) LIKE :nombres', { nombres: `%${params.nombres.toLowerCase()}%` });
+    }
+
+    if (params.apellidos) {
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellidos', { apellidos: `%${params.apellidos.toLowerCase()}%` });
+    }
+
+    return await query.getMany();
+  }
+  async update(id: number, updateAdministrativoDto: UpdateAdministrativoDto) {
+    const administrativo = await this.findOne(id);
+    Object.assign(administrativo, updateAdministrativoDto);
+    return await this.administrativoRepository.save(administrativo);
   }
 
   remove(id: number) {

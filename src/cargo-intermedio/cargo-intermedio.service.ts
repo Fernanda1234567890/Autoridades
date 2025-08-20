@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCargoIntermedioDto } from './dto/create-cargo-intermedio.dto';
 import { UpdateCargoIntermedioDto } from './dto/update-cargo-intermedio.dto';
 import { Repository } from 'typeorm';
 import { CargoIntermedio } from './entities/cargo-intermedio.entity';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class CargoIntermedioService {
@@ -44,12 +45,35 @@ export class CargoIntermedioService {
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))
         return await this.cargoIntermedioRepository.save(mapeados)
   }
-  findOne(id: number) {
-    return `This action returns a #${id} cargoIntermedio`;
+  async findOne(id: number) {
+   const cargoIntermedio = await this.cargoIntermedioRepository.findOne({
+    where:{ id },
+    relations: ['cargos-intermedios'] 
+   });
+   if(!cargoIntermedio){
+    throw new NotFoundException (`Cargo intermedio con id ${id} no encontrado`)
+   }
+   return cargoIntermedio;
   }
 
-  update(id: number, updateCargoIntermedioDto: UpdateCargoIntermedioDto) {
-    return `This action updates a #${id} cargoIntermedio`;
+  async findByNombre(nombre: string) {
+    const cargoIntermedio = await this.cargoIntermedioRepository.findOne({
+      where: { nombre },
+      relations: ['unidad'], // aquí puedes cargar la relación con Unidad si la tienes
+    });
+
+    if (!cargoIntermedio) {
+      throw new NotFoundException(
+        `Cargo intermedio con nombre "${nombre}" no encontrado`,
+      );
+    }
+
+    return cargoIntermedio;
+  }
+  async update(id: number, updateCargoIntermedioDto: UpdateCargoIntermedioDto) {
+    const cargoIntermedio = await this.findOne(id);
+    Object.assign(cargoIntermedio, updateCargoIntermedioDto);
+    return await this.cargoIntermedioRepository.save(cargoIntermedio);
   }
 
   remove(id: number) {

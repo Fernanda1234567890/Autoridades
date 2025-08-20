@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTipoUnidadDto } from './dto/create-tipo-unidad.dto';
 import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
 import { Repository } from 'typeorm';
@@ -41,12 +41,21 @@ export class TipoUnidadService {
 
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tipoUnidad`;
+  async findOne(id: number) {
+    const tipoUnidad = await this.tipoUnidadRepository.findOne({
+      where: { id },
+      relations: ['tipo_unidades']
+    });
+    if (!tipoUnidad){
+      throw new NotFoundException(`tipo de unidad con id ${id} no encontrada`);
+    }
+    return tipoUnidad;
   }
 
-  update(id: number, updateTipoUnidadDto: UpdateTipoUnidadDto) {
-    return `This action updates a #${id} tipoUnidad`;
+  async  update(id: number, updateTipoUnidadDto: UpdateTipoUnidadDto) {
+    const tipoUnidad = await this.findOne(id);
+    Object.assign(tipoUnidad, updateTipoUnidadDto);
+    return await this.tipoUnidadRepository.save(tipoUnidad);
   }
 
   remove(id: number) {

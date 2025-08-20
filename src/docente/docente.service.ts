@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDocenteDto } from './dto/create-docente.dto';
 import { UpdateDocenteDto } from './dto/update-docente.dto';
 import { Repository } from 'typeorm';
@@ -50,12 +50,41 @@ export class DocenteService {
     return await this.docenteRepository.save(mapeados)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} docente`;
+  async findOne(id: number) {
+    const docente = await this.docenteRepository.findOne ({
+      where: { id },
+      relations:['docentes']
+    });
+    if(!docente){
+      throw new NotFoundException(`Docente con id ${id} no encontrado`)
+    }
+    return docente;
   }
 
-  update(id: number, updateDocenteDto: UpdateDocenteDto) {
-    return `This action updates a #${id} docente`;
+  async search(params: { carrera?: string; nombres?: string; apellidos?: string }) {
+    const query = this.docenteRepository
+      .createQueryBuilder('docente')
+      .leftJoinAndSelect('docente.persona', 'persona'); // JOIN con persona
+
+    if (params.carrera) {
+      query.andWhere('LOWER(docente.carrera) LIKE :carrera', { carrera: `%${params.carrera.toLowerCase()}%` });
+    }
+
+    if (params.nombres) {
+      query.andWhere('LOWER(persona.nombres) LIKE :nombres', { nombres: `%${params.nombres.toLowerCase()}%` });
+    }
+
+    if (params.apellidos) {
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellidos', { apellidos: `%${params.apellidos.toLowerCase()}%` });
+    }
+
+    return await query.getMany();
+  }
+
+  async update(id: number, updateDocenteDto: UpdateDocenteDto) {
+   const docente = await this.findOne(id);
+   Object.assign(docente, updateDocenteDto);
+   return await this.docenteRepository.save(docente);
   }
 
   remove(id: number) {
