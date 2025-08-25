@@ -4,29 +4,45 @@ import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 import { CargoRegular } from './entities/cargo-regular.entity';
 import { Repository } from 'typeorm';
 import { Organizacion } from 'src/organizacion/entities/organizacion.entity';
+import { AdministrativoCargoRegularUnidad } from 'src/administrativo-cargo-regular-unidad/entities/administrativo-cargo-regular-unidad.entity';
 
 @Injectable()
 export class CargoRegularService {
   constructor(
     @Inject('CargoRegularRepository')
     private readonly cargoRegularRepository: Repository<CargoRegular>
-  ){}
+  ) { }
   async create(createCargoRegularDto: CreateCargoRegularDto) {
     const existe = await this.cargoRegularRepository.findOne({
       where: { nombre: createCargoRegularDto.nombre },
     })
-    if (existe){
+    if (existe) {
       throw new BadRequestException(`Ya existe un cargo con nombre ${createCargoRegularDto.nombre}`);
     }
     const nuevoCargoRegular = this.cargoRegularRepository.create(createCargoRegularDto);
     return await this.cargoRegularRepository.save(nuevoCargoRegular);
   }
 
-  findAll() {
-    return this.cargoRegularRepository.find({})
+  async findAll() {
+    const cargos_regulares: CargoRegular[] = await this.cargoRegularRepository.find({
+      relations: ['administrativo_cargo_regular_unidades', 'administrativo_cargo_regular_unidades.administrativo', 'administrativo_cargo_regular_unidades.unidad']
+    })
+
+    const datos_limpios = cargos_regulares.map((cargo: CargoRegular) => {
+      const relaciones: any = cargo.administrativo_cargo_regular_unidades?.find((relacion: AdministrativoCargoRegularUnidad) => relacion.fecha_fin === null)
+      return {
+        ...cargo,
+        cantidad: relaciones
+      }
+    })
+
+    return datos_limpios
+
+
+
   }
 
-  async seed(){
+  async seed() {
 
     //await this.cargoRegularRepository.query(`TRUNCATE TABLE cargos-regulares CASCADE`);
     //await this.cargoRegularRepository.clear()
@@ -35,40 +51,41 @@ export class CargoRegularService {
     const datos: CreateCargoRegularDto[] = [
       {
         id: 1,
-        nombre: 'jefe de departamento', 
+        nombre: 'jefe de departamento',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 1
       },
       {
         id: 2,
-        nombre: 'responsable de correspondencia', 
+        nombre: 'responsable de correspondencia',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 2
       },
       {
         id: 3,
-        nombre: 'secretaria/o', 
+        nombre: 'secretaria/o',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 3
       },
       {
         id: 4,
-        nombre: 'mensajero', 
+        nombre: 'mensajero',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 4
       }
     ]
 
-        const mapeados = datos.map((e)=> this.cargoRegularRepository.create(e))
-        return await this.cargoRegularRepository.save(mapeados)
+    const mapeados = datos.map((e) => this.cargoRegularRepository.create(e))
+    return await this.cargoRegularRepository.save(mapeados)
   }
 
   async findOne(id: number) {
     const cargoRegular = await this.cargoRegularRepository.findOne({
       where: { id },
-      relations: ['cargos_regulares']
+      relations: ['administrativo_cargo_regular_unidades', 'administrativo_cargo_regular_unidades.administrativo', 'administrativo_cargo_regular_unidades.unidad']
     });
-    if (!cargoRegular){
+    console.log(cargoRegular)
+    if (!cargoRegular) {
       throw new NotFoundException(`Organizacion con id ${id} no encontrada`);
     }
     return cargoRegular;

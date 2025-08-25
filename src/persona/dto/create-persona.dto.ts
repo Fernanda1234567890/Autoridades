@@ -1,5 +1,5 @@
 export class CreatePersonaDto {
-    id: number;
+    id?: number;
     nombres: string;
     apellidos: string;
     ci: string;

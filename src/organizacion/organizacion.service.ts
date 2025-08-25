@@ -1,3 +1,5 @@
+
+
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizacionDto } from './dto/create-organizacion.dto';
 import { UpdateOrganizacionDto } from './dto/update-organizacion.dto';
@@ -9,7 +11,7 @@ export class OrganizacionService {
   constructor(
     @Inject('OrganizacionRepository')
     private readonly organizacionRepository: Repository<Organizacion>
-  ){}
+  ) { }
   async create(createOrganizacionDto: CreateOrganizacionDto) {
     const existe = await this.organizacionRepository.findOne({
       where: { tipo: createOrganizacionDto.tipo },
@@ -17,17 +19,23 @@ export class OrganizacionService {
     if (existe) {
       throw new BadRequestException(`Ya existe una organización con tipo ${createOrganizacionDto.tipo}`);
     }
-    
+
     const nuevaOrganizacion = this.organizacionRepository.create(createOrganizacionDto);
-    return await this.organizacionRepository.save(nuevaOrganizacion) 
+    return await this.organizacionRepository.save(nuevaOrganizacion)
   }
 
-  async findAll() {
-    const organizaciones: Organizacion[] = await this.organizacionRepository.find({})
-    return organizaciones;
+  async findAll(page: number = 1, limit: number = 10) {
+    const [items, total] = await this.organizacionRepository.findAndCount({
+      skip: (page - 1) * limit, // saltar los registros anteriores
+      take: limit,              // limitar la cantidad
+      // order: { createdAt: 'DESC' }, // opcional: ordenar
+    });
+
+    return { items, total };
   }
 
-  async seed(){
+
+  async seed() {
 
     //await this.organizacionRepository.query(`TRUNCATE TABLE organizaciones CASCADE`);
     //await this.organizacionRepository.clear()
@@ -51,17 +59,17 @@ export class OrganizacionService {
       }
     ]
 
-    const mapeados = datos.map((e)=> this.organizacionRepository.create(e))
+    const mapeados = datos.map((e) => this.organizacionRepository.create(e))
     return await this.organizacionRepository.save(mapeados)
   }
 
- //busqueda por id
+  //busqueda por id
   async findOne(id: number) {
     const organizacion = await this.organizacionRepository.findOne({
       where: { id },
       relations: ['organizacion_personas'] //incorporar mas relaciones si existe
     });
-    if (!organizacion){
+    if (!organizacion) {
       throw new NotFoundException(`Organización con id ${id} no encontrada`);
     }
     return organizacion;

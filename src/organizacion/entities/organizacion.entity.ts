@@ -12,6 +12,8 @@ export class Organizacion {
     @Column({ type: 'text'})
     descripcion: string; 
 
+    @Column({ type: 'text'})
+    estado: boolean; 
 
     @OneToMany(()=>OrganizacionPersona, organizacion_personas => organizacion_personas.organizacion)
     organizacion_personas: OrganizacionPersona[];

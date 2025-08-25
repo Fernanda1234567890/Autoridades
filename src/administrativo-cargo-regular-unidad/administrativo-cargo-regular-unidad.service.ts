@@ -28,14 +28,14 @@ export class AdministrativoCargoRegularUnidadService {
         id_cargo: 1,
         id_unidad: 1,
         id_administrativo: 1,
-        fecha_ingreso: new Date('2023-01-01')
+        fecha_ingreso: new Date('2023-01-01'),
       },
       {
         id: 2,
         id_cargo: 2,
         id_unidad: 2,
         id_administrativo: 2,
-        fecha_ingreso: new Date('2023-02-01')
+        fecha_ingreso: new Date('2023-02-01'),
       }
     ];
      const mapeados = datos.map((e) => this.adimnistrativoCargoRegularUnidadRepository.create(e));

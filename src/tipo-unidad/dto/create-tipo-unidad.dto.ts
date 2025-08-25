@@ -1,5 +1,5 @@
 export class CreateTipoUnidadDto {
-    id: number;
+    id?: number;
     tipo: string;
     descripcion: string;
 

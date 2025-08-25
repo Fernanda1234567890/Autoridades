@@ -16,13 +16,19 @@ export class AdministrativoService {
   }
 
   async findAll() {
-    const administrativo = await this.administrativoRepository.find({ relations: ['persona'] })
+    const administrativo = await this.administrativoRepository.find({ relations: ['persona', 'administrativo_cargo_regular_unidades', 'administrativo_cargo_regular_unidades.cargo_regular', 'administrativo_cargo_regular_unidades.unidad'] })
+    console.log (administrativo)
     return administrativo.map((administrativo) => ({
       ...administrativo,
       persona: {
         nombres: administrativo.persona.nombres,
         apellidos: administrativo.persona.apellidos
-      }
+      },
+      administrativo_cargo_regular_unidades: administrativo.administrativo_cargo_regular_unidades
+        .filter((acru)=>acru.fecha_fin === null)?.map((acru)=>({
+          cargo: acru.cargo_regular.nombre,
+          unidad: acru.unidad.nombre,    
+        }))[0],
     }))
 
   }

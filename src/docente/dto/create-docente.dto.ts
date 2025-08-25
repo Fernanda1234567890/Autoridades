@@ -1,5 +1,5 @@
 export class CreateDocenteDto {
-    id: number;
+    id?: number;
     carrera: string;
     id_persona: number;
 }

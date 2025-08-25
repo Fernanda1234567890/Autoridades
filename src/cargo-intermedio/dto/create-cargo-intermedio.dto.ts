@@ -1,5 +1,5 @@
 export class CreateCargoIntermedioDto {
-    id: number;
+    id?: number;
     nombre: string;
     descripcion: string;
     nivel_jerarquico: number;

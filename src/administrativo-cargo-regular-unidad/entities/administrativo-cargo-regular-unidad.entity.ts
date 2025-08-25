@@ -7,30 +7,33 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "t
 @Entity('administrativo-cargo-regular-unidad')
 export class AdministrativoCargoRegularUnidad {
     @PrimaryGeneratedColumn()
-    id:number; 
+    id: number;
 
-    @Column({type: 'integer'})
+    @Column({ type: 'integer' })
     id_cargo: number;
 
-    @Column({type: 'integer'})
+    @Column({ type: 'integer' })
     id_unidad: number;
-    
-    @Column({type: 'integer'})
+
+    @Column({ type: 'integer' })
     id_administrativo: number;
-    
-    @Column({type: 'date'})
+
+    @Column({ type: 'date' })
     fecha_ingreso: Date;
 
-    @JoinColumn({name: 'id_cargo'})
-    @ManyToOne(()=>CargoRegular, cargoRegular=>cargoRegular.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
+    @Column({ type: 'date', nullable: true })
+    fecha_fin: Date;
+
+    @JoinColumn({ name: 'id_cargo' })
+    @ManyToOne(() => CargoRegular, cargoRegular => cargoRegular.administrativo_cargo_regular_unidades, { onDelete: 'CASCADE' })
     cargo_regular: CargoRegular;
 
-    @JoinColumn({name: 'id_unidad'})
-    @ManyToOne(()=>Unidad, unidad=>unidad.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
+    @JoinColumn({ name: 'id_unidad' })
+    @ManyToOne(() => Unidad, unidad => unidad.administrativo_cargo_regular_unidades, { onDelete: 'CASCADE' })
     unidad: Unidad;
 
-    @JoinColumn({name: 'id_administrativo'})
-    @ManyToOne(()=>Administrativo, administrativo=>administrativo.administrativo_cargo_regular_unidades,{onDelete:'CASCADE'})
+    @JoinColumn({ name: 'id_administrativo' })
+    @ManyToOne(() => Administrativo, administrativo => administrativo.administrativo_cargo_regular_unidades, { onDelete: 'CASCADE' })
     administrativo: Administrativo;
 
 }

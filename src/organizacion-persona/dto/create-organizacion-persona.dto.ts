@@ -1,5 +1,5 @@
 export class CreateOrganizacionPersonaDto {
-    id: number;
+    id?: number;
     id_organizacion: number;
     id_persona: number;
 }
