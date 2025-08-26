@@ -3,4 +3,5 @@ export class CreateEstudianteDto {
     carrera: string;
     ru: number;
     id_persona: number;
+    estado: boolean;
 }

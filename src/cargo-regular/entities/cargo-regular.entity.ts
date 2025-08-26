@@ -11,6 +11,7 @@ export class CargoRegular {
 
         @Column({ type: 'text' })
         descripcion: string;
+     
 
         @Column({ type: 'integer', nullable: true })
         nivel_jerarquico: number;

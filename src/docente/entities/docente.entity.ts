@@ -13,6 +13,9 @@ export class Docente {
 
     @Column({ type: 'integer', unique: true })
     id_persona: number;
+           
+    @Column({ type: 'boolean', default: true})
+    estado: boolean; 
 
     @JoinColumn({name: 'id_persona'})
     @OneToOne(() => Persona, persona => persona.docente)

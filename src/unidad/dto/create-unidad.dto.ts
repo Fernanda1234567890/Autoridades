@@ -5,4 +5,5 @@ export class CreateUnidadDto {
     responsable: string;
     id_unidad?: number;
     id_tipo_unidad: number;
+    estado: boolean;
 }

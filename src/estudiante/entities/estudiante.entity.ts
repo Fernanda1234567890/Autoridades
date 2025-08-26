@@ -13,6 +13,9 @@ export class Estudiante {
     @Column({type: 'integer'})
     ru: number;
     
+    @Column({ type: 'boolean', default: true})
+    estado: boolean; 
+    
     @Column({type: 'integer', unique: true})
     id_persona: number;
 

@@ -53,25 +53,25 @@ export class CargoRegularService {
         id: 1,
         nombre: 'jefe de departamento',
         descripcion: 'descripcion de ejemplo',
-        nivel_jerarquico: 1
+        nivel_jerarquico: 1,  
       },
       {
         id: 2,
         nombre: 'responsable de correspondencia',
         descripcion: 'descripcion de ejemplo',
-        nivel_jerarquico: 2
+        nivel_jerarquico: 2,
       },
       {
         id: 3,
         nombre: 'secretaria/o',
         descripcion: 'descripcion de ejemplo',
-        nivel_jerarquico: 3
+        nivel_jerarquico: 3,
       },
       {
         id: 4,
         nombre: 'mensajero',
         descripcion: 'descripcion de ejemplo',
-        nivel_jerarquico: 4
+        nivel_jerarquico: 4,
       }
     ]
 

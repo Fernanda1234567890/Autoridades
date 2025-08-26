@@ -38,12 +38,14 @@ export class EstudianteService {
         carrera: 'Artes',
         ru: 123456,
         id_persona: 2,
+        estado: true,
       },
       {
         id: 2,
         carrera: 'Ingenieria Civil',
         ru: 654321,
-        id_persona: 1
+        id_persona: 1,
+        estado: true,
       }
     ];
 

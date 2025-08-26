@@ -32,14 +32,14 @@ export class CargoIntermedioService {
         nombre: 'Coordinador de Proyectos',
         descripcion: 'Encargado de coordinar proyectos intermedios',
         nivel_jerarquico: 3,
-        id_unidad: 1
+        id_unidad: 1,
       },
       {
         id: 2,
         nombre: 'Supervisor de Operaciones',
         descripcion: 'Responsable de supervisar las operaciones diarias',
         nivel_jerarquico: 3,
-        id_unidad: 2
+        id_unidad: 2,
       }
     ]
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))

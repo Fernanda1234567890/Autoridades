@@ -4,5 +4,4 @@ export class CreateCargoIntermedioDto {
     descripcion: string;
     nivel_jerarquico: number;
     id_unidad: number;
-
 }

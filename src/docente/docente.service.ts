@@ -38,11 +38,13 @@ export class DocenteService {
         id: 1,
         carrera: 'Ingenieria de Sistemas',
         id_persona: 1,
+        estado: true,
       },
       {
         id: 2,
         carrera: 'ingenieria de Sistemas',
-        id_persona: 2
+        id_persona: 2,
+        estado: true
       }
     ]
 

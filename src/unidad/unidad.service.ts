@@ -32,7 +32,8 @@ export class UnidadService {
         nombre: 'Rectorado',
         descripcion: 'Unidad del Rector',
         responsable: 'Juan Perez',
-        id_tipo_unidad: 2
+        id_tipo_unidad: 2,
+        estado: true,
       },
       {
         id: 2,
@@ -40,7 +41,8 @@ export class UnidadService {
         descripcion: 'Unidad encargada de la administración de sistemas',
         responsable: 'Maria Lopez',
         id_unidad: 1,
-        id_tipo_unidad: 2
+        id_tipo_unidad: 2,
+        estado: true,
       }
     ]
 

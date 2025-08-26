@@ -12,7 +12,7 @@ export class Organizacion {
     @Column({ type: 'text'})
     descripcion: string; 
 
-    @Column({ type: 'text'})
+    @Column({ type: 'boolean', default: true})
     estado: boolean; 
 
     @OneToMany(()=>OrganizacionPersona, organizacion_personas => organizacion_personas.organizacion)

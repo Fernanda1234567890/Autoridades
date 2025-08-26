@@ -41,10 +41,12 @@ export class AdministrativoService {
       {
         id: 1,
         id_persona: 4,
+        estado: true,
       },
       {
         id: 2,
-        id_persona: 3
+        id_persona: 3,
+        estado: true,
       }
     ]
 

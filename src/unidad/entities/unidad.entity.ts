@@ -26,6 +26,9 @@ export class Unidad {
     @Column({ type: 'integer' })
     id_tipo_unidad: number;
 
+    @Column({ type: 'boolean', default: true})
+    estado: boolean; 
+
     @JoinColumn({ name: 'id_unidad' })
     @ManyToOne(() => Unidad, unidad => unidad.dependencias, { onDelete: 'CASCADE'})
     depende_de: Unidad;

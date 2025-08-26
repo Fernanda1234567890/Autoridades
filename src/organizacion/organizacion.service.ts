@@ -45,17 +45,20 @@ export class OrganizacionService {
       {
         id: 1,
         tipo: 'FUD',
-        descripcion: 'descripcion de ejemplo 1'
+        descripcion: 'descripcion de ejemplo 1',
+        estado: true,
       },
       {
         id: 2,
         tipo: 'FUL',
-        descripcion: 'descripcion de ejemplo 2'
+        descripcion: 'descripcion de ejemplo 2',
+        estado: true,
       },
       {
         id: 3,
         tipo: 'STU',
-        descripcion: 'descripcion de ejemplo 3'
+        descripcion: 'descripcion de ejemplo 3',
+        estado: true,
       }
     ]
 
