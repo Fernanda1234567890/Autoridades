@@ -3,7 +3,6 @@ import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
 import { Repository } from 'typeorm';
 import { Unidad } from './entities/unidad.entity';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UnidadService {
@@ -11,14 +10,34 @@ export class UnidadService {
     @Inject('UnidadRepository')
     private readonly unidadRepository: Repository<Unidad>
   ) { }
+  // Crear unidad
   async create(createUnidadDto: CreateUnidadDto) {
     const nuevaUnidad = this.unidadRepository.create(createUnidadDto);
-    return await this.unidadRepository.save(nuevaUnidad);
+    const saved = await this.unidadRepository.save(nuevaUnidad);
+    return {
+      success: true,
+      message: 'Unidad creada correctamente',
+      data: saved,
+    };
   }
 
-  async findAll() {
-    return await this.unidadRepository.find({ relations: ['depende_de']})
-  }
+  // Listar unidades con paginación
+  async findAll(page: number = 1, limit: number = 10) {
+  const [items, total] = await this.unidadRepository.findAndCount({
+    skip: (page - 1) * limit,
+    take: limit,
+    relations: ['depende_de', 'tipo_unidad', 'dependencias']
+  });
+
+  return {
+    success: true,
+    data: items,
+    total,
+    page,
+    limit,
+  };
+}
+
 
   async seed() {
 
@@ -49,21 +68,26 @@ export class UnidadService {
     const mapeados = datos.map((e: CreateUnidadDto) => this.unidadRepository.create(e))
     return await this.unidadRepository.save(mapeados)
   }
+  // Buscar por ID
   async findOne(id: number) {
     const unidad = await this.unidadRepository.findOne({
       where: { id },
-      relations: ['unidades']
+      relations: ['depende_de', 'tipo_unidad', 'cargos_intermedios', 'administrativo_cargo_regular_unidades'],
     });
-    if(!unidad){
-      throw new NotFoundException(`Administrativo con id ${id} no encontrado`)
+    if (!unidad) {
+      throw new NotFoundException(`Unidad con id ${id} no encontrada`);
     }
-    return unidad;
+    return {
+      success: true,
+      data: unidad,
+    };
   }
 
+  // Búsqueda dinámica
   async search(params: { nombre?: string; responsable?: string; id_tipo_unidad?: number }) {
     const query = this.unidadRepository
       .createQueryBuilder('unidad')
-      .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad'); // join con la relación tipo_unidad
+      .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad');
 
     if (params.nombre) {
       query.andWhere('unidad.nombre ILIKE :nombre', { nombre: `%${params.nombre}%` });
@@ -77,16 +101,48 @@ export class UnidadService {
       query.andWhere('tipo_unidad.id = :id_tipo_unidad', { id_tipo_unidad: params.id_tipo_unidad });
     }
 
-    return await query.getMany();
+    const results = await query.getMany();
+    return {
+      success: true,
+      message: results.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      data: results,
+    };
   }
 
+ // Actualizar
   async update(id: number, updateUnidadDto: UpdateUnidadDto) {
-   const unidad = await this.findOne(id);
-   Object.assign(unidad, updateUnidadDto);
-   return await this.unidadRepository.save(unidad);
+    const unidad = await this.findOne(id);
+    Object.assign(unidad.data, updateUnidadDto); // recordar que findOne devuelve { success, data }
+    const updated = await this.unidadRepository.save(unidad.data);
+    return {
+      success: true,
+      message: 'Unidad actualizada correctamente',
+      data: updated,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} unidad`;
-  }
+  // Soft delete
+    async remove(id: number) {
+      const { data: unidad } = await this.findOne(id); // extraemos la unidad
+      unidad.estado = false;
+      const updated = await this.unidadRepository.save(unidad);
+
+      return {
+        success: true,
+        message: 'Unidad desactivada correctamente',
+        data: updated,
+      };
+    }
+
+    async restore(id: number) {
+      const { data: unidad } = await this.findOne(id); // extraemos la unidad
+      unidad.estado = true;
+      const updated = await this.unidadRepository.save(unidad);
+
+      return {
+        success: true,
+        message: 'Unidad reactivada correctamente',
+        data: updated,
+      };
+    }
 }

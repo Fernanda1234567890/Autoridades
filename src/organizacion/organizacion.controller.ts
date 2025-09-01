@@ -20,17 +20,18 @@ export class OrganizacionController {
   // 📌 Listar todas con paginación y filtro opcional
   @Get()
   async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-    // @Query('tipo') tipo?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
   ) {
-    const result = await this.organizacionService.findAll();
+    // ✅ Ahora sí se pasan al service
+    const result = await this.organizacionService.findAll(+page, +limit);
     return {
       success: true,
-      data: result.items,
+      message: 'Lista de organizaciones',
+      data: result.data,
       total: result.total,
-      page: +page,
-      limit: +limit,
+      page: result.page,
+      limit: result.limit,
     };
   }
   
@@ -51,27 +52,34 @@ export class OrganizacionController {
       data: organizacion,
     };
   }
-  // @Patch(':id')
-  // update(@Param('id') id: number, @Body() updateOrganizacionDto: UpdateOrganizacionDto) {
-  //   return this.organizacionService.update(+id, updateOrganizacionDto);
-  // }
 
-  // 📌 Actualizar organización
+  @Get('buscar/:nombre')
+  async findByName(@Param('nombre') nombre: string) {
+  return this.organizacionService.findByName(nombre);
+}
+
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() dto: UpdateOrganizacionDto) {
-    const organizacion = await this.organizacionService.update(+id, dto);
-    if (!organizacion) {
-      throw new NotFoundException(`No se pudo actualizar, id ${id} no existe`);
-    }
-    return {
-      success: true,
-      message: 'Organización actualizada correctamente',
-      data: organizacion,
-    };
+  async update(
+    @Param('id') id: number,
+    @Body() updateOrganizacionDto: UpdateOrganizacionDto,
+  ) {
+    const data = await this.organizacionService.update(+id, updateOrganizacionDto);
+    return { success: true, message: 'Organización actualizada', data };
   }
 
+
+  // 📌 Actualizar organización
+  @Patch(':id/restore')
+  async restore(@Param('id') id: number) {
+    const data = await this.organizacionService.restore(+id);
+    return { success: true, message: 'Organización restaurada', data };
+  }
+
+
+ // Cambiar estado (soft delete)
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.organizacionService.remove(+id);
+  async remove(@Param('id') id: number) {
+    const data = await this.organizacionService.remove(+id);
+    return { success: true, message: 'Organización desactivada', data };
   }
 }

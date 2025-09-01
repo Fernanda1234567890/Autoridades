@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
 import { CargoRegularService } from './cargo-regular.service';
 import { CreateCargoRegularDto } from './dto/create-cargo-regular.dto';
 import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
@@ -7,14 +7,29 @@ import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 export class CargoRegularController {
   constructor(private readonly cargoRegularService: CargoRegularService) {}
 
+  // Crear
   @Post()
-  create(@Body() createCargoRegularDto: CreateCargoRegularDto) {
-    return this.cargoRegularService.create(createCargoRegularDto);
+  async create(@Body() createCargoRegularDto: CreateCargoRegularDto) {
+    const cargo = await this.cargoRegularService.create(createCargoRegularDto);
+    return {
+      success: true,
+      message: 'Cargo regular creado correctamente',
+      data: cargo,
+    };
   }
 
+  // Listar con paginación
   @Get()
-  findAll() {
-    return this.cargoRegularService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    const cargos = await this.cargoRegularService.findAll(page, limit);
+    return {
+      success: true,
+      message: 'Lista de cargos regulares obtenida correctamente',
+      data: cargos,
+    };
   }
 
   @Get('/seed')
@@ -22,18 +37,42 @@ export class CargoRegularController {
     return this.cargoRegularService.seed();
   }
 
+// Buscar por ID
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cargoRegularService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const cargo = await this.cargoRegularService.findOne(id);
+    return {
+      success: true,
+      message: 'Cargo regular encontrado',
+      data: cargo,
+    };
   }
 
+// Buscar por nombre
+  @Get('search/:nombre')
+  async findByNombre(@Param('nombre') nombre: string) {
+    const cargos = await this.cargoRegularService.findByName(nombre);
+    return {
+      success: true,
+      message: 'Búsqueda de cargos regulares por nombre',
+      data: cargos,
+    };
+  }
+
+// Actualizar
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCargoRegularDto: UpdateCargoRegularDto) {
-    return this.cargoRegularService.update(+id, updateCargoRegularDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cargoRegularService.remove(+id);
+  async update(
+    @Param('id') id: number,
+    @Body() updateCargoRegularDto: UpdateCargoRegularDto,
+  ) {
+    const updated = await this.cargoRegularService.update(
+      id,
+      updateCargoRegularDto,
+    );
+    return {
+      success: true,
+      message: 'Cargo regular actualizado correctamente',
+      data: updated,
+    };
   }
 }

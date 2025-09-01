@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
 import { PersonaService } from './persona.service';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
@@ -7,14 +7,32 @@ import { UpdatePersonaDto } from './dto/update-persona.dto';
 export class PersonaController {
   constructor(private readonly personaService: PersonaService) {}
 
+  // Crear persona
   @Post()
-  create(@Body() createPersonaDto: CreatePersonaDto) {
-    return this.personaService.create(createPersonaDto);
+  async create(@Body() createPersonaDto: CreatePersonaDto) {
+    const persona = await this.personaService.create(createPersonaDto);
+    return {
+      success: true,
+      message: 'Persona creada correctamente',
+      data: persona,
+    };
   }
 
+  // Listar con paginación y filtros
   @Get()
-  findAll() {
-    return this.personaService.findAll();
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('nombre') nombre?: string,
+    @Query('apellido') apellido?: string,
+    @Query('ci') ci?: string,
+  ) {
+    const result = await this.personaService.findAll(+page, +limit, nombre, apellido, ci);
+    return {
+      success: true,
+      message: 'Lista de personas obtenida correctamente',
+      ...result,
+    };
   }
 
   @Get('/seed')
@@ -22,19 +40,35 @@ export class PersonaController {
     return this.personaService.seed();
   }
 
-
+ // Buscar por ID
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.personaService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const persona = await this.personaService.findOne(+id);
+    return {
+      success: true,
+      message: 'Persona encontrada',
+      data: persona,
+    };
+  }
+  // Buscar por nombre o filtros
+  @Get('/search/filtros')
+  async search(@Query() query: { nombres?: string; apellidos?: string; ci?: string }) {
+    const personas = await this.personaService.search(query);
+    return {
+      success: true,
+      message: 'Resultados de búsqueda',
+      data: personas,
+    };
   }
 
+// Actualizar
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePersonaDto: UpdatePersonaDto) {
-    return this.personaService.update(+id, updatePersonaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.personaService.remove(+id);
+  async update(@Param('id') id: number, @Body() updatePersonaDto: UpdatePersonaDto) {
+    const persona = await this.personaService.update(+id, updatePersonaDto);
+    return {
+      success: true,
+      message: 'Persona actualizada correctamente',
+      data: persona,
+    };
   }
 }

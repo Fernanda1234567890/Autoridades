@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AdministrativoService } from './administrativo.service';
 import { CreateAdministrativoDto } from './dto/create-administrativo.dto';
 import { UpdateAdministrativoDto } from './dto/update-administrativo.dto';
@@ -13,8 +13,8 @@ export class AdministrativoController {
   }
 
   @Get()
-  findAll() {
-    return this.administrativoService.findAll();
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.administrativoService.findAll(+page, +limit);
   }
 
    @Get('/seed')
@@ -22,17 +22,32 @@ export class AdministrativoController {
     return this.administrativoService.seed();
   }
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.administrativoService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const administrativo = await this.administrativoService.findOne(+id);
+    return { success: true, message: 'Administrativo encontrado', data: administrativo };
+  }
+
+  @Get('buscar')
+  async search(
+    @Query('nombre') nombre?: string,
+    @Query('apellido') apellido?: string,
+    @Query('ci') ci?: string,
+  ) {
+    return this.administrativoService.search({ nombre, apellido, ci });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdministrativoDto: UpdateAdministrativoDto) {
-    return this.administrativoService.update(+id, updateAdministrativoDto);
+  async update(@Param('id') id: string, @Body() updateDto: UpdateAdministrativoDto) {
+    return this.administrativoService.update(+id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.administrativoService.remove(+id);
+  }
+
+  @Patch('restore/:id')
+  async restore(@Param('id') id: string) {
+    return this.administrativoService.restore(+id);
   }
 }

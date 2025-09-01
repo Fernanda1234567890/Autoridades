@@ -1,7 +1,7 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCargoIntermedioDto } from './dto/create-cargo-intermedio.dto';
 import { UpdateCargoIntermedioDto } from './dto/update-cargo-intermedio.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CargoIntermedio } from './entities/cargo-intermedio.entity';
 import { NotFoundError } from 'rxjs';
 
@@ -11,13 +11,38 @@ export class CargoIntermedioService {
     @Inject('CargoIntermedioRepository')
     private readonly cargoIntermedioRepository: Repository<CargoIntermedio>
   ) {}
-  async create(createCargoIntermedioDto: CreateCargoIntermedioDto) {
-    const nuevoCargoIntermedio = this.cargoIntermedioRepository.create(createCargoIntermedioDto);
-    return await this.cargoIntermedioRepository.save(nuevoCargoIntermedio);
+ async create(createCargoIntermedioDto: CreateCargoIntermedioDto) {
+    const existe = await this.cargoIntermedioRepository.findOne({
+      where: { nombre: createCargoIntermedioDto.nombre },
+    });
+    if (existe) {
+      throw new BadRequestException(`Ya existe un cargo intermedio con nombre ${createCargoIntermedioDto.nombre}`);
+    }
+
+    const nuevoCargo = this.cargoIntermedioRepository.create(createCargoIntermedioDto);
+    const saved = await this.cargoIntermedioRepository.save(nuevoCargo);
+
+    return {
+      success: true,
+      message: 'Cargo intermedio creado correctamente',
+      data: saved,
+    };
   }
 
-  findAll() {
-    return `This action returns all cargoIntermedio`;
+  async findAll(page: number = 1, limit: number = 10) {
+    const [items, total] = await this.cargoIntermedioRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['unidad'],
+    });
+
+    return {
+      success: true,
+      data: items,
+      total,
+      page,
+      limit,
+    };
   }
 
   async seed(){
@@ -45,38 +70,46 @@ export class CargoIntermedioService {
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))
         return await this.cargoIntermedioRepository.save(mapeados)
   }
-  async findOne(id: number) {
-   const cargoIntermedio = await this.cargoIntermedioRepository.findOne({
-    where:{ id },
-    relations: ['cargos-intermedios'] 
-   });
-   if(!cargoIntermedio){
-    throw new NotFoundException (`Cargo intermedio con id ${id} no encontrado`)
-   }
-   return cargoIntermedio;
+async findOne(id: number) {
+    const cargo = await this.cargoIntermedioRepository.findOne({
+      where: { id },
+      relations: ['unidad'],
+    });
+    if (!cargo) {
+      throw new NotFoundException(`Cargo intermedio con id ${id} no encontrado`);
+    }
+    return {
+      success: true,
+      data: cargo,
+    };
   }
 
-  async findByNombre(nombre: string) {
-    const cargoIntermedio = await this.cargoIntermedioRepository.findOne({
-      where: { nombre },
-      relations: ['unidad'], // aquí puedes cargar la relación con Unidad si la tienes
+  async findByName(nombre: string) {
+    const cargos = await this.cargoIntermedioRepository.find({
+      where: { nombre: ILike(`%${nombre}%`) },
+      relations: ['unidad'],
     });
 
-    if (!cargoIntermedio) {
-      throw new NotFoundException(
-        `Cargo intermedio con nombre "${nombre}" no encontrado`,
-      );
+    return {
+      success: true,
+      message: cargos.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      data: cargos,
+    };
+  }
+
+  async update(id: number, updateCargoIntermedioDto: UpdateCargoIntermedioDto) {
+    const cargo = await this.cargoIntermedioRepository.findOne({ where: { id } });
+    if (!cargo) {
+      throw new NotFoundException(`Cargo intermedio con id ${id} no encontrado`);
     }
 
-    return cargoIntermedio;
-  }
-  async update(id: number, updateCargoIntermedioDto: UpdateCargoIntermedioDto) {
-    const cargoIntermedio = await this.findOne(id);
-    Object.assign(cargoIntermedio, updateCargoIntermedioDto);
-    return await this.cargoIntermedioRepository.save(cargoIntermedio);
-  }
+    Object.assign(cargo, updateCargoIntermedioDto);
+    const updated = await this.cargoIntermedioRepository.save(cargo);
 
-  remove(id: number) {
-    return `This action removes a #${id} cargoIntermedio`;
+    return {
+      success: true,
+      message: 'Cargo intermedio actualizado correctamente',
+      data: updated,
+    };
   }
 }

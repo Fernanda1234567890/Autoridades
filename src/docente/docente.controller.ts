@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { DocenteService } from './docente.service';
 import { CreateDocenteDto } from './dto/create-docente.dto';
 import { UpdateDocenteDto } from './dto/update-docente.dto';
@@ -13,28 +13,38 @@ export class DocenteController {
   }
 
   @Get()
-  findAll() {
-    return this.docenteService.findAll();
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.docenteService.findAll(+page, +limit);
   }
-  
-  @Get('/seed')
-  seed() {
-    return this.docenteService.seed();
-  }
-  
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.docenteService.findOne(+id);
+  
+ @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const docente = await this.docenteService.findOne(+id);
+    return { success: true, message: 'Docente encontrado', data: docente };
+  }
+
+  @Get('buscar')
+  async search(
+    @Query('nombre') nombre?: string,
+    @Query('apellido') apellido?: string,
+    @Query('ci') ci?: string,
+  ) {
+    return this.docenteService.search({ nombre, apellido, ci });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDocenteDto: UpdateDocenteDto) {
-    return this.docenteService.update(+id, updateDocenteDto);
+  async update(@Param('id') id: string, @Body() updateDto: UpdateDocenteDto) {
+    return this.docenteService.update(+id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.docenteService.remove(+id);
+  }
+
+  @Patch('restore/:id')
+  async restore(@Param('id') id: string) {
+    return this.docenteService.restore(+id);
   }
 }

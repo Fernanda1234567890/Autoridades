@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { CreateCargoRegularDto } from './dto/create-cargo-regular.dto';
 import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 import { CargoRegular } from './entities/cargo-regular.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Organizacion } from 'src/organizacion/entities/organizacion.entity';
 import { AdministrativoCargoRegularUnidad } from 'src/administrativo-cargo-regular-unidad/entities/administrativo-cargo-regular-unidad.entity';
 
@@ -12,35 +12,44 @@ export class CargoRegularService {
     @Inject('CargoRegularRepository')
     private readonly cargoRegularRepository: Repository<CargoRegular>
   ) { }
-  async create(createCargoRegularDto: CreateCargoRegularDto) {
-    const existe = await this.cargoRegularRepository.findOne({
-      where: { nombre: createCargoRegularDto.nombre },
-    })
-    if (existe) {
-      throw new BadRequestException(`Ya existe un cargo con nombre ${createCargoRegularDto.nombre}`);
-    }
-    const nuevoCargoRegular = this.cargoRegularRepository.create(createCargoRegularDto);
-    return await this.cargoRegularRepository.save(nuevoCargoRegular);
-  }
-
-  async findAll() {
-    const cargos_regulares: CargoRegular[] = await this.cargoRegularRepository.find({
-      relations: ['administrativo_cargo_regular_unidades', 'administrativo_cargo_regular_unidades.administrativo', 'administrativo_cargo_regular_unidades.unidad']
-    })
-
-    const datos_limpios = cargos_regulares.map((cargo: CargoRegular) => {
-      const relaciones: any = cargo.administrativo_cargo_regular_unidades?.find((relacion: AdministrativoCargoRegularUnidad) => relacion.fecha_fin === null)
-      return {
-        ...cargo,
-        cantidad: relaciones
+    async create(createCargoRegularDto: CreateCargoRegularDto) {
+      const existe = await this.cargoRegularRepository.findOne({
+        where: { nombre: createCargoRegularDto.nombre },
+      });
+      if (existe) {
+        throw new BadRequestException(`Ya existe un cargo con nombre ${createCargoRegularDto.nombre}`);
       }
-    })
 
-    return datos_limpios
+      const nuevoCargo = this.cargoRegularRepository.create(createCargoRegularDto);
+      const savedCargo = await this.cargoRegularRepository.save(nuevoCargo);
+
+      return {
+        success: true,
+        message: 'Cargo regular creado correctamente',
+        data: savedCargo,
+      };
+    }
 
 
+  async findAll(page: number = 1, limit: number = 10) {
+    const [items, total] = await this.cargoRegularRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: [
+        'administrativo_cargo_regular_unidades',
+        'administrativo_cargo_regular_unidades.administrativo',
+        'administrativo_cargo_regular_unidades.unidad',
+      ],
+  });
 
-  }
+  return {
+    success: true,
+    data: items,
+    total,
+    page,
+    limit,
+  };
+}
 
   async seed() {
 
@@ -91,11 +100,30 @@ export class CargoRegularService {
     return cargoRegular;
   }
 
-  async update(id: number, updateCargoRegularDto: UpdateCargoRegularDto) {
-    const cargoRegular = await this.findOne(id);
-    Object.assign(cargoRegular, updateCargoRegularDto);
-    return await this.cargoRegularRepository.save(cargoRegular);
-  }
+  async findByName(nombre: string) {
+  const cargos = await this.cargoRegularRepository.find({
+    where: { nombre: ILike(`%${nombre}%`) }, // búsqueda insensible a mayúsculas
+  });
+
+  return {
+    success: true,
+    message: cargos.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+    data: cargos,
+  };
+}
+ 
+async update(id: number, updateCargoRegularDto: UpdateCargoRegularDto) {
+  const cargo = await this.findOne(id);
+  Object.assign(cargo, updateCargoRegularDto);
+  const updated = await this.cargoRegularRepository.save(cargo);
+
+  return {
+    success: true,
+    message: 'Cargo regular actualizado correctamente',
+    data: updated,
+  };
+}
+
 
   remove(id: number) {
     return `This action removes a #${id} cargoRegular`;

@@ -7,5 +7,4 @@ export class CreatePersonaDto {
     telefono: number;
     direccion: string;
     fecha_nac: string;
-
 }

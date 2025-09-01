@@ -1,9 +1,7 @@
-
-
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizacionDto } from './dto/create-organizacion.dto';
 import { UpdateOrganizacionDto } from './dto/update-organizacion.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Organizacion } from './entities/organizacion.entity';
 
 @Injectable()
@@ -23,18 +21,20 @@ export class OrganizacionService {
     const nuevaOrganizacion = this.organizacionRepository.create(createOrganizacionDto);
     return await this.organizacionRepository.save(nuevaOrganizacion)
   }
-
   async findAll(page: number = 1, limit: number = 10) {
-    const [items, total] = await this.organizacionRepository.findAndCount({
-      skip: (page - 1) * limit, // saltar los registros anteriores
-      take: limit,              // limitar la cantidad
-      // order: { createdAt: 'DESC' }, // opcional: ordenar
+    const [result, total] = await this.organizacionRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      withDeleted: true,
     });
 
-    return { items, total };
+    return {
+      data: result,
+      total,
+      page,
+      limit,
+    };
   }
-
-
   async seed() {
 
     //await this.organizacionRepository.query(`TRUNCATE TABLE organizaciones CASCADE`);
@@ -77,15 +77,34 @@ export class OrganizacionService {
     }
     return organizacion;
   }
+
+  async findByName(nombre: string) {
+  const organizaciones = await this.organizacionRepository.find({
+    where: { descripcion: ILike(`%${nombre}%`) }, // búsqueda insensible a mayúsculas
+  });
+
+  return {
+    success: true,
+    message: organizaciones.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+    data: organizaciones,
+  };
+}
+
   //actualizar  
   async update(id: number, updateOrganizacionDto: UpdateOrganizacionDto) {
     const organizacion = await this.findOne(id);
     Object.assign(organizacion, updateOrganizacionDto);
     return await this.organizacionRepository.save(organizacion);
   }
-  //eliminar
+ // "Eliminar" → en realidad desactivar
   async remove(id: number) {
-    // const organizacion = await this.findOne(id);
-    // return await this.organizacionRepository.remove(organizacion);
+    const organizacion = await this.findOne(id);
+    organizacion.estado = false;
+    return await this.organizacionRepository.save(organizacion);
   }
+  async restore(id: number) {
+  const organizacion = await this.findOne(id);
+  organizacion.estado = true;
+  return await this.organizacionRepository.save(organizacion);
+}
 }

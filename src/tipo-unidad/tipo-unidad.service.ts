@@ -41,24 +41,32 @@ export class TipoUnidadService {
 
   }
 
+  // Buscar por ID
   async findOne(id: number) {
-    const tipoUnidad = await this.tipoUnidadRepository.findOne({
-      where: { id },
-      relations: ['tipo_unidades']
-    });
-    if (!tipoUnidad){
-      throw new NotFoundException(`tipo de unidad con id ${id} no encontrada`);
+    const tipoUnidad = await this.tipoUnidadRepository.findOne({ where: { id } });
+    if (!tipoUnidad) {
+      throw new NotFoundException(`Tipo de unidad con id ${id} no encontrada`);
     }
     return tipoUnidad;
   }
 
-  async  update(id: number, updateTipoUnidadDto: UpdateTipoUnidadDto) {
+   // Buscar por nombre (extra)
+  async findByTipo(tipo: string) {
+    const resultado = await this.tipoUnidadRepository.findOne({ where: { tipo } });
+    if (!resultado) {
+      throw new NotFoundException(`No se encontró el tipo de unidad: ${tipo}`);
+    }
+    return resultado;
+  }
+
+ // Actualizar
+  async update(id: number, updateTipoUnidadDto: UpdateTipoUnidadDto) {
     const tipoUnidad = await this.findOne(id);
     Object.assign(tipoUnidad, updateTipoUnidadDto);
     return await this.tipoUnidadRepository.save(tipoUnidad);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tipoUnidad`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} tipoUnidad`;
+  // }
 }

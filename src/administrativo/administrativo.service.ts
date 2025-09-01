@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAdministrativoDto } from './dto/create-administrativo.dto';
 import { UpdateAdministrativoDto } from './dto/update-administrativo.dto';
 import { Repository } from 'typeorm';
@@ -10,28 +10,42 @@ export class AdministrativoService {
     @Inject('AdministrativoRepository')
     private readonly administrativoRepository: Repository<Administrativo>
   ) { }
-  async create(createAdministrativoDto: CreateAdministrativoDto) {
-    const nuevoAdministrativo = this.administrativoRepository.create(createAdministrativoDto);
-    return await this.administrativoRepository.save(nuevoAdministrativo)
+  // Crear administrativo
+  async create(createDto: CreateAdministrativoDto) {
+    const existe = await this.administrativoRepository.findOne({
+      where: { id_persona: createDto.id_persona },
+    });
+    if (existe) {
+      throw new BadRequestException('Ya existe un administrativo para esta persona');
+    }
+
+    const nuevo = this.administrativoRepository.create(createDto);
+    const saved = await this.administrativoRepository.save(nuevo);
+
+    return {
+      success: true,
+      message: 'Administrativo creado correctamente',
+      data: saved,
+    };
   }
 
-  async findAll() {
-    const administrativo = await this.administrativoRepository.find({ relations: ['persona', 'administrativo_cargo_regular_unidades', 'administrativo_cargo_regular_unidades.cargo_regular', 'administrativo_cargo_regular_unidades.unidad'] })
-    console.log (administrativo)
-    return administrativo.map((administrativo) => ({
-      ...administrativo,
-      persona: {
-        nombres: administrativo.persona.nombres,
-        apellidos: administrativo.persona.apellidos
-      },
-      administrativo_cargo_regular_unidades: administrativo.administrativo_cargo_regular_unidades
-        .filter((acru)=>acru.fecha_fin === null)?.map((acru)=>({
-          cargo: acru.cargo_regular.nombre,
-          unidad: acru.unidad.nombre,    
-        }))[0],
-    }))
+ // Listar con paginación
+  async findAll(page = 1, limit = 10) {
+    const [items, total] = await this.administrativoRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['persona'],
+    });
 
+    return {
+      success: true,
+      data: items,
+      total,
+      page,
+      limit,
+    };
   }
+
   async seed() {
 
     //await this.administrativoRepository.query(`TRUNCATE TABLE administrativo CASCADE`);
@@ -54,40 +68,77 @@ export class AdministrativoService {
     return await this.administrativoRepository.save(mapeados)
   }
 
+// Buscar por ID
   async findOne(id: number) {
-    const administrativo = await this. administrativoRepository.findOne ({
+    const administrativo = await this.administrativoRepository.findOne({
       where: { id },
-      relations: ['administrativos']
+      relations: ['persona'],
     });
-    if(!administrativo){
-      throw new NotFoundException(`administrativo con id ${id} no encontrado`);
+    if (!administrativo) {
+      throw new NotFoundException(`Administrativo con id ${id} no encontrado`);
     }
     return administrativo;
   }
 
-// Búsqueda avanzada con filtros opcionales
-  async search(params: { nombres?: string; apellidos?: string }) {
-    const query = this.administrativoRepository
-      .createQueryBuilder('administrativo')
+// Búsqueda dinámica
+  async search(params: { nombre?: string; apellido?: string; ci?: string }) {
+    const query = this.administrativoRepository.createQueryBuilder('administrativo')
       .leftJoinAndSelect('administrativo.persona', 'persona');
 
-    if (params.nombres) {
-      query.andWhere('LOWER(persona.nombres) LIKE :nombres', { nombres: `%${params.nombres.toLowerCase()}%` });
+    if (params.nombre) {
+      query.andWhere('LOWER(persona.nombres) LIKE :nombre', { nombre: `%${params.nombre.toLowerCase()}%` });
+    }
+    if (params.apellido) {
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellido', { apellido: `%${params.apellido.toLowerCase()}%` });
+    }
+    if (params.ci) {
+      query.andWhere('persona.ci LIKE :ci', { ci: `%${params.ci}%` });
     }
 
-    if (params.apellidos) {
-      query.andWhere('LOWER(persona.apellidos) LIKE :apellidos', { apellidos: `%${params.apellidos.toLowerCase()}%` });
-    }
+    const results = await query.getMany();
 
-    return await query.getMany();
+    return {
+      success: true,
+      message: results.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      data: results,
+    };
   }
-  async update(id: number, updateAdministrativoDto: UpdateAdministrativoDto) {
+
+// Actualizar
+  async update(id: number, updateDto: UpdateAdministrativoDto) {
     const administrativo = await this.findOne(id);
-    Object.assign(administrativo, updateAdministrativoDto);
-    return await this.administrativoRepository.save(administrativo);
+    Object.assign(administrativo, updateDto);
+    const updated = await this.administrativoRepository.save(administrativo);
+
+    return {
+      success: true,
+      message: 'Administrativo actualizado correctamente',
+      data: updated,
+    };
+  }
+// Soft delete
+  async remove(id: number) {
+    const administrativo = await this.findOne(id);
+    administrativo.estado = false;
+    const updated = await this.administrativoRepository.save(administrativo);
+
+    return {
+      success: true,
+      message: 'Administrativo desactivado',
+      data: updated,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} administrativo`;
+  // Restaurar
+  async restore(id: number) {
+    const administrativo = await this.findOne(id);
+    administrativo.estado = true;
+    const updated = await this.administrativoRepository.save(administrativo);
+
+    return {
+      success: true,
+      message: 'Administrativo activado',
+      data: updated,
+    };
   }
 }

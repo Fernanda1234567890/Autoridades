@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { TipoUnidadService } from './tipo-unidad.service';
 import { CreateTipoUnidadDto } from './dto/create-tipo-unidad.dto';
 import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
@@ -7,14 +7,20 @@ import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
 export class TipoUnidadController {
   constructor(private readonly tipoUnidadService: TipoUnidadService) {}
 
-  @Post()
-  create(@Body() createTipoUnidadDto: CreateTipoUnidadDto) {
-    return this.tipoUnidadService.create(createTipoUnidadDto);
+ @Post()
+  async create(@Body() createTipoUnidadDto: CreateTipoUnidadDto) {
+    const tipoUnidad = await this.tipoUnidadService.create(createTipoUnidadDto);
+    return {
+      success: true,
+      message: 'Tipo de unidad creada correctamente',
+      data: tipoUnidad,
+    };
   }
 
-  @Get()
-  findAll() {
-    return this.tipoUnidadService.findAll();
+@Get()
+  async findAll() {
+    const data = await this.tipoUnidadService.findAll();
+    return { success: true, message: 'Lista de tipos de unidad', data };
   }
 
   @Get('/seed')
@@ -22,18 +28,21 @@ export class TipoUnidadController {
     return this.tipoUnidadService.seed();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tipoUnidadService.findOne(+id);
+@Get(':id')
+  async findOne(@Param('id') id: string) {
+    const tipoUnidad = await this.tipoUnidadService.findOne(+id);
+    return { success: true, message: 'Tipo de unidad encontrado', data: tipoUnidad };
+  }
+
+  @Get('buscar/:tipo')
+  async findByTipo(@Param('tipo') tipo: string) {
+    const data = await this.tipoUnidadService.findByTipo(tipo);
+    return { success: true, message: 'Tipo de unidad encontrado por nombre', data };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTipoUnidadDto: UpdateTipoUnidadDto) {
-    return this.tipoUnidadService.update(+id, updateTipoUnidadDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tipoUnidadService.remove(+id);
+  async update(@Param('id') id: string, @Body() updateTipoUnidadDto: UpdateTipoUnidadDto) {
+    const tipoUnidad = await this.tipoUnidadService.update(+id, updateTipoUnidadDto);
+    return { success: true, message: 'Tipo de unidad actualizado', data: tipoUnidad };
   }
 }

@@ -20,9 +20,6 @@ export class CargoIntermedio {
         @Column({ type: 'integer' })
         id_unidad: number;
 
-        @Column({ type: 'boolean', default: true})
-        estado: boolean; 
-
         @JoinColumn({ name: 'id_unidad' })
         @ManyToOne(() => Unidad, unidad => unidad.cargos_intermedios,{onDelete:'CASCADE'})
         unidad: Unidad;

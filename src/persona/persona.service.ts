@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Persona } from './entities/persona.entity';
 import { console } from 'inspector';
 
@@ -11,14 +11,33 @@ export class PersonaService {
     @Inject('PersonaRepository')
     private readonly personaRepository: Repository<Persona>
   ){}
+// Crear
   async create(createPersonaDto: CreatePersonaDto) {
-  
-    const nuevaPersona = this.personaRepository.create(createPersonaDto)
-    return await this.personaRepository.save(nuevaPersona);
+    const persona = this.personaRepository.create(createPersonaDto);
+    return await this.personaRepository.save(persona);
   }
 
-  async findAll() {
-    return await this.personaRepository.find({})
+// Listar con paginación + filtros opcionales
+  async findAll(page: number, limit: number, nombre?: string, apellido?: string, ci?: string) {
+    const where: any = {};
+
+    if (nombre) where.nombres = ILike(`%${nombre}%`);
+    if (apellido) where.apellidos = ILike(`%${apellido}%`);
+    if (ci) where.ci = ILike(`%${ci}%`);
+
+    const [data, total] = await this.personaRepository.findAndCount({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { id: 'ASC' },
+    });
+
+    return {
+      data,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async seed(){
@@ -109,10 +128,6 @@ export class PersonaService {
     const persona = await this.findOne(id);
     Object.assign(persona, updatePersonaDto);
     return await this.personaRepository.save(persona);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} persona`;
   }
 }
  
