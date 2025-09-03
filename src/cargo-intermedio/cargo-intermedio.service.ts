@@ -70,7 +70,7 @@ export class CargoIntermedioService {
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))
         return await this.cargoIntermedioRepository.save(mapeados)
   }
-async findOne(id: number) {
+  async findOne(id: number) {
     const cargo = await this.cargoIntermedioRepository.findOne({
       where: { id },
       relations: ['unidad'],
@@ -83,7 +83,6 @@ async findOne(id: number) {
       data: cargo,
     };
   }
-
   async findByName(nombre: string) {
     const cargos = await this.cargoIntermedioRepository.find({
       where: { nombre: ILike(`%${nombre}%`) },

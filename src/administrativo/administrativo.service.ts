@@ -81,15 +81,15 @@ export class AdministrativoService {
   }
 
 // Búsqueda dinámica
-  async search(params: { nombre?: string; apellido?: string; ci?: string }) {
+  async search(params: { nombres?: string; apellidos?: string; ci?: string }) {
     const query = this.administrativoRepository.createQueryBuilder('administrativo')
       .leftJoinAndSelect('administrativo.persona', 'persona');
 
-    if (params.nombre) {
-      query.andWhere('LOWER(persona.nombres) LIKE :nombre', { nombre: `%${params.nombre.toLowerCase()}%` });
+    if (params.nombres) {
+      query.andWhere('LOWER(persona.nombres) LIKE :nombre', { nombre: `%${params.nombres.toLowerCase()}%` });
     }
-    if (params.apellido) {
-      query.andWhere('LOWER(persona.apellidos) LIKE :apellido', { apellido: `%${params.apellido.toLowerCase()}%` });
+    if (params.apellidos) {
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellido', { apellido: `%${params.apellidos.toLowerCase()}%` });
     }
     if (params.ci) {
       query.andWhere('persona.ci LIKE :ci', { ci: `%${params.ci}%` });

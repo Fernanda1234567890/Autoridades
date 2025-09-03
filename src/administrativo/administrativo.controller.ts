@@ -22,32 +22,24 @@ export class AdministrativoController {
     return this.administrativoService.seed();
   }
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const administrativo = await this.administrativoService.findOne(+id);
-    return { success: true, message: 'Administrativo encontrado', data: administrativo };
+  findOne(@Param('id') id: string) {
+    return this.administrativoService.findOne(+id);
   }
-
-  @Get('buscar')
-  async search(
-    @Query('nombre') nombre?: string,
-    @Query('apellido') apellido?: string,
-    @Query('ci') ci?: string,
+ @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateAdministrativoDto: UpdateAdministrativoDto,
   ) {
-    return this.administrativoService.search({ nombre, apellido, ci });
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateDto: UpdateAdministrativoDto) {
-    return this.administrativoService.update(+id, updateDto);
+    return this.administrativoService.update(+id, updateAdministrativoDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  remove(@Param('id') id: string) {
     return this.administrativoService.remove(+id);
   }
 
-  @Patch('restore/:id')
-  async restore(@Param('id') id: string) {
+  @Patch(':id/restore')
+  restore(@Param('id') id: string) {
     return this.administrativoService.restore(+id);
   }
 }
