@@ -7,30 +7,29 @@ import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 export class CargoRegularController {
   constructor(private readonly cargoRegularService: CargoRegularService) {}
 
+    @Get()
+    getAll(
+    @Query('page') page?: '1',
+    @Query('limit') limit?: '10',
+    @Query('search') search?: string,
+    
+    ) {
+       const pageNum = isNaN(Number(page)) ? 1 : Number(page);
+       const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+
+      return this.cargoRegularService.findAll({ page: pageNum, limit: limitNum, search});
+    }
+@Get(':id')
+    getOne(@Param('id') id: string) {
+    return this.cargoRegularService.findOne(+id);
+    }
+    
   // Crear
   @Post()
-  async create(@Body() createCargoRegularDto: CreateCargoRegularDto) {
-    const cargo = await this.cargoRegularService.create(createCargoRegularDto);
-    return {
-      success: true,
-      message: 'Cargo regular creado correctamente',
-      data: cargo,
-    };
+  create(@Body() createCargoRegularDto: CreateCargoRegularDto) {
+    return this.cargoRegularService.create(createCargoRegularDto);
   }
 
-  // Listar con paginación
-  @Get()
-  async findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-  ) {
-    const cargos = await this.cargoRegularService.findAll(page, limit);
-    return {
-      success: true,
-      message: 'Lista de cargos regulares obtenida correctamente',
-      data: cargos,
-    };
-  }
 
   @Get('/seed')
   seed() {
@@ -75,4 +74,8 @@ export class CargoRegularController {
       data: updated,
     };
   }
+  //   @Delete(':id')
+  // remove(@Param('id') id: number) {
+  //   return this.service.remove(id);
+  // }
 }

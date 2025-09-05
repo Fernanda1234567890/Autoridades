@@ -5,6 +5,7 @@ import { CargoRegular } from './entities/cargo-regular.entity';
 import { ILike, Repository } from 'typeorm';
 import { Organizacion } from 'src/organizacion/entities/organizacion.entity';
 import { AdministrativoCargoRegularUnidad } from 'src/administrativo-cargo-regular-unidad/entities/administrativo-cargo-regular-unidad.entity';
+import { FindAllOptions } from 'src/organizacion/organizacion.service';
 
 @Injectable()
 export class CargoRegularService {
@@ -31,25 +32,26 @@ export class CargoRegularService {
     }
 
 
-  async findAll(page: number = 1, limit: number = 10) {
-    const [items, total] = await this.cargoRegularRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: [
-        'administrativo_cargo_regular_unidades',
-        'administrativo_cargo_regular_unidades.administrativo',
-        'administrativo_cargo_regular_unidades.unidad',
-      ],
-  });
+ async findAll(options: FindAllOptions) {
+    const { page, limit, search } = options;
+    const skip = (page - 1) * limit;
 
-  return {
-    success: true,
-    data: items,
-    total,
-    page,
-    limit,
-  };
-}
+    const [result, total] = await this.cargoRegularRepository.findAndCount({
+      where: search
+        ? { nombre: ILike(`%${search}%`) }
+        : {},
+      skip,
+      take: limit,
+      order: { nombre: 'ASC' },
+    });
+
+    return {
+      data: result,
+      total,
+      page,
+      limit,
+    };
+  }
 
   async seed() {
 

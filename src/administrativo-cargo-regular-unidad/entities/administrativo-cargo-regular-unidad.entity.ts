@@ -35,5 +35,4 @@ export class AdministrativoCargoRegularUnidad {
     @JoinColumn({ name: 'id_administrativo' })
     @ManyToOne(() => Administrativo, administrativo => administrativo.administrativo_cargo_regular_unidades, { onDelete: 'CASCADE' })
     administrativo: Administrativo;
-
 }
