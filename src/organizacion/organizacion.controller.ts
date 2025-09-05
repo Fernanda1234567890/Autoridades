@@ -119,9 +119,9 @@ export class OrganizacionController {
     }
 
       @Get('/seed')
-  seed() {
-    return this.organizacionService.seed();
-  }
+        seed() {
+          return this.organizacionService.seed();
+        }
 
     @Patch(':id')
     update(@Param('id') id: string, @Body() UpdateOrganizacionDto: UpdateOrganizacionDto) {

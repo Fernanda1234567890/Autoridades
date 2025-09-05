@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, ParseIntPipe, Delete } from '@nestjs/common';
 import { TipoUnidadService } from './tipo-unidad.service';
 import { CreateTipoUnidadDto } from './dto/create-tipo-unidad.dto';
 import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
@@ -6,6 +6,24 @@ import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
 @Controller('tipo-unidad')
 export class TipoUnidadController {
   constructor(private readonly tipoUnidadService: TipoUnidadService) {}
+
+
+      @Get()
+      getAll(
+      @Query('page') page?: '1',
+      @Query('limit') limit?: '10',
+      @Query('search') search?: string,
+      ) {
+         const pageNum = isNaN(Number(page)) ? 1 : Number(page);
+         const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+  
+        return this.tipoUnidadService.findAll({ page: pageNum, limit: limitNum, search });
+      }
+
+    @Get(':id')
+    getOne(@Param('id') id: string) {
+    return this.tipoUnidadService.findOne(+id);
+    }
 
  @Post()
   async create(@Body() createTipoUnidadDto: CreateTipoUnidadDto) {
@@ -17,16 +35,10 @@ export class TipoUnidadController {
     };
   }
 
-@Get()
-  async findAll() {
-    const data = await this.tipoUnidadService.findAll();
-    return { success: true, message: 'Lista de tipos de unidad', data };
-  }
-
-  @Get('/seed')
-  seed() {
-    return this.tipoUnidadService.seed();
-  }
+    @Get('/seed')
+    seed() {
+      return this.tipoUnidadService.seed();
+    }
 
 @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -45,4 +57,9 @@ export class TipoUnidadController {
     const tipoUnidad = await this.tipoUnidadService.update(+id, updateTipoUnidadDto);
     return { success: true, message: 'Tipo de unidad actualizado', data: tipoUnidad };
   }
+
+   @Delete(':id')
+      async remove(@Param('id', ParseIntPipe) id: number) {
+        return this.tipoUnidadService.remove(id);
+    }
 }

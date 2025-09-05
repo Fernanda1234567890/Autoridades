@@ -44,8 +44,4 @@ export class Persona {
 
     @OneToMany(() => OrganizacionPersona, organizacion_personas => organizacion_personas.persona)
     organizacion_personas: OrganizacionPersona[];
-
-
-
-
 }

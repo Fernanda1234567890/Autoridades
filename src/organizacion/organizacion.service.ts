@@ -28,7 +28,6 @@ async create(createOrganizacionDto: CreateOrganizacionDto) {
   }
 }
 
-
   async findAll({
     page = 1,
     limit = 10,
