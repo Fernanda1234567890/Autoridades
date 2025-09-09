@@ -1,5 +1,4 @@
 import { Administrativo } from "src/administrativo/entities/administrativo.entity";
-import { CargoIntermedio } from "src/cargo-intermedio/entities/cargo-intermedio.entity";
 import { CargoRegular } from "src/cargo-regular/entities/cargo-regular.entity";
 import { Unidad } from "src/unidad/entities/unidad.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";

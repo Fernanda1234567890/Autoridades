@@ -16,6 +16,8 @@ export class CargoRegular {
         @Column({ type: 'integer', nullable: true })
         nivel_jerarquico: number;
 
+        @Column({ type: 'boolean', default: true })
+        estado: boolean;
 
         @OneToMany(() => AdministrativoCargoRegularUnidad, administrativo_cargo_regular_unidades => administrativo_cargo_regular_unidades.cargo_regular)
         administrativo_cargo_regular_unidades: AdministrativoCargoRegularUnidad[];

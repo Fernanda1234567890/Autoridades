@@ -28,6 +28,11 @@ import { OrganizacionPersona } from './organizacion-persona/entities/organizacio
 //import { AdministrativoCargoRegularUnidadService } from './administrativo-cargo-regular-unidad/administrativo-cargo-regular-unidad.service';
 import { CargoIntermedioDocente } from './cargo-intermedio-docente/entities/cargo-intermedio-docente.entity';
 import { SeedModule } from './seed/seed.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './user/entities/user.entity';
+import { Seed } from './seed/entities/seed.entity';
+
 
 
 @Module({
@@ -39,6 +44,7 @@ import { SeedModule } from './seed/seed.module';
       username: 'postgres',
       password: '123456789',
       database: 'uatf_autoridades',
+      
       
       entities: [ 
         Organizacion,
@@ -52,7 +58,9 @@ import { SeedModule } from './seed/seed.module';
         CargoIntermedio,
         OrganizacionPersona,
         AdministrativoCargoRegularUnidad,
-        CargoIntermedioDocente
+        CargoIntermedioDocente,
+        User,
+        Seed,
       ],
       synchronize: true,
     }),
@@ -69,6 +77,8 @@ import { SeedModule } from './seed/seed.module';
     AdministrativoCargoRegularUnidadModule,
     CargoIntermedioDocenteModule,
     SeedModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

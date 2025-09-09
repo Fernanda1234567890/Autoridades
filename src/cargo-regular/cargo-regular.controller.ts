@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
-import { CargoRegularService } from './cargo-regular.service';
+import { Controller, Get, Post, Body, Patch, Param, Query, Delete } from '@nestjs/common';
+import { CargoRegularService, FindAllOptions } from './cargo-regular.service';
 import { CreateCargoRegularDto } from './dto/create-cargo-regular.dto';
 import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 
@@ -7,28 +7,32 @@ import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
 export class CargoRegularController {
   constructor(private readonly cargoRegularService: CargoRegularService) {}
 
-    @Get()
-    getAll(
-    @Query('page') page?: '1',
-    @Query('limit') limit?: '10',
+   @Get()
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
     @Query('search') search?: string,
-    
-    ) {
-       const pageNum = isNaN(Number(page)) ? 1 : Number(page);
-       const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+    @Query('estado') estado?: 'activo' | 'inactivo' | 'todos'
+  ) {
+  const options: FindAllOptions = {
+    page: page ? Number(page) : 1,
+    limit: limit ? Number(limit) : 10,
+    search,
+    estado: estado ?? 'activo',
+  };
+  return this.cargoRegularService.findAll(options);
+}
 
-      return this.cargoRegularService.findAll({ page: pageNum, limit: limitNum, search});
-    }
-@Get(':id')
-    getOne(@Param('id') id: string) {
+  @Get(':id')
+  getOne(@Param('id') id: number) {
     return this.cargoRegularService.findOne(+id);
-    }
-    
-  // Crear
-  @Post()
-  create(@Body() createCargoRegularDto: CreateCargoRegularDto) {
-    return this.cargoRegularService.create(createCargoRegularDto);
   }
+
+  @Post()
+  create(@Body() dto: CreateCargoRegularDto) {
+    return this.cargoRegularService.create(dto);
+  }
+
 
 
   @Get('/seed')
@@ -60,22 +64,17 @@ export class CargoRegularController {
 
 // Actualizar
   @Patch(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateCargoRegularDto: UpdateCargoRegularDto,
-  ) {
-    const updated = await this.cargoRegularService.update(
-      id,
-      updateCargoRegularDto,
-    );
-    return {
-      success: true,
-      message: 'Cargo regular actualizado correctamente',
-      data: updated,
-    };
+  update(@Param('id') id: number, @Body() dto: UpdateCargoRegularDto) {
+    return this.cargoRegularService.update(+id, dto);
   }
-  //   @Delete(':id')
-  // remove(@Param('id') id: number) {
-  //   return this.service.remove(id);
-  // }
+
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.cargoRegularService.remove(+id);
+  }
+
+  @Patch(':id/restaurar')
+  restore(@Param('id') id: number) {
+    return this.cargoRegularService.restore(+id);
+  }
 }
