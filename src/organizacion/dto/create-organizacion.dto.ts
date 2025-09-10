@@ -3,5 +3,4 @@ export class CreateOrganizacionDto {
     tipo: string;
     descripcion: string;
     estado: boolean;
-
 }

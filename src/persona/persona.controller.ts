@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, Delete } from '@nestjs/common';
 import { PersonaService } from './persona.service';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
@@ -26,8 +26,10 @@ export class PersonaController {
     @Query('nombre') nombre?: string,
     @Query('apellido') apellido?: string,
     @Query('ci') ci?: string,
+    @Query('estado') estado?: 'activo' | 'inactivo' | 'todos'
+
   ) {
-    const result = await this.personaService.findAll(+page, +limit, nombre, apellido, ci);
+    const result = await this.personaService.findAll(Number(page) || 1, Number(limit) || 10, nombre, apellido, ci, estado);
     return {
       success: true,
       message: 'Lista de personas obtenida correctamente',
@@ -69,6 +71,16 @@ export class PersonaController {
       success: true,
       message: 'Persona actualizada correctamente',
       data: persona,
+    };
+  }
+
+  // Eliminar
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    await this.personaService.remove(+id);
+    return {
+      success: true,
+      message: 'Persona eliminada correctamente',
     };
   }
 }

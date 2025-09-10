@@ -28,10 +28,13 @@ export class Persona {
     direccion: string;
 
     @Column({ type: 'date' })
-    fecha_nac: string;
+    fecha_nac: Date;
 
     @Column({ type: 'text', nullable: true })
     img: string;
+
+    @Column({ type: 'boolean', default: true })
+    estado: boolean;
 
     @OneToOne(() => Estudiante, estudiante => estudiante.persona)
     estudiante: Estudiante

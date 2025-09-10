@@ -23,5 +23,4 @@ export class Docente {
 
     @OneToMany(()=>CargoIntermedioDocente, cargo_intermedio_docente => cargo_intermedio_docente.docente)
     cargo_intermedio_docente: CargoIntermedioDocente[];
-
 }

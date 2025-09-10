@@ -1,16 +1,17 @@
-import { Inject, Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { ILike, Repository } from 'typeorm';
 import { Persona } from './entities/persona.entity';
-import { console } from 'inspector';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PersonaService {
-  constructor(
-    @Inject('PersonaRepository')
-    private readonly personaRepository: Repository<Persona>
-  ){}
+constructor(
+    @InjectRepository(Persona)
+    private readonly personaRepository: Repository<Persona>,
+  ) {}
+
 // Crear
   async create(createPersonaDto: CreatePersonaDto) {
     const persona = this.personaRepository.create(createPersonaDto);
@@ -18,12 +19,15 @@ export class PersonaService {
   }
 
 // Listar con paginación + filtros opcionales
-  async findAll(page: number, limit: number, nombre?: string, apellido?: string, ci?: string) {
+  async findAll(page: number, limit: number, nombre?: string, apellido?: string, ci?: string, estado?: 'activo' | 'inactivo' | 'todos') {
     const where: any = {};
 
     if (nombre) where.nombres = ILike(`%${nombre}%`);
     if (apellido) where.apellidos = ILike(`%${apellido}%`);
     if (ci) where.ci = ILike(`%${ci}%`);
+
+    if (estado === 'activo') where.estado = true;
+    else if (estado === 'inactivo') where.estado = false;
 
     const [data, total] = await this.personaRepository.findAndCount({
       where,
@@ -32,12 +36,7 @@ export class PersonaService {
       order: { id: 'ASC' },
     });
 
-    return {
-      data,
-      total,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-    };
+    return { data, total, currentPage: page, totalPages: Math.ceil(total / limit),};
   }
 
   async seed(){
@@ -93,15 +92,16 @@ export class PersonaService {
 
   }
 
+  // Buscar por ID
   async findOne(id: number) {
     const persona = await this.personaRepository.findOne({
       where: { id },
-      relations: ['persona']// adminbiustraivo docente
+      relations: ['estudiante', 'docente', 'administrativo', 'organizacion_personas'],
     });
-    if(!persona){
+    if (!persona) {
       throw new NotAcceptableException(`Persona con id ${id} no encontrada`);
     }
-    return persona
+    return persona;
   }
 
     // 🔹 Búsqueda dinámica (filtros opcionales)
@@ -123,11 +123,20 @@ export class PersonaService {
 
     return await query.getMany();
   }
-
+// Actualizar
   async update(id: number, updatePersonaDto: UpdatePersonaDto) {
     const persona = await this.findOne(id);
     Object.assign(persona, updatePersonaDto);
     return await this.personaRepository.save(persona);
   }
+
+  // Ahora: solo marca estado = false
+    async remove(id: number) {
+      const persona = await this.findOne(id);
+      persona.estado = false; // ❌ marca como inactivo
+      await this.personaRepository.save(persona); // guarda el cambio
+      return { success: true, message: `Persona con id ${id} dada de baja` };
+
+    }
 }
  
