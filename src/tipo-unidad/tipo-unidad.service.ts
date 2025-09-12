@@ -19,19 +19,32 @@ export class TipoUnidadService {
   ) {}
 
   // Crear
-  async create(createTipoUnidadDto: CreateTipoUnidadDto) {
-    try {
-      const tipoUnidad = this.tipoUnidadRepository.create(createTipoUnidadDto);
-      return await this.tipoUnidadRepository.save(tipoUnidad);
-    } catch (err) {
-      console.error('Error guardando tipo de unidad', err);
-      throw new BadRequestException('No se pudo guardar el tipo de unidad');
-    }
+async create(createTipoUnidadDto: CreateTipoUnidadDto) {
+  const exists = await this.tipoUnidadRepository.findOne({
+    where: { tipo: createTipoUnidadDto.tipo },
+  });
+
+  if (exists) {
+    throw new BadRequestException(`El tipo de unidad "${createTipoUnidadDto.tipo}" ya existe`);
   }
 
+  const tipoUnidad = this.tipoUnidadRepository.create(createTipoUnidadDto);
+  return await this.tipoUnidadRepository.save(tipoUnidad);
+}
+
+
   // Listar con paginación y búsqueda
-  async findAll({ page = 1, limit = 10, search }: FindAllOptions) {
-    const query = this.tipoUnidadRepository.createQueryBuilder('tu');
+  async findAll({
+    page = 1,
+    limit = 10,
+    search,
+    estado = 'activo',
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    estado?: 'activo' | 'inactivo' | 'todos';
+  }) {    const query = this.tipoUnidadRepository.createQueryBuilder('tu');
 
     if (search) {
       query.andWhere(
@@ -39,6 +52,11 @@ export class TipoUnidadService {
         { search: `%${search}%` }
       );
     }
+      if (estado !== 'todos') {
+      query.andWhere('tu.estado = :estado', { estado: estado === 'activo' });
+    }
+
+    query.orderBy('tu.id', 'DESC'); //ASC
 
     const [data, total] = await query
       .skip((page - 1) * limit)
@@ -47,24 +65,17 @@ export class TipoUnidadService {
 
     return {
       success: true,
-      message: 'Tipos de unidad obtenidos correctamente',
-      data: data,
-      meta: {
-        totalItems: total,
-        itemCount: data.length,
-        itemsPerPage: limit,
-        totalPages: Math.ceil(total / limit),
-        currentPage: page,
-      },
+      data,
+      meta: { total, page, limit },
     };
   }
 
   // Seed de ejemplo
   async seed() {
     const datos: CreateTipoUnidadDto[] = [
-      { id: 1, tipo: 'mayor', descripcion: 'Descripción del Tipo A' },
-      { id: 2, tipo: 'unidad intermedia', descripcion: 'Descripción del Tipo B' },
-      { id: 3, tipo: 'unidad dependiente', descripcion: 'Descripción del Tipo C' },
+      { id: 1, tipo: 'mayor', descripcion: 'Descripción del Tipo A',estado: true },
+      { id: 2, tipo: 'unidad intermedia', descripcion: 'Descripción del Tipo B',estado: true },
+      { id: 3, tipo: 'unidad dependiente', descripcion: 'Descripción del Tipo C',estado: true },
     ];
 
     const mapeados = datos.map((e) => this.tipoUnidadRepository.create(e));
@@ -81,7 +92,7 @@ export class TipoUnidadService {
   // Buscar por tipo
   async findByTipo(tipo: string) {
     const tipoUnidades = await this.tipoUnidadRepository.find({
-      where: { descripcion: ILike(`%${tipo}%`) },
+      where: { tipo: ILike(`%${tipo}%`) },
     });
 
     return {
@@ -105,13 +116,15 @@ export class TipoUnidadService {
   }
 
   // Eliminar
-  async remove(id: number) {
-    const tipoUnidad = await this.findOne(id);
-    await this.tipoUnidadRepository.delete(id);
-    return {
-      success: true,
-      message: `TipoUnidad con id ${id} eliminada correctamente`,
-      data: tipoUnidad,
-    };
-  }
+    async remove(id: number) {
+      const tipoUnidad = await this.tipoUnidadRepository.findOne({ where: { id } });
+
+      if (!tipoUnidad) {
+        throw new NotFoundException('Tipo de unidad no encontrado');
+      }
+
+      tipoUnidad.estado = false; // 👈 Dar de baja
+      return await this.tipoUnidadRepository.save(tipoUnidad);
+    }
+
 }

@@ -1,18 +1,32 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Unidad } from './entities/unidad.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UnidadService {
   constructor(
-    @Inject('UnidadRepository')
+    @InjectRepository(Unidad)
     private readonly unidadRepository: Repository<Unidad>
-  ) { }
-  // Crear unidad
+  ) {}
+  
+  // ✅ Crear unidad
   async create(createUnidadDto: CreateUnidadDto) {
-    const nuevaUnidad = this.unidadRepository.create(createUnidadDto);
+    const nombre = createUnidadDto.nombre?.trim();
+    if (!nombre) throw new BadRequestException('El nombre de la unidad es requerido');
+
+    // Validar duplicado
+    const existe = await this.unidadRepository.findOne({ where: { nombre } });
+    if (existe) throw new BadRequestException(`Ya existe una unidad con el nombre "${nombre}"`);
+
+    const nuevaUnidad = this.unidadRepository.create({
+      ...createUnidadDto,
+      nombre,
+      estado: true,
+    });
+
     const saved = await this.unidadRepository.save(nuevaUnidad);
     return {
       success: true,
@@ -21,22 +35,69 @@ export class UnidadService {
     };
   }
 
-  // Listar unidades con paginación
-  async findAll(page: number = 1, limit: number = 10) {
-  const [items, total] = await this.unidadRepository.findAndCount({
-    skip: (page - 1) * limit,
-    take: limit,
-    relations: ['depende_de', 'tipo_unidad', 'dependencias']
-  });
+  // ✅ Listar unidades con paginación y filtros
+    async findAll(
+  page = 1,
+  limit = 10,
+  filters?: {
+    nombre?: string;
+    responsable?: string;
+    id_tipo_unidad?: number | string;
+    estado?: 'activo' | 'inactivo' | 'todos';
+  }
+) {
+  const query = this.unidadRepository.createQueryBuilder('unidad')
+    .leftJoinAndSelect('unidad.depende_de', 'depende_de')
+    .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad')
+    .leftJoinAndSelect('unidad.cargos_intermedios', 'cargos_intermedios')
 
-  return {
-    success: true,
-    data: items,
-    total,
-    page,
-    limit,
-  };
+    // Docentes a través de la tabla intermedia
+    .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_docente', 'cid')
+    .leftJoinAndSelect('cid.docente', 'docente')
+
+    // Administrativos a través de la tabla intermedia
+    .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_administrativos', 'cia')
+    .leftJoinAndSelect('cia.administrativo', 'administrativo')
+
+    // Si quieres mantener también tu acr directo (cargo_regular)
+    .leftJoinAndSelect('unidad.administrativo_cargo_regular_unidades', 'acr')
+    .leftJoinAndSelect('acr.administrativo', 'acr_administrativo')
+    .leftJoinAndSelect('acr.cargoRegular', 'cargoRegular');
+
+  // Filtros
+  if (filters?.nombre && filters.nombre.trim() !== '') {
+    query.andWhere('unidad.nombre ILIKE :nombre', { nombre: `%${filters.nombre.trim()}%` });
+  }
+
+  if (filters?.responsable && filters.responsable.trim() !== '') {
+    query.andWhere('unidad.responsable ILIKE :responsable', { responsable: `%${filters.responsable.trim()}%` });
+  }
+
+  if (filters?.id_tipo_unidad) {
+    const tipoId = Number(filters.id_tipo_unidad);
+    if (!isNaN(tipoId)) {
+      query.andWhere('tipo_unidad.id = :id_tipo_unidad', { id_tipo_unidad: tipoId });
+    }
+  }
+
+  if (filters?.estado && filters.estado !== 'todos') {
+    query.andWhere('unidad.estado = :estado', { estado: filters.estado === 'activo' });
+  }
+
+  query.orderBy('unidad.id', 'DESC')
+       .skip((page - 1) * limit)
+       .take(limit);
+
+  try {
+    const [data, total] = await query.getManyAndCount();
+    return { success: true, data, meta: { total, page, limit } };
+  } catch (error) {
+    console.error('Error en findAll Unidad:', error);
+    throw new Error('No se pudo obtener la lista de unidades.');
+  }
 }
+
+
 
 
   async seed() {
@@ -68,52 +129,38 @@ export class UnidadService {
     const mapeados = datos.map((e: CreateUnidadDto) => this.unidadRepository.create(e))
     return await this.unidadRepository.save(mapeados)
   }
-  // Buscar por ID
+  // ✅ Buscar por ID
   async findOne(id: number) {
     const unidad = await this.unidadRepository.findOne({
       where: { id },
       relations: ['depende_de', 'tipo_unidad', 'cargos_intermedios', 'administrativo_cargo_regular_unidades'],
     });
-    if (!unidad) {
-      throw new NotFoundException(`Unidad con id ${id} no encontrada`);
-    }
-    return {
-      success: true,
-      data: unidad,
-    };
+    if (!unidad) throw new NotFoundException(`Unidad con id ${id} no encontrada`);
+    return { success: true, data: unidad };
   }
 
-  // Búsqueda dinámica
+  // ✅ Búsqueda dinámica simple
   async search(params: { nombre?: string; responsable?: string; id_tipo_unidad?: number }) {
-    const query = this.unidadRepository
-      .createQueryBuilder('unidad')
+    const query = this.unidadRepository.createQueryBuilder('unidad')
       .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad');
 
-    if (params.nombre) {
-      query.andWhere('unidad.nombre ILIKE :nombre', { nombre: `%${params.nombre}%` });
-    }
-
-    if (params.responsable) {
-      query.andWhere('unidad.responsable ILIKE :responsable', { responsable: `%${params.responsable}%` });
-    }
-
-    if (params.id_tipo_unidad) {
-      query.andWhere('tipo_unidad.id = :id_tipo_unidad', { id_tipo_unidad: params.id_tipo_unidad });
-    }
+    if (params.nombre) query.andWhere('unidad.nombre ILIKE :nombre', { nombre: `%${params.nombre}%` });
+    if (params.responsable) query.andWhere('unidad.responsable ILIKE :responsable', { responsable: `%${params.responsable}%` });
+    if (params.id_tipo_unidad) query.andWhere('tipo_unidad.id = :id_tipo_unidad', { id_tipo_unidad: params.id_tipo_unidad });
 
     const results = await query.getMany();
     return {
       success: true,
-      message: results.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      message: results.length ? 'Resultados encontrados' : 'No se encontraron coincidencias',
       data: results,
     };
   }
 
- // Actualizar
-  async update(id: number, updateUnidadDto: UpdateUnidadDto) {
-    const unidad = await this.findOne(id);
-    Object.assign(unidad.data, updateUnidadDto); // recordar que findOne devuelve { success, data }
-    const updated = await this.unidadRepository.save(unidad.data);
+  // ✅ Actualizar unidad
+  async update(id: number, dto: UpdateUnidadDto) {
+    const { data: unidad } = await this.findOne(id);
+    Object.assign(unidad, dto);
+    const updated = await this.unidadRepository.save(unidad);
     return {
       success: true,
       message: 'Unidad actualizada correctamente',
@@ -121,28 +168,31 @@ export class UnidadService {
     };
   }
 
-  // Soft delete
-    async remove(id: number) {
-      const { data: unidad } = await this.findOne(id); // extraemos la unidad
-      unidad.estado = false;
-      const updated = await this.unidadRepository.save(unidad);
+  // ✅ Soft delete
+  async remove(id: number) {
+    const { data: unidad } = await this.findOne(id);
+    if (!unidad.estado) throw new BadRequestException('La unidad ya está desactivada');
 
-      return {
-        success: true,
-        message: 'Unidad desactivada correctamente',
-        data: updated,
-      };
-    }
+    unidad.estado = false;
+    const updated = await this.unidadRepository.save(unidad);
+    return {
+      success: true,
+      message: 'Unidad desactivada correctamente',
+      data: updated,
+    };
+  }
 
-    async restore(id: number) {
-      const { data: unidad } = await this.findOne(id); // extraemos la unidad
-      unidad.estado = true;
-      const updated = await this.unidadRepository.save(unidad);
+  // ✅ Restaurar unidad
+  async restore(id: number) {
+    const { data: unidad } = await this.findOne(id);
+    if (unidad.estado) throw new BadRequestException('La unidad ya está activa');
 
-      return {
-        success: true,
-        message: 'Unidad reactivada correctamente',
-        data: updated,
-      };
-    }
+    unidad.estado = true;
+    const updated = await this.unidadRepository.save(unidad);
+    return {
+      success: true,
+      message: 'Unidad reactivada correctamente',
+      data: updated,
+    };
+  }
 }

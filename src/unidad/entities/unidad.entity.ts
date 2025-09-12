@@ -37,6 +37,7 @@ export class Unidad {
     dependencias: Unidad[];
 
     @ManyToOne(() => TipoUnidad, tipoUnidad => tipoUnidad.unidades, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'id_tipo_unidad' })
     tipo_unidad: TipoUnidad;
 
     @OneToMany(() => CargoIntermedio, cargos_intermedios => cargos_intermedios.unidad)
@@ -44,5 +45,4 @@ export class Unidad {
 
     @OneToMany(() => AdministrativoCargoRegularUnidad, administrativo_cargo_regular_unidades => administrativo_cargo_regular_unidades.unidad)
     administrativo_cargo_regular_unidades: AdministrativoCargoRegularUnidad[];
-
 }

@@ -42,26 +42,29 @@ export class PersonaController {
     return this.personaService.seed();
   }
 
- // Buscar por ID
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const persona = await this.personaService.findOne(+id);
-    return {
-      success: true,
-      message: 'Persona encontrada',
-      data: persona,
-    };
-  }
-  // Buscar por nombre o filtros
-  @Get('/search/filtros')
-  async search(@Query() query: { nombres?: string; apellidos?: string; ci?: string }) {
-    const personas = await this.personaService.search(query);
-    return {
-      success: true,
-      message: 'Resultados de búsqueda',
-      data: personas,
-    };
-  }
+ // Buscar por nombre o filtros
+@Get('/search/filtros')
+async search(@Query() query: any) {
+  const personas = await this.personaService.search(query);
+  return {
+    success: true,
+    message: 'Resultados de búsqueda',
+    ...personas, // esto ya devuelve { data, total }
+  };
+}
+ 
+
+// Buscar por ID
+@Get(':id')
+async findOne(@Param('id') id: number) {
+  const persona = await this.personaService.findOne(+id);
+  return {
+    success: true,
+    message: 'Persona encontrada',
+    data: persona,
+  };
+}
+
 
 // Actualizar
   @Patch(':id')

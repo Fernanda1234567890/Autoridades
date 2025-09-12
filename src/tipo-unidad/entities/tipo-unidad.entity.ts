@@ -6,11 +6,14 @@ export class TipoUnidad {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar', unique: true })
+    @Column({ type: 'varchar' }) 
     tipo: string;
 
     @Column({ type: 'text' })
     descripcion: string;
+
+    @Column({ type: 'boolean', default: true})
+    estado: boolean; 
 
     @OneToMany(()=>Unidad, unidad => unidad.tipo_unidad)
     unidades: Unidad[];

@@ -30,21 +30,45 @@ export class AdministrativoService {
   }
 
  // Listar con paginación
-  async findAll(page = 1, limit = 10) {
-    const [items, total] = await this.administrativoRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: ['persona'],
-    });
+async findAll(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  estado?: boolean;
+}) {
+  const page = params.page || 1;
+  const limit = params.limit || 10;
 
-    return {
-      success: true,
-      data: items,
-      total,
-      page,
-      limit,
-    };
+  const query = this.administrativoRepository.createQueryBuilder('administrativo')
+    .leftJoinAndSelect('administrativo.persona', 'persona');
+
+  // Filtrar por estado
+  if (params.estado !== undefined) {
+    query.andWhere('administrativo.estado = :estado', { estado: params.estado });
   }
+
+  // Filtro búsqueda
+  if (params.search) {
+    query.andWhere(
+      '(LOWER(persona.nombres) LIKE :search OR LOWER(persona.apellidos) LIKE :search OR persona.ci LIKE :search)',
+      { search: `%${params.search.toLowerCase()}%` }
+    );
+  }
+
+  const [items, total] = await query
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
+
+  return {
+    success: true,
+    data: items,
+    total,
+    page,
+    limit,
+  };
+}
+
 
   async seed() {
 

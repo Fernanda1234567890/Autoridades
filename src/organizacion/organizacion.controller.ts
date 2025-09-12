@@ -15,18 +15,18 @@ export class OrganizacionController {
   @Get('inactivos')
   findInactivos() {
     return this.organizacionService.findAll({ estado: 'inactivo' });
-}
+  }
     @Get()
-getAll(
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-  @Query('search') search?: string,
-  @Query('estado') estado: 'activo' | 'inactivo' | 'todos' = 'activo', // <-- aquí
-) {
-  const pageNum = isNaN(Number(page)) ? 1 : Number(page);
-  const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
-  return this.organizacionService.findAll({ page: pageNum, limit: limitNum, search, estado });
-}
+    getAll(
+      @Query('page') page?: string,
+      @Query('limit') limit?: string,
+      @Query('search') search?: string,
+      @Query('estado') estado: 'activo' | 'inactivo' | 'todos' = 'activo', // <-- aquí
+    ) {
+      const pageNum = isNaN(Number(page)) ? 1 : Number(page);
+      const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+      return this.organizacionService.findAll({ page: pageNum, limit: limitNum, search, estado });
+    }
 
     
 
@@ -42,10 +42,10 @@ getAll(
     return this.organizacionService.create(createOrganizacionDto);
     }
 
-      @Get('/seed')
-        seed() {
-          return this.organizacionService.seed();
-        }
+    @Get('/seed')
+      seed() {
+      return this.organizacionService.seed();
+    }
 
      // Actualizar
     @Patch(':id')
