@@ -72,33 +72,39 @@ export class CargoRegularService {
 
     const datos: CreateCargoRegularDto[] = [
       {
-        //id: 1,
         nombre: 'jefe de departamento',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 1,  
       },
       {
-       // id: 2,
         nombre: 'responsable de correspondencia',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 2,
       },
       {
-        //id: 3,
         nombre: 'secretaria/o',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 3,
       },
       {
-       // id: 4,
         nombre: 'mensajero',
         descripcion: 'descripcion de ejemplo',
         nivel_jerarquico: 4,
       }
     ]
 
-    const mapeados = datos.map((e) => this.cargoRepository.create(e))
-    return await this.cargoRepository.save(mapeados)
+    for (const cargo of datos) {
+    const exists = await this.cargoRepository.findOne({
+      where: { nombre: cargo.nombre },
+    });
+
+    if (!exists) {
+      const nuevo = this.cargoRepository.create(cargo);
+      await this.cargoRepository.save(nuevo);
+    }
+  }
+
+  return { message: 'Seed ejecutado correctamente' };
   }
 
    // Buscar por ID

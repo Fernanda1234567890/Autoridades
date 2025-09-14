@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Delete, Put } from '@nestjs/common';
 import { CargoRegularService, FindAllOptions } from './cargo-regular.service';
 import { CreateCargoRegularDto } from './dto/create-cargo-regular.dto';
 import { UpdateCargoRegularDto } from './dto/update-cargo-regular.dto';
@@ -32,9 +32,7 @@ export class CargoRegularController {
   create(@Body() dto: CreateCargoRegularDto) {
     return this.cargoRegularService.create(dto);
   }
-
-
-
+  
   @Get('/seed')
   seed() {
     return this.cargoRegularService.seed();
@@ -63,7 +61,7 @@ export class CargoRegularController {
   }
 
 // Actualizar
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: number, @Body() dto: UpdateCargoRegularDto) {
     return this.cargoRegularService.update(+id, dto);
   }
@@ -73,7 +71,7 @@ export class CargoRegularController {
     return this.cargoRegularService.remove(+id);
   }
 
-  @Patch(':id/restaurar')
+  @Put(':id/restaurar')
   restore(@Param('id') id: number) {
     return this.cargoRegularService.restore(+id);
   }

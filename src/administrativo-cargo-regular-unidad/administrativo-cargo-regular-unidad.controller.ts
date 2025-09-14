@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { AdministrativoCargoRegularUnidadService } from './administrativo-cargo-regular-unidad.service';
 import { CreateAdministrativoCargoRegularUnidadDto } from './dto/create-administrativo-cargo-regular-unidad.dto';
 import { UpdateAdministrativoCargoRegularUnidadDto } from './dto/update-administrativo-cargo-regular-unidad.dto';
@@ -27,7 +27,7 @@ export class AdministrativoCargoRegularUnidadController {
     return this.administrativoCargoRegularUnidadService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateAdministrativoCargoRegularUnidadDto: UpdateAdministrativoCargoRegularUnidadDto) {
     return this.administrativoCargoRegularUnidadService.update(+id, updateAdministrativoCargoRegularUnidadDto);
   }

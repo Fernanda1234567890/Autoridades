@@ -25,13 +25,16 @@ import { Administrativo } from './administrativo/entities/administrativo.entity'
 import { Unidad } from './unidad/entities/unidad.entity';
 import { CargoIntermedio } from './cargo-intermedio/entities/cargo-intermedio.entity';
 import { OrganizacionPersona } from './organizacion-persona/entities/organizacion-persona.entity';
-//import { AdministrativoCargoRegularUnidadService } from './administrativo-cargo-regular-unidad/administrativo-cargo-regular-unidad.service';
 import { CargoIntermedioDocente } from './cargo-intermedio-docente/entities/cargo-intermedio-docente.entity';
 import { SeedModule } from './seed/seed.module';
-import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { User } from './user/entities/user.entity';
 import { Seed } from './seed/entities/seed.entity';
+import { UsuarioModule } from './usuario/usuario.module';
+import { FacultadModule } from './facultad/facultad.module';
+import { CarreraModule } from './carrera/carrera.module';
+import { Usuario } from './usuario/entities/usuario.entity';
+import { Facultad } from './facultad/entities/facultad.entity';
+import { Carrera } from './carrera/entities/carrera.entity';
 
 
 
@@ -59,8 +62,10 @@ import { Seed } from './seed/entities/seed.entity';
         OrganizacionPersona,
         AdministrativoCargoRegularUnidad,
         CargoIntermedioDocente,
-        User,
         Seed,
+        Usuario,
+        Facultad,
+        Carrera
       ],
       synchronize: true,
     }),
@@ -77,8 +82,10 @@ import { Seed } from './seed/entities/seed.entity';
     AdministrativoCargoRegularUnidadModule,
     CargoIntermedioDocenteModule,
     SeedModule,
-    UserModule,
     AuthModule,
+    UsuarioModule,
+    FacultadModule,
+    CarreraModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,42 +1,67 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotAcceptableException } from '@nestjs/common';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { ILike, Repository } from 'typeorm';
 import { Persona } from './entities/persona.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryPersonaDto } from './dto/query-persona.dto';
+
 
 @Injectable()
 export class PersonaService {
 constructor(
     @InjectRepository(Persona)
     private readonly personaRepository: Repository<Persona>,
-  ) {}
+  ) {} 
 
-// Crear
-  async create(createPersonaDto: CreatePersonaDto) {
-    const persona = this.personaRepository.create(createPersonaDto);
-    return await this.personaRepository.save(persona);
-  }
 
-// Listar con paginación + filtros opcionales
-  async findAll(page: number, limit: number, nombre?: string, apellido?: string, ci?: string, estado?: 'activo' | 'inactivo' | 'todos') {
+  // Método unificado para buscar con paginación y filtros
+  async findAll(query: QueryPersonaDto) {
+    const {
+      page = 1,
+      limit = 10,
+      nombres,
+      apellidos,
+      ci,
+      email,
+      direccion,
+      fecha_nac,
+      estado,
+      sortBy = 'id',
+      sortOrder = 'ASC'
+    } = query;
+
     const where: any = {};
 
-    if (nombre) where.nombres = ILike(`%${nombre}%`);
-    if (apellido) where.apellidos = ILike(`%${apellido}%`);
+    // Aplicar filtros
+    if (nombres) where.nombres = ILike(`%${nombres}%`);
+    if (apellidos) where.apellidos = ILike(`%${apellidos}%`);
     if (ci) where.ci = ILike(`%${ci}%`);
+    if (email) where.email = ILike(`%${email}%`);
+    if (direccion) where.direccion = ILike(`%${direccion}%`);
+    if (fecha_nac) where.fecha_nac = fecha_nac;
 
+    // Filtro de estado
     if (estado === 'activo') where.estado = true;
     else if (estado === 'inactivo') where.estado = false;
+    // Si es 'todos' o undefined, no aplicamos filtro
 
     const [data, total] = await this.personaRepository.findAndCount({
       where,
       skip: (page - 1) * limit,
       take: limit,
-      order: { id: 'ASC' },
+      order: { [sortBy]: sortOrder },
+      relations: ['estudiante', 'docente', 'administrativo', 'organizacion_personas'],
     });
 
-    return { data, total, currentPage: page, totalPages: Math.ceil(total / limit),};
+    return {
+      data,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      hasNext: page < Math.ceil(total / limit),
+      hasPrev: page > 1,
+    };
   }
 
   async seed(){
@@ -53,7 +78,7 @@ constructor(
           email: 'onel@gmail.com',
           telefono: 76451245,
           direccion: 'Av.Siempre viva 742',
-          fecha_nac: '29-02-2000'
+          fecha_nac: '2000-02-29'
         },
         {
           id: 2,
@@ -63,7 +88,7 @@ constructor(
           email: 'ape@gmail.com',
           telefono: 79457845,
           direccion: 'Calle falsa 123',
-          fecha_nac: '26-08-1994'
+          fecha_nac: '1994-08-26'
         },
        {
           id: 3,
@@ -73,7 +98,7 @@ constructor(
           email: 'marial@gmail.com',
           telefono: 76051245,
           direccion: 'Av.Siempre viva 1',
-          fecha_nac: '02-02-2009'
+          fecha_nac: '2009-02-02'
         },
         {
           id: 4,
@@ -83,13 +108,12 @@ constructor(
           email: 'luis@gmail.com',
           telefono: 79457800,
           direccion: 'Calle falsa 89',
-          fecha_nac: '26-08-1991'
+          fecha_nac: '1991-05-20'
         }
       ]
 
       const mapeados = datos.map((e)=> this.personaRepository.create(e))
       return await this.personaRepository.save(mapeados)
-
   }
 
   // Buscar por ID
@@ -104,25 +128,55 @@ constructor(
     return persona;
   }
 
-    // 🔹 Búsqueda dinámica (filtros opcionales)
-  async search(params: { nombres?: string; apellidos?: string; ci?: string; fecha_nac?: string }) {
-    const query = this.personaRepository.createQueryBuilder('persona');
+ async create(createPersonaDto: CreatePersonaDto) {
+    // 1. Validar que CI o email no existan
+    const existing = await this.personaRepository.findOne({
+      where: [
+        { ci: createPersonaDto.ci },
+        { email: createPersonaDto.email }
+      ],
+    });
 
-    if (params.nombres) {
-      query.andWhere('LOWER(persona.nombres) LIKE :nombres', { nombres: `%${params.nombres.toLowerCase()}%` });
-    }
-    if (params.apellidos) {
-      query.andWhere('LOWER(persona.apellidos) LIKE :apellidos', { apellidos: `%${params.apellidos.toLowerCase()}%` });
-    }
-    if (params.ci) {
-      query.andWhere('persona.ci LIKE :ci', { ci: `%${params.ci}%` });
-    }
-    if (params.fecha_nac) {
-      query.andWhere('persona.fecha_nac = :fecha_nac', { fecha_nac: params.fecha_nac });
+    if (existing) {
+      if (existing.ci === createPersonaDto.ci) {
+        throw new ConflictException(`La CI ${createPersonaDto.ci} ya está registrada`);
+      }
+      if (existing.email === createPersonaDto.email) {
+        throw new ConflictException(`El email ${createPersonaDto.email} ya está registrado`);
+      }
     }
 
-    return await query.getMany();
+    // 2. Validar y transformar la fecha
+    let fechaNacDate: Date;
+    try {
+      fechaNacDate = new Date(createPersonaDto.fecha_nac);
+      
+      // Validar que la fecha sea válida
+      if (isNaN(fechaNacDate.getTime())) {
+        throw new BadRequestException('Formato de fecha inválido');
+      }
+
+      // Validar que la fecha no sea futura (opcional)
+      if (fechaNacDate > new Date()) {
+        throw new BadRequestException('La fecha de nacimiento no puede ser futura');
+      }
+
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('Error al procesar la fecha de nacimiento');
+    }
+
+    // 3. Crear y guardar la persona
+    const persona = this.personaRepository.create({
+      ...createPersonaDto,
+      fecha_nac: fechaNacDate, // fecha convertida a Date
+    });
+
+    return await this.personaRepository.save(persona);
   }
+
 // Actualizar
   async update(id: number, updatePersonaDto: UpdatePersonaDto) {
     const persona = await this.findOne(id);
@@ -130,13 +184,14 @@ constructor(
     return await this.personaRepository.save(persona);
   }
 
-  // Ahora: solo marca estado = false
-    async remove(id: number) {
-      const persona = await this.findOne(id);
-      persona.estado = false; // ❌ marca como inactivo
-      await this.personaRepository.save(persona); // guarda el cambio
-      return { success: true, message: `Persona con id ${id} dada de baja` };
-
+  async remove(id: number) {
+    const persona = await this.findOne(id);
+    if (!persona.estado) {
+      throw new BadRequestException('La persona ya está inactiva');
     }
+    persona.estado = false;
+    await this.personaRepository.save(persona);
+    return { success: true, message: `Persona con id ${id} dada de baja` };
+  }
 }
  

@@ -47,22 +47,22 @@ export class UnidadService {
   }
 ) {
   const query = this.unidadRepository.createQueryBuilder('unidad')
-    .leftJoinAndSelect('unidad.depende_de', 'depende_de')
-    .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad')
-    .leftJoinAndSelect('unidad.cargos_intermedios', 'cargos_intermedios')
+    // .leftJoinAndSelect('unidad.depende_de', 'depende_de')
+    // .leftJoinAndSelect('unidad.tipo_unidad', 'tipo_unidad')
+    // .leftJoinAndSelect('unidad.cargos_intermedios', 'cargos_intermedios')
 
-    // Docentes a través de la tabla intermedia
-    .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_docente', 'cid')
-    .leftJoinAndSelect('cid.docente', 'docente')
+    // // Docentes a través de la tabla intermedia
+    // .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_docente', 'cid')
+    // .leftJoinAndSelect('cid.docente', 'docente')
 
-    // Administrativos a través de la tabla intermedia
-    .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_administrativos', 'cia')
-    .leftJoinAndSelect('cia.administrativo', 'administrativo')
+    // // Administrativos a través de la tabla intermedia
+    // .leftJoinAndSelect('cargos_intermedios.cargo_intermedio_administrativos', 'cia')
+    // .leftJoinAndSelect('cia.administrativo', 'administrativo')
 
-    // Si quieres mantener también tu acr directo (cargo_regular)
-    .leftJoinAndSelect('unidad.administrativo_cargo_regular_unidades', 'acr')
-    .leftJoinAndSelect('acr.administrativo', 'acr_administrativo')
-    .leftJoinAndSelect('acr.cargoRegular', 'cargoRegular');
+    // // Si quieres mantener también tu acr directo (cargo_regular)
+    // .leftJoinAndSelect('unidad.administrativo_cargo_regular_unidades', 'acr')
+    // .leftJoinAndSelect('acr.administrativo', 'acr_administrativo')
+    // .leftJoinAndSelect('acr.cargoRegular', 'cargoRegular');
 
   // Filtros
   if (filters?.nombre && filters.nombre.trim() !== '') {
@@ -96,9 +96,6 @@ export class UnidadService {
     throw new Error('No se pudo obtener la lista de unidades.');
   }
 }
-
-
-
 
   async seed() {
 

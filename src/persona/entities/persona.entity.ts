@@ -2,6 +2,7 @@ import { Administrativo } from "src/administrativo/entities/administrativo.entit
 import { Docente } from "src/docente/entities/docente.entity";
 import { Estudiante } from "src/estudiante/entities/estudiante.entity";
 import { OrganizacionPersona } from "src/organizacion-persona/entities/organizacion-persona.entity";
+import { Usuario } from "src/usuario/entities/usuario.entity";
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('personas')
@@ -47,4 +48,7 @@ export class Persona {
 
     @OneToMany(() => OrganizacionPersona, organizacion_personas => organizacion_personas.persona)
     organizacion_personas: OrganizacionPersona[];
+
+    @OneToOne(() => Usuario ,usuario => usuario.persona)
+    usuario: Usuario;
 }

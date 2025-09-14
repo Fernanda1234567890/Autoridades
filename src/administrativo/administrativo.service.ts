@@ -3,117 +3,144 @@ import { CreateAdministrativoDto } from './dto/create-administrativo.dto';
 import { UpdateAdministrativoDto } from './dto/update-administrativo.dto';
 import { Repository } from 'typeorm';
 import { Administrativo } from './entities/administrativo.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
+export interface FindAllOptions {
+  page: number;
+  limit: number;
+  search?: string;
+}
 @Injectable()
 export class AdministrativoService {
   constructor(
-    @Inject('AdministrativoRepository')
-    private readonly administrativoRepository: Repository<Administrativo>
-  ) { }
-  // Crear administrativo
+    @InjectRepository(Administrativo)
+    private readonly administrativoRepository: Repository<Administrativo>,
+  ) {}
+
+  // ✅ Crear administrativo
   async create(createDto: CreateAdministrativoDto) {
+    const { id_persona } = createDto;
+
     const existe = await this.administrativoRepository.findOne({
-      where: { id_persona: createDto.id_persona },
+      where: { id_persona },
     });
     if (existe) {
-      throw new BadRequestException('Ya existe un administrativo para esta persona');
+      throw new BadRequestException(
+        `Ya existe un administrativo para la persona con id ${id_persona}`,
+      );
     }
 
-    const nuevo = this.administrativoRepository.create(createDto);
-    const saved = await this.administrativoRepository.save(nuevo);
+    const administrativo = this.administrativoRepository.create({
+      id_persona,
+      estado: true, // forzamos estado true al crear
+    });
+
+    try {
+      const saved = await this.administrativoRepository.save(administrativo);
+      return {
+        success: true,
+        message: 'Administrativo creado correctamente',
+        data: saved,
+      };
+    } catch (err) {
+      console.error('Error guardando administrativo:', err);
+      throw new BadRequestException('No se pudo guardar al administrativo');
+    }
+  }
+
+  // ✅ Listar con paginación, búsqueda y estado
+  async findAll({
+    page = 1,
+    limit = 10,
+    search,
+    estado = 'activo',
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    estado?: 'activo' | 'inactivo' | 'todos';
+  }) {
+    const query = this.administrativoRepository
+      .createQueryBuilder('admi')
+      .leftJoinAndSelect('admi.persona', 'persona')
+      .leftJoinAndSelect(
+        'admi.administrativo_cargo_regular_unidades',
+        'cargos',
+      );
+
+    if (search) {
+      query.andWhere(
+        '(LOWER(persona.nombres) LIKE :search OR LOWER(persona.apellidos) LIKE :search OR persona.ci LIKE :search)',
+        { search: `%${search.toLowerCase()}%` },
+      );
+    }
+
+    if (estado !== 'todos') {
+      query.andWhere('admi.estado = :estado', {
+        estado: estado === 'activo',
+      });
+    }
+
+    query.orderBy('admi.id', 'DESC');
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       success: true,
-      message: 'Administrativo creado correctamente',
-      data: saved,
+      data,
+      meta: { total, page, limit },
     };
   }
 
- // Listar con paginación
-async findAll(params: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  estado?: boolean;
-}) {
-  const page = params.page || 1;
-  const limit = params.limit || 10;
-
-  const query = this.administrativoRepository.createQueryBuilder('administrativo')
-    .leftJoinAndSelect('administrativo.persona', 'persona');
-
-  // Filtrar por estado
-  if (params.estado !== undefined) {
-    query.andWhere('administrativo.estado = :estado', { estado: params.estado });
-  }
-
-  // Filtro búsqueda
-  if (params.search) {
-    query.andWhere(
-      '(LOWER(persona.nombres) LIKE :search OR LOWER(persona.apellidos) LIKE :search OR persona.ci LIKE :search)',
-      { search: `%${params.search.toLowerCase()}%` }
-    );
-  }
-
-  const [items, total] = await query
-    .skip((page - 1) * limit)
-    .take(limit)
-    .getManyAndCount();
-
-  return {
-    success: true,
-    data: items,
-    total,
-    page,
-    limit,
-  };
-}
-
-
+  // ✅ Seed
   async seed() {
-
-    //await this.administrativoRepository.query(`TRUNCATE TABLE administrativo CASCADE`);
-    //await this.administrativoRepository.clear()
-    //await this.administrativoRepository.query(`ALTER SEQUENCE administrativo_id_seq RESTART WITH 1`)
     const datos: CreateAdministrativoDto[] = [
-      {
-        id: 1,
-        id_persona: 4,
-        estado: true,
-      },
-      {
-        id: 2,
-        id_persona: 3,
-        estado: true,
-      }
-    ]
+      { id: 1, id_persona: 4, estado: true },
+      { id: 2, id_persona: 3, estado: true },
+    ];
 
-    const mapeados = datos.map((e) => this.administrativoRepository.create(e))
-    return await this.administrativoRepository.save(mapeados)
+    const mapeados = datos.map((e) =>
+      this.administrativoRepository.create(e),
+    );
+    return await this.administrativoRepository.save(mapeados);
   }
 
-// Buscar por ID
+  // ✅ Buscar por ID
   async findOne(id: number) {
     const administrativo = await this.administrativoRepository.findOne({
       where: { id },
-      relations: ['persona'],
+      relations: ['persona', 'administrativo_cargo_regular_unidades'],
     });
     if (!administrativo) {
-      throw new NotFoundException(`Administrativo con id ${id} no encontrado`);
+      throw new NotFoundException(
+        `Administrativo con id ${id} no encontrado`,
+      );
     }
     return administrativo;
   }
 
-// Búsqueda dinámica
-  async search(params: { nombres?: string; apellidos?: string; ci?: string }) {
-    const query = this.administrativoRepository.createQueryBuilder('administrativo')
-      .leftJoinAndSelect('administrativo.persona', 'persona');
+  // ✅ Búsqueda dinámica
+  async search(params: {
+    nombres?: string;
+    apellidos?: string;
+    ci?: string;
+  }) {
+    const query = this.administrativoRepository
+      .createQueryBuilder('admi')
+      .leftJoinAndSelect('admi.persona', 'persona');
 
     if (params.nombres) {
-      query.andWhere('LOWER(persona.nombres) LIKE :nombre', { nombre: `%${params.nombres.toLowerCase()}%` });
+      query.andWhere('LOWER(persona.nombres) LIKE :nombre', {
+        nombre: `%${params.nombres.toLowerCase()}%`,
+      });
     }
     if (params.apellidos) {
-      query.andWhere('LOWER(persona.apellidos) LIKE :apellido', { apellido: `%${params.apellidos.toLowerCase()}%` });
+      query.andWhere('LOWER(persona.apellidos) LIKE :apellido', {
+        apellido: `%${params.apellidos.toLowerCase()}%`,
+      });
     }
     if (params.ci) {
       query.andWhere('persona.ci LIKE :ci', { ci: `%${params.ci}%` });
@@ -123,12 +150,15 @@ async findAll(params: {
 
     return {
       success: true,
-      message: results.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      message:
+        results.length > 0
+          ? 'Resultados encontrados'
+          : 'No se encontraron coincidencias',
       data: results,
     };
   }
 
-// Actualizar
+  // ✅ Actualizar
   async update(id: number, updateDto: UpdateAdministrativoDto) {
     const administrativo = await this.findOne(id);
     Object.assign(administrativo, updateDto);
@@ -140,7 +170,8 @@ async findAll(params: {
       data: updated,
     };
   }
-// Soft delete
+
+  // ✅ Soft delete
   async remove(id: number) {
     const administrativo = await this.findOne(id);
     administrativo.estado = false;
@@ -153,7 +184,7 @@ async findAll(params: {
     };
   }
 
-  // Restaurar
+  // ✅ Restaurar
   async restore(id: number) {
     const administrativo = await this.findOne(id);
     administrativo.estado = true;

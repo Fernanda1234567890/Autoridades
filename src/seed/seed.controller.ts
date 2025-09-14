@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { SeedService } from './seed.service';
 import { CreateSeedDto } from './dto/create-seed.dto';
 import { UpdateSeedDto } from './dto/update-seed.dto';
@@ -14,11 +14,16 @@ import { CargoIntermedioService } from 'src/cargo-intermedio/cargo-intermedio.se
 import { OrganizacionPersonaService } from 'src/organizacion-persona/organizacion-persona.service';
 import { AdministrativoCargoRegularUnidadService } from 'src/administrativo-cargo-regular-unidad/administrativo-cargo-regular-unidad.service';
 import { CargoIntermedioDocenteService } from 'src/cargo-intermedio-docente/cargo-intermedio-docente.service';
+import { UsuarioService } from 'src/usuario/usuario.service';
+import { FacultadService } from 'src/facultad/facultad.service';
+import { CarreraService } from 'src/carrera/carrera.service';
 
 @Controller('seed')
 export class SeedController {
   constructor(
     // private readonly seedService: SeedService,
+    private readonly usuarioService: UsuarioService,
+
     private readonly organizacionService: OrganizacionService,
     private readonly cargoRegularService: CargoRegularService,
     private readonly tipoUnidadService: TipoUnidadService,
@@ -28,6 +33,9 @@ export class SeedController {
     private readonly administrativoService: AdministrativoService,
     private readonly unidadService: UnidadService,
     private readonly cargoIntermedioService: CargoIntermedioService,
+
+    private readonly facultadService: FacultadService,
+    private readonly carreraService: CarreraService,
 
     private readonly organizacionPersonaService: OrganizacionPersonaService,
     private readonly administrativoCargoRegularUnidadService: AdministrativoCargoRegularUnidadService,
@@ -39,6 +47,9 @@ export class SeedController {
 
   @Get()
   async seed() {
+    console.log('->Usuario')
+    await this.usuarioService.seed()
+
     console.log('->organizacionService')
     await this.organizacionService.seed()
     console.log('->cargoRegularService')
@@ -57,12 +68,19 @@ export class SeedController {
     await this.unidadService.seed()
     console.log('->cargoIntermedioService')
     await this.cargoIntermedioService.seed()
+
+    console.log('->facultadService')
+    await this.facultadService.seed()
+    console.log('->carreraService')
+    await this.carreraService.seed()
+
     console.log('->organizacionPersonaService')
     await this.organizacionPersonaService.seed()
     console.log('->administrativoCargoRegularUnidadService')
     await this.administrativoCargoRegularUnidadService.seed()
     console.log('->cargoIntermedioDocenteService')
     await this.cargoIntermedioDocenteService.seed()
+
     return 'listo....'
     // return this.seedService.findAll();
   }

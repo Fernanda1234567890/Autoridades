@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { UnidadService } from './unidad.service';
 import { CreateUnidadDto } from './dto/create-unidad.dto';
 import { UpdateUnidadDto } from './dto/update-unidad.dto';
@@ -73,7 +73,7 @@ findInactivos() {
   }
 
   // ✅ Actualizar unidad
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUnidadDto: UpdateUnidadDto,
@@ -88,7 +88,7 @@ findInactivos() {
   }
 
   // ✅ Restaurar unidad
-  @Patch('restore/:id')
+  @Put('restore/:id')
   restore(@Param('id', ParseIntPipe) id: number) {
     return this.unidadService.restore(id);
   }

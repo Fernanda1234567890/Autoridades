@@ -92,21 +92,38 @@ export class OrganizacionService {
       meta: { total, page, limit },
     };
   }
-  async seed() {
-
-    //await this.organizacionRepository.query(`TRUNCATE TABLE organizaciones CASCADE`);
-    //await this.organizacionRepository.clear()
-    //await this.organizacionRepository.query(`ALTER SEQUENCE organizaciones_id_seq RESTART WITH 1`)
+// En organizacion.service.ts - método seed
+async seed() {
+  try {
+    // Primero verifica si ya existen datos
+    const existentes = await this.organizacionRepository.count();
+    if (existentes > 0) {
+      return {
+        success: true,
+        message: 'Ya existen datos en la base de datos',
+        data: []
+      };
+    }
 
     const datos = [
-      { id: 1, tipo: 'FUD', descripcion: 'descripcion de ejemplo 1', estado: true, },
-      { id: 2,tipo: 'FUL', descripcion: 'descripcion de ejemplo 2', estado: true,},
-      { id: 3,tipo: 'STU',descripcion: 'descripcion de ejemplo 3',estado: true,}
-    ]
+      { tipo: 'FUD', descripcion: 'Fundación para el Desarrollo', estado: true },
+      { tipo: 'FUL', descripcion: 'Fundación para la Educación', estado: true },
+      { tipo: 'STU', descripcion: 'Sistema de Trabajo Universitario', estado: true }
+    ];
 
-    const mapeados = datos.map((e) => this.organizacionRepository.create(e))
-    return await this.organizacionRepository.save(mapeados)
+    const mapeados = datos.map(e => this.organizacionRepository.create(e));
+    const guardados = await this.organizacionRepository.save(mapeados);
+    
+    return {
+      success: true,
+      message: 'Datos de seed insertados correctamente',
+      data: guardados
+    };
+  } catch (error) {
+    console.error('Error en seed:', error);
+    throw new BadRequestException('Error al insertar datos de seed: ' + error.message);
   }
+}
 
     // ✅ Buscar por ID
     async findOne(id: number) {

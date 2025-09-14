@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/user/user.service';
+import { UsuarioService } from 'src/usuario/usuario.service';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 
@@ -8,19 +8,19 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private userService: UserService,
+    private usuarioService: UsuarioService,
   ) {}
 
   // 🔹 Registro
     @Post('register')
     async register(@Body() body: any) {
-    const role: 'admin' | 'user' = body.role === 'admin' ? 'admin' : 'user';
+    const role: 'admin' | 'usuario' = body.role === 'admin' ? 'admin' : 'usuario';
     
-    return this.userService.create({
+    return this.usuarioService.create({
         name: body.name,
         email: body.email,
         password: body.password,
-        role,  // tipo garantizado
+        role: role || 'usuario',
     });
     }
 // auth.controller.ts
@@ -29,10 +29,10 @@ async login(@Body() loginDto: LoginDto) {
   return this.authService.login(loginDto); // <-- pasas el DTO directamente
 }
 
-  // user/user.controller.ts
+  // usuario/usuario.controller.ts
     @Get('seed-admin')
     async seedAdmin() {
-    return this.userService.seedAdmin();
+    return this.usuarioService.seed();
     }
 
 }

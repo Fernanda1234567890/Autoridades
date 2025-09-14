@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
 import { DocenteService } from './docente.service';
 import { CreateDocenteDto } from './dto/create-docente.dto';
 import { UpdateDocenteDto } from './dto/update-docente.dto';
@@ -12,10 +12,11 @@ export class DocenteController {
     return this.docenteService.create(createDocenteDto);
   }
 
-  @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.docenteService.findAll(+page, +limit);
-  }
+ // controller
+@Get()
+getAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+  return this.docenteService.findAll({ page: +page, limit: +limit });
+}
 
   
  @Get(':id')
@@ -33,7 +34,7 @@ export class DocenteController {
     return this.docenteService.search({ nombre, apellido, ci });
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(@Param('id') id: string, @Body() updateDto: UpdateDocenteDto) {
     return this.docenteService.update(+id, updateDto);
   }
@@ -43,7 +44,7 @@ export class DocenteController {
     return this.docenteService.remove(+id);
   }
 
-  @Patch('restore/:id')
+  @Put('restore/:id')
   async restore(@Param('id') id: string) {
     return this.docenteService.restore(+id);
   }

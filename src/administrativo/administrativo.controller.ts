@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { AdministrativoService } from './administrativo.service';
 import { CreateAdministrativoDto } from './dto/create-administrativo.dto';
 import { UpdateAdministrativoDto } from './dto/update-administrativo.dto';
@@ -50,7 +50,7 @@ export class AdministrativoController {
   }
 
   // ✅ Actualizar
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateAdministrativoDto: UpdateAdministrativoDto) {
     return this.administrativoService.update(id, updateAdministrativoDto);
   }
@@ -62,7 +62,7 @@ export class AdministrativoController {
   }
 
   // ✅ Restaurar administrativo
-  @Patch(':id/restaurar')
+  @Put(':id/restaurar')
   restore(@Param('id', ParseIntPipe) id: number) {
     return this.administrativoService.restore(id);
   }

@@ -111,4 +111,20 @@ export class CargoIntermedioService {
       data: updated,
     };
   }
+
+    async remove(id: number) {
+    const cargo = await this.cargoIntermedioRepository.findOne({ where: { id } });
+    if (!cargo) {
+      throw new NotFoundException(`Cargo intermedio con id ${id} no encontrado`);
+    }
+
+    await this.cargoIntermedioRepository.remove(cargo);
+
+    return {
+      success: true,
+      message: 'Cargo intermedio eliminado correctamente',
+      data: cargo,
+    };
+  }
+
 }

@@ -1,59 +1,59 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUsuarioDto } from 'src/usuario/dto/create-usuario.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/entities/user.entity';
+import { UsuarioService } from 'src/usuario/usuario.service';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { LoginDto } from './dto/login.dto';
 
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
+    private usuarioService: UsuarioService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.findByEmail(email);
-    if (!user) return null;
+  async validateUsuario(email: string, password: string): Promise<Usuario | null> {
+    const usuario = await this.usuarioService.findByEmail(email);
+    if (!usuario) return null;
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, usuario.password);
     if (!isPasswordValid) return null;
 
-    return user;
+    return usuario;
   }
 
-  async login(userDto: LoginDto) {
-    const user = await this.validateUser(userDto.email, userDto.password);
+  async login(usuarioDto: LoginDto) {
+    const usuario = await this.validateUsuario(usuarioDto.email, usuarioDto.password);
 
-    if (!user) {
+    if (!usuario) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
     return {
-      email: user.email,
-      token: this.generateToken(user), // ✅ llamamos aquí
+      email: usuario.email,
+      token: this.generateToken(usuario), // ✅ llamamos aquí
     };
   }
 
   // 🔹 Aquí colocas generateToken
-  generateToken(user: User) {
+  generateToken(usuario: Usuario) {
     return this.jwtService.sign({
-      id: user.id,
-      email: user.email,
-      role: user.role,
+      id: usuario.id,
+      email: usuario.email,
+      role: usuario.role,
     });
   }
 
   async register(body: any) {
     const hashedPassword = await bcrypt.hash(body.password, 10);
-    return this.userService.create({
+    return this.usuarioService.create({
       name: body.name,
       email: body.email,
       password: hashedPassword,
-      role: body.role || 'user',
+      role: body.role || 'usuario',
     });
   }
 }

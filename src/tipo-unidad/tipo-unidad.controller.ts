@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ParseIntPipe, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, ParseIntPipe, Delete, UseGuards, Put } from '@nestjs/common';
 import { TipoUnidadService } from './tipo-unidad.service';
 import { CreateTipoUnidadDto } from './dto/create-tipo-unidad.dto';
 import { UpdateTipoUnidadDto } from './dto/update-tipo-unidad.dto';
@@ -63,7 +63,7 @@ export class TipoUnidadController {
       return { success: true, message: 'Tipo de unidad encontrado por nombre', data };
     }
 
-    @Patch(':id')
+    @Put(':id')
     async update(@Param('id') id: string, @Body() updateTipoUnidadDto: UpdateTipoUnidadDto) {
       const tipoUnidad = await this.tipoUnidadService.update(+id, updateTipoUnidadDto);
       return { success: true, message: 'Tipo de unidad actualizado', data: tipoUnidad };
