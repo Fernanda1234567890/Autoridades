@@ -33,44 +33,38 @@ export class TipoUnidadController {
       //Buscar por ID
     @Get(':id')
     getOne(@Param('id') id: string) {
-    return this.tipoUnidadService.findOne(+id);
+      return this.tipoUnidadService.findOne(+id);
     }
-    //crear
-  @Post()
+
+    @Post()
     async create(@Body() createTipoUnidadDto: CreateTipoUnidadDto) {
-      const tipoUnidad = await this.tipoUnidadService.create(createTipoUnidadDto);
-      return {
-        success: true,
-        message: 'Tipo de unidad creada correctamente',
-        data: tipoUnidad,
-      };
+      return this.tipoUnidadService.create(createTipoUnidadDto);
     }
+
 
     @Get('/seed')
     seed() {
       return this.tipoUnidadService.seed();
     }
 
-  @Get(':id')
-    async findOne(@Param('id') id: string) {
-      const tipoUnidad = await this.tipoUnidadService.findOne(+id);
-      return { success: true, message: 'Tipo de unidad encontrado', data: tipoUnidad };
-    }
-
-    @Get('buscar/:tipo')
-    async findByTipo(@Param('tipo') tipo: string) {
-      const data = await this.tipoUnidadService.findByTipo(tipo);
-      return { success: true, message: 'Tipo de unidad encontrado por nombre', data };
-    }
+    // @Get('buscar/:tipo')
+    // async findByTipo(@Param('tipo') tipo: string) {
+    //   const data = await this.tipoUnidadService.findByTipo(tipo);
+    //   return { success: true, message: 'Tipo de unidad encontrado por nombre', data };
+    // }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() updateTipoUnidadDto: UpdateTipoUnidadDto) {
-      const tipoUnidad = await this.tipoUnidadService.update(+id, updateTipoUnidadDto);
-      return { success: true, message: 'Tipo de unidad actualizado', data: tipoUnidad };
+    update(@Param('id') id: string, @Body() updateTipoUnidadDto: UpdateTipoUnidadDto) {
+      return this.tipoUnidadService.update(+id, updateTipoUnidadDto);
     }
 
    @Delete(':id')
       async remove(@Param('id', ParseIntPipe) id: number) {
         return this.tipoUnidadService.remove(id);
     }
+
+  @Put(':id/restaurar')
+  restore(@Param('id') id: string){
+    return this.tipoUnidadService.restore(+id);
+  }
 }

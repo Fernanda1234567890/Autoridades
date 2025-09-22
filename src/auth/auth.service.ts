@@ -1,19 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { CreateUsuarioDto } from 'src/usuario/dto/create-usuario.dto';
-import { Test, TestingModule } from '@nestjs/testing';
+//import { CreateUsuarioDto } from 'src/usuario/dto/create-usuario.dto';
+//import { Test, TestingModule } from '@nestjs/testing';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { LoginDto } from './dto/login.dto';
 
-
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UsuarioService)) 
     private usuarioService: UsuarioService,
     private jwtService: JwtService,
   ) {}
+
 
   async validateUsuario(email: string, password: string): Promise<Usuario | null> {
     const usuario = await this.usuarioService.findByEmail(email);
@@ -25,20 +26,19 @@ export class AuthService {
     return usuario;
   }
 
-  async login(usuarioDto: LoginDto) {
-    const usuario = await this.validateUsuario(usuarioDto.email, usuarioDto.password);
+    async login(loginDto: { email: string; password: string }) {
+      const user = await this.usuarioService.findByEmail(loginDto.email);
+      if (!user) throw new UnauthorizedException('Usuario no encontrado');
+      const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+      if (!isPasswordValid) throw new UnauthorizedException('Contraseña incorrecta');
 
-    if (!usuario) {
-      throw new UnauthorizedException('Credenciales incorrectas');
+      const payload = { sub: user.id, email: user.email };
+      return {
+        access_token: this.jwtService.sign(payload),
+        user,
+      };
     }
 
-    return {
-      email: usuario.email,
-      token: this.generateToken(usuario), // ✅ llamamos aquí
-    };
-  }
-
-  // 🔹 Aquí colocas generateToken
   generateToken(usuario: Usuario) {
     return this.jwtService.sign({
       id: usuario.id,

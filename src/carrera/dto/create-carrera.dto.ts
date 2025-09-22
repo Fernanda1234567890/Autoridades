@@ -1,5 +1,15 @@
+import { IsNumber, IsOptional, IsString } from "class-validator";
+
 export class CreateCarreraDto {
-    id: number;
+    id?: number;
+
+    @IsString()
     nombre: string;
-    sigla: string; 
+
+    @IsString()
+    sigla: string;
+    
+    @IsOptional()
+    @IsNumber()
+    id_facultad?: number;     
 }

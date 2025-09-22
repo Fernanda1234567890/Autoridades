@@ -35,6 +35,8 @@ import { CarreraModule } from './carrera/carrera.module';
 import { Usuario } from './usuario/entities/usuario.entity';
 import { Facultad } from './facultad/entities/facultad.entity';
 import { Carrera } from './carrera/entities/carrera.entity';
+import { ActividadModule } from './actividad/actividad.module';
+import { Actividad } from './actividad/entities/actividad.entity';
 
 
 
@@ -65,7 +67,8 @@ import { Carrera } from './carrera/entities/carrera.entity';
         Seed,
         Usuario,
         Facultad,
-        Carrera
+        Carrera,
+        Actividad
       ],
       synchronize: true,
     }),
@@ -86,6 +89,7 @@ import { Carrera } from './carrera/entities/carrera.entity';
     UsuarioModule,
     FacultadModule,
     CarreraModule,
+    ActividadModule
   ],
   controllers: [AppController],
   providers: [AppService],

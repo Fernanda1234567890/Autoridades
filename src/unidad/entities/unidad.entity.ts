@@ -45,4 +45,5 @@ export class Unidad {
 
     @OneToMany(() => AdministrativoCargoRegularUnidad, administrativo_cargo_regular_unidades => administrativo_cargo_regular_unidades.unidad)
     administrativo_cargo_regular_unidades: AdministrativoCargoRegularUnidad[];
+    
 }

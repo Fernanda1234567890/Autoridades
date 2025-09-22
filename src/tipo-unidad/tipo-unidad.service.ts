@@ -9,6 +9,7 @@ export interface FindAllOptions {
   page?: number;
   limit?: number;
   search?: string;
+  estado?: 'activo' | 'inactivo' | 'todos';
 }
 
 @Injectable()
@@ -17,23 +18,39 @@ export class TipoUnidadService {
     @InjectRepository(TipoUnidad)
     private readonly tipoUnidadRepository: Repository<TipoUnidad>
   ) {}
+  
+  async create(createTipoUnidadDto: CreateTipoUnidadDto) {
+    const tipo = createTipoUnidadDto.tipo?.trim();
+    const descripcion = createTipoUnidadDto.descripcion?.trim();
 
-  // Crear
-async create(createTipoUnidadDto: CreateTipoUnidadDto) {
-  const exists = await this.tipoUnidadRepository.findOne({
-    where: { tipo: createTipoUnidadDto.tipo },
-  });
+    if (!tipo || !descripcion) {
+      throw new BadRequestException('Tipo y descripción son requeridos');
+    }
 
-  if (exists) {
-    throw new BadRequestException(`El tipo de unidad "${createTipoUnidadDto.tipo}" ya existe`);
+    const exists = await this.tipoUnidadRepository.findOne({ where: { tipo, estado: true } });
+    if (exists) {
+      throw new BadRequestException(`La unidad "${tipo}" ya existe`);
+    }
+
+    const tipoUnidad = this.tipoUnidadRepository.create({
+      tipo,
+      descripcion,
+      estado: true,
+    });
+
+    try {
+      const saved = await this.tipoUnidadRepository.save(tipoUnidad);
+      return {
+        success: true,
+        message: 'Tipo de unidad creado correctamente',
+        data: { id: saved.id, tipo: saved.tipo, descripcion: saved.descripcion },
+      };
+    } catch (err) {
+      console.error('Error guardando tipo de unidad:', err);
+      throw new BadRequestException('No se pudo guardar el tipo de unidad');
+    }
   }
 
-  const tipoUnidad = this.tipoUnidadRepository.create(createTipoUnidadDto);
-  return await this.tipoUnidadRepository.save(tipoUnidad);
-}
-
-
-  // Listar con paginación y búsqueda
   async findAll({
     page = 1,
     limit = 10,
@@ -52,11 +69,12 @@ async create(createTipoUnidadDto: CreateTipoUnidadDto) {
         { search: `%${search}%` }
       );
     }
-      if (estado !== 'todos') {
+        if (estado !== 'todos') {
       query.andWhere('tu.estado = :estado', { estado: estado === 'activo' });
     }
 
-    query.orderBy('tu.id', 'DESC'); //ASC
+
+    query.orderBy('tu.id', 'DESC'); //---------ASC
 
     const [data, total] = await query
       .skip((page - 1) * limit)
@@ -70,61 +88,67 @@ async create(createTipoUnidadDto: CreateTipoUnidadDto) {
     };
   }
 
-  // Seed de ejemplo
   async seed() {
     const datos: CreateTipoUnidadDto[] = [
-      { id: 1, tipo: 'mayor', descripcion: 'Descripción del Tipo A',estado: true },
-      { id: 2, tipo: 'unidad intermedia', descripcion: 'Descripción del Tipo B',estado: true },
-      { id: 3, tipo: 'unidad dependiente', descripcion: 'Descripción del Tipo C',estado: true },
+      { id: 1, tipo: 'mayor', descripcion: 'Descripción de unidad mayor',estado: true },
+      { id: 2, tipo: 'unidad intermedia', descripcion: 'Descripción de unidad intermedia',estado: true },
+      { id: 3, tipo: 'unidad dependiente', descripcion: 'Descripción deunidad Dependiente',estado: true },
     ];
 
     const mapeados = datos.map((e) => this.tipoUnidadRepository.create(e));
     return await this.tipoUnidadRepository.save(mapeados);
   }
 
-  // Buscar por ID
   async findOne(id: number) {
     const tipoUnidad = await this.tipoUnidadRepository.findOneBy({ id });
-    if (!tipoUnidad) throw new NotFoundException(`Tipo de unidad con id ${id} no encontrada`);
+    if (!tipoUnidad) throw new NotFoundException(`Tipo de unidad no encontrada`);
     return tipoUnidad;
   }
 
-  // Buscar por tipo
-  async findByTipo(tipo: string) {
+  async findByTipo(texto: string) {
     const tipoUnidades = await this.tipoUnidadRepository.find({
-      where: { tipo: ILike(`%${tipo}%`) },
+      where: { tipo: ILike(`%${texto}%`) },
     });
 
     return {
       success: true,
-      message: tipoUnidades.length > 0 ? 'Resultados encontrados' : 'No se encontraron resultados',
+      message: tipoUnidades.length > 0 
+      ? 'Resultados encontrados' 
+      : 'No se encontraron resultados',
       data: tipoUnidades,
     };
   }
 
-  // Actualizar
   async update(id: number, dto: UpdateTipoUnidadDto) {
     const tipoUnidad = await this.findOne(id);
     Object.assign(tipoUnidad, dto);
-    const updated = await this.tipoUnidadRepository.save(tipoUnidad);
+    return this.tipoUnidadRepository.save(tipoUnidad);
 
-    return {
-      success: true,
-      message: 'Tipo de unidad actualizado correctamente',
-      data: updated,
-    };
+
   }
 
-  // Eliminar
     async remove(id: number) {
-      const tipoUnidad = await this.tipoUnidadRepository.findOne({ where: { id } });
+      const tipoUnidad = await this.findOne(id);
 
-      if (!tipoUnidad) {
+      if (!tipoUnidad?.estado) {
         throw new NotFoundException('Tipo de unidad no encontrado');
       }
 
-      tipoUnidad.estado = false; // 👈 Dar de baja
-      return await this.tipoUnidadRepository.save(tipoUnidad);
-    }
+      tipoUnidad.estado = false; 
+      await this.tipoUnidadRepository.save(tipoUnidad);
+    
+    return {
+      success: true,
+      message: 'Tipo de unidadse dio de baja correctamente',
+      data: { id: tipoUnidad.id, tipo: tipoUnidad.tipo },
+    };
+  }
 
+  async restore(id:number) {
+    const tipoUnidad = await this.findOne(id);
+    if(tipoUnidad.estado) throw new BadRequestException('El tipo de unidad ya esta activo');
+
+    tipoUnidad.estado = true;
+    return this.tipoUnidadRepository.save(tipoUnidad);
+  }
 }

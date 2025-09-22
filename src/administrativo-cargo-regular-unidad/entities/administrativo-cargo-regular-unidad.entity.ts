@@ -8,20 +8,14 @@ export class AdministrativoCargoRegularUnidad {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'integer' })
-    id_cargo: number;
-
-    @Column({ type: 'integer' })
-    id_unidad: number;
-
-    @Column({ type: 'integer' })
-    id_administrativo: number;
-
     @Column({ type: 'date' })
     fecha_ingreso: Date;
 
     @Column({ type: 'date', nullable: true })
     fecha_fin: Date;
+
+    @Column({ default: true })
+    activo: boolean;
 
     @JoinColumn({ name: 'id_cargo' })
     @ManyToOne(() => CargoRegular, cargoRegular => cargoRegular.administrativo_cargo_regular_unidades, { onDelete: 'CASCADE' })

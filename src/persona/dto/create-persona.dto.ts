@@ -1,4 +1,4 @@
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreatePersonaDto {
     id?: number;
@@ -9,6 +9,10 @@ export class CreatePersonaDto {
     telefono: number;
     direccion: string;
 
+    @IsOptional()
+    @IsString()
+    img?: string;
+    
     @IsDateString()
     fecha_nac: string;
 }

@@ -17,7 +17,6 @@ export class AdministrativoService {
     private readonly administrativoRepository: Repository<Administrativo>,
   ) {}
 
-  // ✅ Crear administrativo
   async create(createDto: CreateAdministrativoDto) {
     const { id_persona } = createDto;
 
@@ -32,7 +31,7 @@ export class AdministrativoService {
 
     const administrativo = this.administrativoRepository.create({
       id_persona,
-      estado: true, // forzamos estado true al crear
+      estado: true,
     });
 
     try {
@@ -48,7 +47,6 @@ export class AdministrativoService {
     }
   }
 
-  // ✅ Listar con paginación, búsqueda y estado
   async findAll({
     page = 1,
     limit = 10,
@@ -95,7 +93,6 @@ export class AdministrativoService {
     };
   }
 
-  // ✅ Seed
   async seed() {
     const datos: CreateAdministrativoDto[] = [
       { id: 1, id_persona: 4, estado: true },
@@ -108,7 +105,6 @@ export class AdministrativoService {
     return await this.administrativoRepository.save(mapeados);
   }
 
-  // ✅ Buscar por ID
   async findOne(id: number) {
     const administrativo = await this.administrativoRepository.findOne({
       where: { id },
@@ -122,7 +118,6 @@ export class AdministrativoService {
     return administrativo;
   }
 
-  // ✅ Búsqueda dinámica
   async search(params: {
     nombres?: string;
     apellidos?: string;
@@ -158,7 +153,6 @@ export class AdministrativoService {
     };
   }
 
-  // ✅ Actualizar
   async update(id: number, updateDto: UpdateAdministrativoDto) {
     const administrativo = await this.findOne(id);
     Object.assign(administrativo, updateDto);
@@ -171,7 +165,6 @@ export class AdministrativoService {
     };
   }
 
-  // ✅ Soft delete
   async remove(id: number) {
     const administrativo = await this.findOne(id);
     administrativo.estado = false;
@@ -184,7 +177,6 @@ export class AdministrativoService {
     };
   }
 
-  // ✅ Restaurar
   async restore(id: number) {
     const administrativo = await this.findOne(id);
     administrativo.estado = true;

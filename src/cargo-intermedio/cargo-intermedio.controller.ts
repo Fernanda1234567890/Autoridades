@@ -17,10 +17,10 @@ export class CargoIntermedioController {
     return this.cargoIntermedioService.findAll(+page, +limit);
   }
 
-    @Get('/seed')
-  seed() {
-    return this.cargoIntermedioService.seed();
-  }
+  //   @Get('/seed')
+  // seed() {
+  //   return this.cargoIntermedioService.seed();
+  // }
 
    @Get('buscar/:nombre')
   findByName(@Param('nombre') nombre: string) {

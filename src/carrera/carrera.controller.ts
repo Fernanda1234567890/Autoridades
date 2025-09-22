@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
 import { CarreraService } from './carrera.service';
 import { CreateCarreraDto } from './dto/create-carrera.dto';
 import { UpdateCarreraDto } from './dto/update-carrera.dto';
+
+
 
 @Controller('carrera')
 export class CarreraController {
@@ -13,10 +15,30 @@ export class CarreraController {
   }
 
   @Get()
-  findAll() {
-    return this.carreraService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('search') search?: string,
+    @Query('estado') estado?: string,
+  ) {
+    const pageNum = isNaN(Number(page)) ? 1 : Number(page);
+    const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+
+    // Normalizamos estado
+    let estadoNormalized: 'activo' | 'inactivo' | 'todos' | undefined = 'activo';
+    if (estado === 'inactivo') estadoNormalized = 'inactivo';
+    else if (estado === 'todos') estadoNormalized = 'todos';
+
+    return this.carreraService.findAll({ 
+      page: pageNum,
+      limit: limitNum,
+      search,
+      estado: estadoNormalized,
+    });
   }
-    @Get('/seed')
+
+
+  @Get('/seed')
   seed() {
     return this.carreraService.seed();
   }

@@ -1,56 +1,49 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { AuthService } from '../auth/auth.service';
 
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
+  constructor(
+    private readonly usuarioService: UsuarioService,
+    private readonly authService: AuthService
+  ) {}
 
-  @Get('seed-admin')
-  async seedAdmin() {
-    return this.usuarioService.seed();
+  @Post()
+  create(@Body() createUsuarioDto: CreateUsuarioDto) {
+    return this.usuarioService.create(createUsuarioDto);
   }
-  
-// @UseGuards(JwtAuthGuard, RolesGuard)
-// @Roles('admin')
-// @Post()
-// create(@Body() createUsuarioDto: CreateUsuarioDto) {
-//   return this.usuarioService.create(createUsuarioDto);
-// }
-
-@Post()
-create(@Body() createUsuarioDto: CreateUsuarioDto) {
-  return this.usuarioService.create(createUsuarioDto);
-}
-
-
 
   @Get()
   findAll() {
     return this.usuarioService.findAll();
   }
 
-    @Get('/seed')
-  seed() {
-    return this.usuarioService.seed();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
-  }
-
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  update(@Param('id') id: number, @Body() dto: UpdateUsuarioDto) {
+    return this.usuarioService.update(id, dto);
+  }
+
+  @Put(':id/deactivate')
+  deactivate(@Param('id') id: number) {
+    return this.usuarioService.deactivate(+id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usuarioService.remove(+id);
+  }
+
+    @Post('login')
+    login(@Body() loginDto: { email: string; password: string }) {
+    return this.usuarioService.login(loginDto.email, loginDto.password);
+  }
+
+
+  @Get('seed-admin')
+  seedAdmin() {
+    return this.usuarioService.seed();
   }
 }

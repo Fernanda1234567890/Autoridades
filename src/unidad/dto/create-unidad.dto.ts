@@ -6,4 +6,5 @@ export class CreateUnidadDto {
     id_unidad?: number;
     id_tipo_unidad: number;
     estado: boolean;
+    logo?: string; 
 }

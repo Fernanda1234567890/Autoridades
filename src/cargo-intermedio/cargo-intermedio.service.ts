@@ -47,22 +47,29 @@ export class CargoIntermedioService {
 
   async seed(){
 
-    //await this.cargoIntermedioRepository.query(`TRUNCATE TABLE cargos-intermedios CASCADE`);
-    //await this.cargoIntermedioRepository.clear()
-    //await this.cargoIntermedioRepository.query(`ALTER SEQUENCE "cargos-intermedios_id_seq" RESTART WITH 1`)
+    // await this.cargoIntermedioRepository.query(`TRUNCATE TABLE cargos-intermedios CASCADE`);
+    // await this.cargoIntermedioRepository.clear()
+    // await this.cargoIntermedioRepository.query(`ALTER SEQUENCE "cargos-intermedios_id_seq" RESTART WITH 1`)
     
     const datos: CreateCargoIntermedioDto[] = [
       {
         id: 1,
-        nombre: 'Coordinador de Proyectos',
-        descripcion: 'Encargado de coordinar proyectos intermedios',
-        nivel_jerarquico: 3,
+        nombre: 'Decando de la carrera de Derecho',
+        descripcion: 'Decano',
+        nivel_jerarquico: 1,
         id_unidad: 1,
       },
       {
         id: 2,
-        nombre: 'Supervisor de Operaciones',
-        descripcion: 'Responsable de supervisar las operaciones diarias',
+        nombre: 'Director de la carrera de Derecho',
+        descripcion: 'Director',
+        nivel_jerarquico: 2,
+        id_unidad: 2,
+      },
+      {
+        id: 3,
+        nombre: 'Director/a de Servicios academicos',
+        descripcion: 'Director/a',
         nivel_jerarquico: 3,
         id_unidad: 2,
       }
@@ -70,6 +77,7 @@ export class CargoIntermedioService {
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))
         return await this.cargoIntermedioRepository.save(mapeados)
   }
+
   async findOne(id: number) {
     const cargo = await this.cargoIntermedioRepository.findOne({
       where: { id },

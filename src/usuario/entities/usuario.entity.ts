@@ -1,5 +1,6 @@
+import { Actividad } from "src/actividad/entities/actividad.entity";
 import { Persona } from "src/persona/entities/persona.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('usuarios')
 export class Usuario {
@@ -17,6 +18,9 @@ export class Usuario {
     
       @Column({ type: 'enum', enum: ['admin', 'usuario'], default: 'usuario' })
       role: 'admin' | 'usuario';
+
+      @Column({ default: true })
+      activo: boolean;
       
       @Column({ type: 'integer', unique: true, nullable: true }) 
       id_persona: number;
@@ -24,4 +28,7 @@ export class Usuario {
       @OneToOne(() => Persona, { nullable: true }) // opcional
       @JoinColumn({ name: 'id_persona' })
       persona?: Persona;
+
+       @OneToMany(() => Actividad, (actividad) => actividad.usuario)
+       actividades: Actividad[];
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, NotFoundException } from '@nestjs/common';
 import { EstudianteService } from './estudiante.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
@@ -7,13 +7,11 @@ import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 export class EstudianteController {
   constructor(private readonly estudianteService: EstudianteService) {}
 
- 
   @Post()
   create(@Body() createEstudianteDto: CreateEstudianteDto) {
     return this.estudianteService.create(createEstudianteDto);
   }
 
-  // ✅ Listar con paginación, búsqueda y estado
   @Get()
   findAll(
     @Query('page') page = 1,
@@ -28,10 +26,23 @@ export class EstudianteController {
       estado,
     });
   }
+
   @Get('/seed')
   seed() {
     return this.estudianteService.seed();
   }
+
+  // @Get('ci/:ci')
+  // async findByCI(@Param('ci') ci: string) {
+  //   const persona = await this.personaRepository.findOne({ where: { ci } });
+  //   if (!persona) {
+  //     throw new NotFoundException(`Persona con CI ${ci} no encontrada`);
+  //   }
+  //   return {
+  //     success: true,
+  //     data: persona,
+  //   };
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -51,8 +62,8 @@ export class EstudianteController {
     return this.estudianteService.remove(+id);
   }
 
-  @Put('restore/:id')
-  restore(@Param('id') id: string) {
-    return this.estudianteService.restore(+id);
-  }
+  // @Put('restore/:id')
+  // restore(@Param('id') id: string) {
+  //   return this.estudianteService.restore(+id);
+  // }
 }

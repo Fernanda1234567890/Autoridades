@@ -4,48 +4,36 @@ import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Repository } from 'typeorm';
 import { Estudiante } from './entities/estudiante.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Persona } from 'src/persona/entities/persona.entity';
 
 @Injectable()
 export class EstudianteService {
   constructor(
     @InjectRepository(Estudiante)
     private readonly estudianteRepository: Repository<Estudiante>,
-  ) {}
 
-  // ✅ Crear estudiante
+    @InjectRepository(Persona)
+    private readonly personaRepository: Repository<Persona>,
+  ) {}
+  
   async create(createDto: CreateEstudianteDto) {
     const { id_persona, ru } = createDto;
 
-    // Verificar que no exista estudiante para esa persona
-    const existe = await this.estudianteRepository.findOne({
-      where: { id_persona },
-    });
+    const persona = await this.personaRepository.findOne({ where: { id: id_persona } });
+    if (!persona) {
+      throw new BadRequestException(`Persona con id ${id_persona} no encontrada`);
+    }
+
+    const existe = await this.estudianteRepository.findOne({ where: { id_persona } });
     if (existe) {
-      throw new BadRequestException(
-        `Ya existe un estudiante para la persona con id ${id_persona}`,
-      );
+      throw new BadRequestException(`Ya existe un estudiante para la persona con id ${id_persona}`);
     }
 
-    // Crear estudiante forzando estado = true
-    const estudiante = this.estudianteRepository.create({
-      ...createDto,
-      estado: true,
-    });
-
-    try {
-      const saved = await this.estudianteRepository.save(estudiante);
-      return {
-        success: true,
-        message: 'Estudiante creado correctamente',
-        data: saved,
-      };
-    } catch (err) {
-      console.error('Error guardando estudiante:', err);
-      throw new BadRequestException('No se pudo guardar el estudiante');
-    }
+    const estudiante = this.estudianteRepository.create({ ...createDto, estado: true });
+    return await this.estudianteRepository.save(estudiante);
   }
 
-  // ✅ Listar con paginación, búsqueda y estado
+
   async findAll({
     page = 1,
     limit = 10,
@@ -88,7 +76,19 @@ export class EstudianteService {
     };
   }
 
-  // ✅ Seed
+//   useEffect(() => {
+//   async function fetchPersonas() {
+//     try {
+//       const res = await axios.get("http://localhost:3000/api/persona");
+//       setPersonas(res.data.data); // ajusta según cómo venga la respuesta
+//     } catch (error) {
+//       console.error("Error cargando personas:", error);
+//     }
+//   }
+//   fetchPersonas();
+// }, []);
+
+
   async seed() {
     const datos: CreateEstudianteDto[] = [
       {
@@ -113,7 +113,6 @@ export class EstudianteService {
     return await this.estudianteRepository.save(mapeados);
   }
 
-// ✅ Buscar por ID
   async findOne(id: number) {
     const estudiante = await this.estudianteRepository.findOne({
       where: { id },
@@ -125,7 +124,13 @@ export class EstudianteService {
     return estudiante;
   }
 
-  // ✅ Búsqueda dinámica
+    // async findByCI(ci: string): Promise<Persona | null> {
+    //   return await this.personaRepository.findOne({
+    //     where: { ci },
+    //   });
+    // }
+
+
   async search(params: {
     nombres?: string;
     apellidos?: string;
@@ -167,7 +172,6 @@ export class EstudianteService {
     };
   }
 
-  // ✅ Actualizar
   async update(id: number, updateDto: UpdateEstudianteDto) {
     const estudiante = await this.findOne(id);
     Object.assign(estudiante, updateDto);
@@ -180,7 +184,6 @@ export class EstudianteService {
     };
   }
 
-  // ✅ Soft delete
   async remove(id: number) {
     const estudiante = await this.findOne(id);
     estudiante.estado = false;
@@ -193,7 +196,6 @@ export class EstudianteService {
     };
   }
 
-  // ✅ Restaurar
   async restore(id: number) {
     const estudiante = await this.findOne(id);
     estudiante.estado = true;

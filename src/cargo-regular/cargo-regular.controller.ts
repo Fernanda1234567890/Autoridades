@@ -23,11 +23,6 @@ export class CargoRegularController {
   return this.cargoRegularService.findAll(options);
 }
 
-  @Get(':id')
-  getOne(@Param('id') id: number) {
-    return this.cargoRegularService.findOne(+id);
-  }
-
   @Post()
   create(@Body() dto: CreateCargoRegularDto) {
     return this.cargoRegularService.create(dto);
@@ -38,18 +33,6 @@ export class CargoRegularController {
     return this.cargoRegularService.seed();
   }
 
-// Buscar por ID
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const cargo = await this.cargoRegularService.findOne(id);
-    return {
-      success: true,
-      message: 'Cargo regular encontrado',
-      data: cargo,
-    };
-  }
-
-// Buscar por nombre
   @Get('search/:nombre')
   async findByNombre(@Param('nombre') nombre: string) {
     const cargos = await this.cargoRegularService.findByName(nombre);
@@ -60,9 +43,18 @@ export class CargoRegularController {
     };
   }
 
-// Actualizar
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    const cargo = await this.cargoRegularService.findOne(id);
+    return {
+      success: true,
+      message: 'Cargo regular encontrado',
+      data: cargo,
+    };
+  }
+
   @Put(':id')
-  update(@Param('id') id: number, @Body() dto: UpdateCargoRegularDto) {
+  updatePut(@Param('id') id: number, @Body() dto: UpdateCargoRegularDto) {
     return this.cargoRegularService.update(+id, dto);
   }
 

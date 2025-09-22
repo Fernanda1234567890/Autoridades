@@ -5,5 +5,5 @@ export class CreateAdministrativoCargoRegularUnidadDto {
     id_administrativo: number;
     fecha_ingreso: Date;
     fecha_fin?: Date;
-    
+    activo?: boolean;
 }

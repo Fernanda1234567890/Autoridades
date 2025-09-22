@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -6,11 +6,17 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (!roles) return true;
+    const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
+    if (!requiredRoles) return true; 
 
     const request = context.switchToHttp().getRequest();
-    const usuario = request.usuario; // Debe venir del JWT guard
-    return roles.includes(usuario.role);
+    const user = request.user; 
+    if (!user) throw new ForbiddenException('No autorizado');
+
+    if (!requiredRoles.includes(user.role)) {
+      throw new ForbiddenException('No tienes permisos para este recurso');
+    }
+
+    return true;
   }
 }

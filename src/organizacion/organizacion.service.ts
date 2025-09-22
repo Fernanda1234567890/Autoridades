@@ -9,6 +9,7 @@ export interface FindAllOptions {
   page: number;
   limit: number;
   search?: string;
+  estado?: 'activo' | 'inactivo' | 'todos';
 }
 
 @Injectable()
@@ -18,10 +19,7 @@ export class OrganizacionService {
     private readonly organizacionRepository: Repository<Organizacion>
   ) { }
 
-
-   // ✅ Crear una nueva organización
   async create(createOrganizacionDto: CreateOrganizacionDto) {
-    // Normalizar / limpiar inputs
     const tipo = createOrganizacionDto.tipo?.trim();
     const descripcion = createOrganizacionDto.descripcion?.trim();
 
@@ -29,13 +27,11 @@ export class OrganizacionService {
       throw new BadRequestException('Tipo y descripción son requeridos');
     }
 
-    // Validación de duplicado (por tipo). Opcional: usar comparación case-insensitive si lo prefieres.
     const existe = await this.organizacionRepository.findOne({ where: { tipo } });
     if (existe) {
       throw new BadRequestException(`Ya existe una organización con el tipo "${tipo}"`);
     }
 
-    // Forzar estado true al crear (no confiar en lo que venga del front)
     const organizacion = this.organizacionRepository.create({
       tipo,
       descripcion,
@@ -79,7 +75,7 @@ export class OrganizacionService {
       query.andWhere('org.estado = :estado', { estado: estado === 'activo' });
     }
 
-    query.orderBy('org.id', 'DESC'); //ASC
+    query.orderBy('org.id', 'DESC'); //----ASC
 
     const [data, total] = await query
       .skip((page - 1) * limit)
@@ -92,10 +88,8 @@ export class OrganizacionService {
       meta: { total, page, limit },
     };
   }
-// En organizacion.service.ts - método seed
 async seed() {
   try {
-    // Primero verifica si ya existen datos
     const existentes = await this.organizacionRepository.count();
     if (existentes > 0) {
       return {
@@ -106,8 +100,8 @@ async seed() {
     }
 
     const datos = [
-      { tipo: 'FUD', descripcion: 'Fundación para el Desarrollo', estado: true },
-      { tipo: 'FUL', descripcion: 'Fundación para la Educación', estado: true },
+      { tipo: 'FUD', descripcion: 'Federacion Universitaria DEpartamental', estado: true },
+      { tipo: 'FUL', descripcion: 'Federacion universitaria Local', estado: true },
       { tipo: 'STU', descripcion: 'Sistema de Trabajo Universitario', estado: true }
     ];
 
@@ -125,12 +119,11 @@ async seed() {
   }
 }
 
-    // ✅ Buscar por ID
-    async findOne(id: number) {
-      const organizacion = await this.organizacionRepository.findOneBy({ id });
-      if (!organizacion) throw new NotFoundException('Organización no encontrada');
-      return organizacion;
-    }
+  async findOne(id: number) {
+    const organizacion = await this.organizacionRepository.findOneBy({ id });
+    if (!organizacion) throw new NotFoundException('Organización no encontrada');
+    return organizacion;
+  }
 
   async findByTipo(texto: string) {
     const organizaciones = await this.organizacionRepository.find({
@@ -146,15 +139,12 @@ async seed() {
     };
   }
 
-// ✅ Actualizar organización
   async update(id: number, dto: UpdateOrganizacionDto) {
     const org = await this.findOne(id);
     Object.assign(org, dto);
     return this.organizacionRepository.save(org);
   }
 
-    // Soft delete: marcar estado = false
-  // ✅ Dar de baja (soft delete)
   async remove(id: number) {
     const organizacion = await this.findOne(id);
 
@@ -172,7 +162,6 @@ async seed() {
     };
   }
 
-  //Restaurar (solo si tienes botón especial, opcional)
   async restore(id: number) {
     const org = await this.findOne(id);
     if (org.estado) throw new BadRequestException('La organización ya está activa');

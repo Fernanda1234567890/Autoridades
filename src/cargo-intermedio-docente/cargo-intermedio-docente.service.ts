@@ -1,20 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateCargoIntermedioDocenteDto } from './dto/create-cargo-intermedio-docente.dto';
-import { UpdateCargoIntermedioDocenteDto } from './dto/update-cargo-intermedio-docente.dto';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CargoIntermedioDocente } from './entities/cargo-intermedio-docente.entity';
+import { CreateCargoIntermedioDocenteDto } from './dto/create-cargo-intermedio-docente.dto';
+import { UpdateCargoIntermedioDocenteDto } from './dto/update-cargo-intermedio-docente.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class CargoIntermedioDocenteService {
 
-  @Inject ('CargoIntermedioDocenteRepository')
-  private readonly cargoIntermedioDocenteRepository: Repository<CargoIntermedioDocente>
-  create(createCargoIntermedioDocenteDto: CreateCargoIntermedioDocenteDto) {
-    return 'This action adds a new cargoIntermedioDocente';
+  constructor(
+    @InjectRepository(CargoIntermedioDocente)
+    private readonly cargoIntermedioDocenteRepository: Repository<CargoIntermedioDocente>
+  ) {}
+
+  async create(dto: CreateCargoIntermedioDocenteDto) {
+    const entity = this.cargoIntermedioDocenteRepository.create(dto);
+    return await this.cargoIntermedioDocenteRepository.save(entity);
   }
 
-  findAll() {
-    return `This action returns all cargoIntermedioDocente`;
+  async findAll() {
+    return await this.cargoIntermedioDocenteRepository.find({
+      relations: ['docente', 'cargo_intermedio', 'unidad'],
+    });
   }
   async seed() {
 

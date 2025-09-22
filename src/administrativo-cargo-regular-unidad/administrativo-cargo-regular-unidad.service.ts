@@ -9,13 +9,18 @@ export class AdministrativoCargoRegularUnidadService {
 
   @Inject('AdministrativoCargoRegularUnidadRepository')
   private readonly adimnistrativoCargoRegularUnidadRepository: Repository<AdministrativoCargoRegularUnidad>
-  create(createAdministrativoCargoRegularUnidadDto: CreateAdministrativoCargoRegularUnidadDto) {
-    return 'This action adds a new administrativoCargoRegularUnidad';
+  
+  async create(dto: CreateAdministrativoCargoRegularUnidadDto) {
+  const entity = this.adimnistrativoCargoRegularUnidadRepository.create(dto);
+    return await this.adimnistrativoCargoRegularUnidadRepository.save(entity);
   }
 
-  findAll() {
-    return `This action returns all administrativoCargoRegularUnidad`;
+  async findAll() {
+    return await this.adimnistrativoCargoRegularUnidadRepository.find({
+      relations: ['cargo_regular', 'unidad', 'administrativo'],
+    });
   }
+
   async seed(){
 
     //await this.adimnistrativoCargoRegularUnidadRepository.query(`TRUNCATE TABLE administrativo-cargo-regular-unidad CASCADE`);
@@ -24,14 +29,12 @@ export class AdministrativoCargoRegularUnidadService {
     
     const datos: CreateAdministrativoCargoRegularUnidadDto[] = [
       {
-        id: 1,
         id_cargo: 1,
         id_unidad: 1,
         id_administrativo: 1,
         fecha_ingreso: new Date('2023-01-01'),
       },
       {
-        id: 2,
         id_cargo: 2,
         id_unidad: 2,
         id_administrativo: 2,
@@ -43,15 +46,21 @@ export class AdministrativoCargoRegularUnidadService {
  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} administrativoCargoRegularUnidad`;
+  async findOne(id: number) {
+    return await this.adimnistrativoCargoRegularUnidadRepository.findOne({
+      where: { id },
+      relations: ['cargo_regular', 'unidad', 'administrativo'],
+    });
   }
 
-  update(id: number, updateAdministrativoCargoRegularUnidadDto: UpdateAdministrativoCargoRegularUnidadDto) {
-    return `This action updates a #${id} administrativoCargoRegularUnidad`;
+
+  async update(id: number, dto: UpdateAdministrativoCargoRegularUnidadDto) {
+    await this.adimnistrativoCargoRegularUnidadRepository.update(id, dto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} administrativoCargoRegularUnidad`;
+  async remove(id: number) {
+    return await this.adimnistrativoCargoRegularUnidadRepository.delete(id);
   }
+
 }

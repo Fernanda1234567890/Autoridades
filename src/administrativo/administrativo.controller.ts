@@ -10,7 +10,6 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class AdministrativoController {
   constructor(private readonly administrativoService: AdministrativoService) {}
 
-  // ✅ Solo admin puede ver inactivos
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('inactivos')
@@ -18,7 +17,6 @@ export class AdministrativoController {
     return this.administrativoService.findAll({ estado: 'inactivo' });
   }
 
-  // ✅ Listado general con paginación, búsqueda y filtro por estado
   @Get()
   getAll(
     @Query('page') page?: string,
@@ -31,37 +29,31 @@ export class AdministrativoController {
     return this.administrativoService.findAll({ page: pageNum, limit: limitNum, search, estado });
   }
 
-  // ✅ Buscar por ID
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number) {
     return this.administrativoService.findOne(id);
   }
 
-  // ✅ Crear administrativo
   @Post()
   create(@Body() createAdministrativoDto: CreateAdministrativoDto) {
     return this.administrativoService.create(createAdministrativoDto);
   }
 
-  // ✅ Seeder
   @Get('/seed')
   seed() {
     return this.administrativoService.seed();
   }
 
-  // ✅ Actualizar
   @Put(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateAdministrativoDto: UpdateAdministrativoDto) {
     return this.administrativoService.update(id, updateAdministrativoDto);
   }
 
-  // ✅ Soft delete
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.administrativoService.remove(id);
   }
 
-  // ✅ Restaurar administrativo
   @Put(':id/restaurar')
   restore(@Param('id', ParseIntPipe) id: number) {
     return this.administrativoService.restore(id);

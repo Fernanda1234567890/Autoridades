@@ -1,10 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 import { Facultad } from './entities/facultad.entity';
 import { CreateFacultadDto } from './dto/create-facultad.dto';
 import { UpdateFacultadDto } from './dto/update-facultad.dto';
+
+export interface FindAllOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+  estado?: 'activo' | 'inactivo' | 'todos';
+}
 
 @Injectable()
 export class FacultadService {
@@ -13,43 +20,135 @@ export class FacultadService {
     private readonly facultadRepository: Repository<Facultad>,
   ) {}
 
-  create(createFacultadDto: CreateFacultadDto) {
-    const facultad = this.facultadRepository.create(createFacultadDto);
+  async create(createFacultadDto: CreateFacultadDto) {
+    const nombre = createFacultadDto.nombre?.trim();
+    const sigla = createFacultadDto.sigla?.trim();
+
+    if (!nombre || !sigla) {
+      throw new BadRequestException('Nombre y sigla son requeridos');
+    }
+
+    const existe = await this.facultadRepository.findOne({ where: { nombre } });
+    if (existe) {
+      throw new BadRequestException(`Ya existe una facultad con el nombre "${nombre}"`);
+    }
+
+    const facultad = this.facultadRepository.create({
+      nombre,
+      sigla,
+      estado: true, 
+    });
+
     return this.facultadRepository.save(facultad);
   }
 
-  findAll() {
-    return this.facultadRepository.find({ relations: ['carreras'] });
+  async findAll({
+    page = 1,
+    limit = 10,
+    search,
+    estado = 'activo',
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    estado?: 'activo' | 'inactivo' | 'todos';
+  }) {
+    const query = this.facultadRepository.createQueryBuilder('fac');
+
+    if (search) {
+      query.andWhere('fac.nombre ILIKE :search OR fac.sigla ILIKE :search', { search: `%${search}%` });
+    }
+
+    if (estado !== 'todos') {
+      query.andWhere('fac.estado = :estado', { estado: estado === 'activo' });
+    }
+
+    query.orderBy('fac.id', 'DESC');
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .leftJoinAndSelect('fac.carreras', 'carr') 
+      .getManyAndCount();
+
+    return { success: true, data, meta: { total, page, limit } };
   }
 
-  findOne(id: number) {
-    return this.facultadRepository.findOne({
+  async findOne(id: number) {
+    const facultad = await this.facultadRepository.findOne({
       where: { id },
       relations: ['carreras'],
     });
+    if (!facultad) throw new NotFoundException('Facultad no encontrada');
+    return facultad;
+  }
+
+  async findByNombreOrSigla(texto: string) {
+    const facultades = await this.facultadRepository.find({
+      where: [
+        { nombre: ILike(`%${texto}%`) },
+        { sigla: ILike(`%${texto}%`) },
+      ],
+      relations: ['carreras'],
+    });
+
+    return {
+      success: true,
+      message: facultades.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      data: facultades,
+    };
+  }
+
+  async update(id: number, dto: UpdateFacultadDto) {
+    const facultad = await this.findOne(id);
+    Object.assign(facultad, dto);
+    return this.facultadRepository.save(facultad);
+  }
+
+  async remove(id: number) {
+    const facultad = await this.findOne(id);
+
+    if (!facultad.estado) {
+      throw new BadRequestException('La facultad ya está dada de baja');
+    }
+
+    facultad.estado = false;
+    await this.facultadRepository.save(facultad);
+
+    return {
+      success: true,
+      message: 'Facultad dada de baja correctamente',
+      data: { id: facultad.id, nombre: facultad.nombre, sigla: facultad.sigla },
+    };
+  }
+
+  async restore(id: number) {
+    const facultad = await this.findOne(id);
+
+    if (facultad.estado) {
+      throw new BadRequestException('La facultad ya está activa');
+    }
+
+    facultad.estado = true;
+    return this.facultadRepository.save(facultad);
   }
 
   async seed() {
-    // await this.facultadRepository.query(`TRUNCATE TABLE facultades CASCADE`);
-    // await this.facultadRepository.clear();
-    // await this.facultadRepository.query(`ALTER SEQUENCE facultades_id_seq RESTART WITH 1`);
+    const datos: CreateFacultadDto[] = [
+      { nombre: 'Facultad de Ingeniería', sigla: 'FING' },
+      { nombre: 'Facultad de Ingeniería Minera', sigla: 'FINGM' },
+      { nombre: 'Facultad de Ciencias Puras', sigla: 'FCP' },
+      { nombre: 'Facultad de Ciencias Sociales y Humanísticas', sigla: 'FCSH' },
+    ];
 
-      const datos: CreateFacultadDto[] = [
-        { id: 1, nombre: 'Facultad de Ingeniería', sigla: 'FING' },
-        { id: 2, nombre: 'Facultad de Derecho', sigla: 'FD' },
-        { id: 3, nombre: 'Facultad de Medicina', sigla: 'FMED' },
-        { id: 4, nombre: 'Facultad de Ciencias Agrícolas', sigla: 'FCA' },
-      ];
-
-      const mapeados = datos.map((e) => this.facultadRepository.create(e));
-      return await this.facultadRepository.save(mapeados);
+    const existentes = await this.facultadRepository.count();
+    if (existentes > 0) {
+      return { success: true, message: 'Ya existen facultades registradas' };
     }
 
-  update(id: number, updateFacultadDto: UpdateFacultadDto) {
-    return this.facultadRepository.update(id, updateFacultadDto);
-  }
+    const mapeados = datos.map(e => this.facultadRepository.create({ ...e, estado: true }));
+    const guardados = await this.facultadRepository.save(mapeados);
 
-  remove(id: number) {
-    return this.facultadRepository.delete(id);
+    return { success: true, message: 'Seed ejecutado correctamente', data: guardados };
   }
 }

@@ -1,5 +1,5 @@
 export class CreateFacultadDto {
-    id: number;
+    id?: number;
     nombre: string;
-    sigla: string; 
+    sigla?: string; 
 }

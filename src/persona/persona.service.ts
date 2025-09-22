@@ -15,7 +15,6 @@ constructor(
   ) {} 
 
 
-  // Método unificado para buscar con paginación y filtros
   async findAll(query: QueryPersonaDto) {
     const {
       page = 1,
@@ -33,7 +32,6 @@ constructor(
 
     const where: any = {};
 
-    // Aplicar filtros
     if (nombres) where.nombres = ILike(`%${nombres}%`);
     if (apellidos) where.apellidos = ILike(`%${apellidos}%`);
     if (ci) where.ci = ILike(`%${ci}%`);
@@ -41,10 +39,8 @@ constructor(
     if (direccion) where.direccion = ILike(`%${direccion}%`);
     if (fecha_nac) where.fecha_nac = fecha_nac;
 
-    // Filtro de estado
     if (estado === 'activo') where.estado = true;
     else if (estado === 'inactivo') where.estado = false;
-    // Si es 'todos' o undefined, no aplicamos filtro
 
     const [data, total] = await this.personaRepository.findAndCount({
       where,
@@ -72,43 +68,53 @@ constructor(
       const datos: CreatePersonaDto[] = [
         {
           id: 1,
-          nombres: 'Nelvi',
-          apellidos: 'Ortega',
+          nombres: 'Ing. Pedro Guido ',
+          apellidos: 'López Cortés ',
           ci: '12345678',
-          email: 'onel@gmail.com',
-          telefono: 76451245,
+          email: 'pedro@gmail.com',
+          telefono: 76000000,
           direccion: 'Av.Siempre viva 742',
-          fecha_nac: '2000-02-29'
+          fecha_nac: '1955-02-20'
         },
         {
           id: 2,
-          nombres: 'Armando',
-          apellidos: 'Paredes',
-          ci: '8754215-a',
-          email: 'ape@gmail.com',
-          telefono: 79457845,
+          nombres: 'Ing. David ',
+          apellidos: 'Soraide Lozano',
+          ci: '8700000-a',
+          email: 'david@gmail.com',
+          telefono: 79400000,
           direccion: 'Calle falsa 123',
-          fecha_nac: '1994-08-26'
+          fecha_nac: '1960-08-26'
         },
        {
           id: 3,
-          nombres: 'Maria',
-          apellidos: 'Oros',
+          nombres: 'M. Sc. Abog. Jaqueline ',
+          apellidos: 'Filipps Díaz',
           ci: '12345000',
-          email: 'marial@gmail.com',
+          email: 'jaq@gmail.com',
           telefono: 76051245,
           direccion: 'Av.Siempre viva 1',
-          fecha_nac: '2009-02-02'
+          fecha_nac: '1970-02-06'
         },
         {
           id: 4,
-          nombres: 'Luis',
-          apellidos: 'Perez',
-          ci: '8754298',
-          email: 'luis@gmail.com',
+          nombres: 'M. Sc. Abog. Silvestre  ',
+          apellidos: 'Iñiguez Meneses',
+          ci: '8704298',
+          email: 'sil@gmail.com',
           telefono: 79457800,
           direccion: 'Calle falsa 89',
-          fecha_nac: '1991-05-20'
+          fecha_nac: '1960-05-20'
+        },
+         {
+          id: 5,
+          nombres: 'M. Sc. Abog. Carlos Severo',
+          apellidos: ' Colque Iporre ',
+          ci: '8750000',
+          email: 'carlos@gmail.com',
+          telefono: 79457800,
+          direccion: 'Calle falsa 89',
+          fecha_nac: '1960-08-19'
         }
       ]
 
@@ -116,7 +122,6 @@ constructor(
       return await this.personaRepository.save(mapeados)
   }
 
-  // Buscar por ID
   async findOne(id: number) {
     const persona = await this.personaRepository.findOne({
       where: { id },
@@ -128,8 +133,12 @@ constructor(
     return persona;
   }
 
- async create(createPersonaDto: CreatePersonaDto) {
-    // 1. Validar que CI o email no existan
+  async findByCI(ci: string): Promise<Persona | null> {
+    return await this.personaRepository.findOne({ where: { ci } });
+  }
+
+
+  async create(createPersonaDto: CreatePersonaDto) {
     const existing = await this.personaRepository.findOne({
       where: [
         { ci: createPersonaDto.ci },
@@ -146,17 +155,14 @@ constructor(
       }
     }
 
-    // 2. Validar y transformar la fecha
     let fechaNacDate: Date;
     try {
       fechaNacDate = new Date(createPersonaDto.fecha_nac);
       
-      // Validar que la fecha sea válida
       if (isNaN(fechaNacDate.getTime())) {
         throw new BadRequestException('Formato de fecha inválido');
       }
 
-      // Validar que la fecha no sea futura (opcional)
       if (fechaNacDate > new Date()) {
         throw new BadRequestException('La fecha de nacimiento no puede ser futura');
       }
@@ -168,16 +174,14 @@ constructor(
       throw new BadRequestException('Error al procesar la fecha de nacimiento');
     }
 
-    // 3. Crear y guardar la persona
     const persona = this.personaRepository.create({
       ...createPersonaDto,
-      fecha_nac: fechaNacDate, // fecha convertida a Date
+      fecha_nac: fechaNacDate,
     });
 
     return await this.personaRepository.save(persona);
   }
 
-// Actualizar
   async update(id: number, updatePersonaDto: UpdatePersonaDto) {
     const persona = await this.findOne(id);
     Object.assign(persona, updatePersonaDto);
@@ -194,4 +198,3 @@ constructor(
     return { success: true, message: `Persona con id ${id} dada de baja` };
   }
 }
- 

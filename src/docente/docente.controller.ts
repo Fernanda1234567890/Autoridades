@@ -12,12 +12,20 @@ export class DocenteController {
     return this.docenteService.create(createDocenteDto);
   }
 
- // controller
-@Get()
-getAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-  return this.docenteService.findAll({ page: +page, limit: +limit });
-}
+  @Get()
+  getAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.docenteService.findAll({ page: +page, limit: +limit });
+  }
 
+ @Get()
+  findAll(@Query() query: any) {
+    return this.docenteService.findAll(query);
+  }
+
+ @Get('/seed')
+  seed() {
+    return this.docenteService.seed();
+  }
   
  @Get(':id')
   async findOne(@Param('id') id: string) {

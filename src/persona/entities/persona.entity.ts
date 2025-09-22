@@ -31,7 +31,7 @@ export class Persona {
     @Column({ type: 'date' })
     fecha_nac: Date;
 
-    @Column({ type: 'text', nullable: true })
+    @Column({ type: 'varchar', length:255 ,  nullable: true })
     img: string;
 
     @Column({ type: 'boolean', default: true })

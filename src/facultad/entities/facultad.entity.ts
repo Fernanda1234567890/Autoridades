@@ -11,6 +11,9 @@ export class Facultad {
    
        @Column({ type: 'text'})
        sigla: string;  
+
+       @Column({ type: 'boolean', default: true })
+       estado: boolean;
    
        @OneToMany(()=>Carrera, carrera => carrera.facultad)
        carreras: Carrera[];

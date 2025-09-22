@@ -1,5 +1,15 @@
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 export class CreateDocenteDto {
-    id?: number;
-    id_persona: number;
-    estado: boolean;
+  @IsString()
+  @IsNotEmpty()
+  ci_persona: string; 
+
+  @IsInt()
+  @IsNotEmpty()
+  id_carrera: number;
+
+  @IsBoolean()
+  @IsOptional()
+  estado?: boolean;
 }
