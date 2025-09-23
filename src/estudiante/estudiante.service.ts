@@ -92,17 +92,15 @@ export class EstudianteService {
   async seed() {
     const datos: CreateEstudianteDto[] = [
       {
-        id: 1,
-        carrera: 'Artes',
-        ru: 123456,
-        id_persona: 2,
+        carrera: 'Carrera de Odontología ',
+        ru: 123450,
+        id_persona: 46,
         estado: true,
       },
       {
-        id: 2,
-        carrera: 'Ingeniería Civil',
+        carrera: 'Carrera de Arquitectura',
         ru: 654321,
-        id_persona: 1,
+        id_persona: 47,
         estado: true,
       },
     ];

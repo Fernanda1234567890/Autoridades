@@ -1,44 +1,39 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { CargoIntermedioDocenteService } from './cargo-intermedio-docente.service';
 import { CreateCargoIntermedioDocenteDto } from './dto/create-cargo-intermedio-docente.dto';
 import { UpdateCargoIntermedioDocenteDto } from './dto/update-cargo-intermedio-docente.dto';
 
 @Controller('cargo-intermedio-docente')
 export class CargoIntermedioDocenteController {
-  constructor(private readonly service: CargoIntermedioDocenteService) {}
+  constructor(private readonly cargoIntermedioDocenteService: CargoIntermedioDocenteService) {}
 
   @Post()
-  create(@Body() dto: CreateCargoIntermedioDocenteDto) {
-    return this.service.create(dto);
+  create(@Body() createCargoIntermedioDocenteDto: CreateCargoIntermedioDocenteDto) {
+    return this.cargoIntermedioDocenteService.create(createCargoIntermedioDocenteDto);
   }
 
   @Get()
   findAll() {
-    return this.service.findAll();
+    return this.cargoIntermedioDocenteService.findAll();
   }
 
-  // @Get('docente/:id')
-  // findByDocente(@Param('id', ParseIntPipe) id: number) {
-  //   return this.service.findByDocente(id);
-  // }
+    @Get('/seed')
+  seed() {
+    return this.cargoIntermedioDocenteService.seed();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id', ParseIntPipe) id: number) {
-  //   return this.service.findOne(id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.cargoIntermedioDocenteService.findOne(+id);
+  }
 
-  // @Put(':id')
-  // update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateCargoIntermedioDocenteDto) {
-  //   return this.service.update(id, dto);
-  // }
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateCargoIntermedioDocenteDto: UpdateCargoIntermedioDocenteDto) {
+    return this.cargoIntermedioDocenteService.update(+id, updateCargoIntermedioDocenteDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id', ParseIntPipe) id: number) {
-  //   return this.service.remove(id);
-  // }
-
-  // @Get('seed')
-  // seed() {
-  //   return this.service.seed();
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.cargoIntermedioDocenteService.remove(+id);
+  }
 }

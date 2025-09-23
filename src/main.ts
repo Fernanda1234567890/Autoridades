@@ -10,7 +10,11 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
   app.setGlobalPrefix('api')
-  app.enableCors()
+  app.enableCors({
+  origin:'*', // tus dos frontends
+  credentials: true, // si usas cookies o headers de autorización
+});
+
   await app.listen(3000);
 }
 bootstrap();

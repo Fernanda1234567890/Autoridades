@@ -52,27 +52,30 @@ export class CargoIntermedioService {
     // await this.cargoIntermedioRepository.query(`ALTER SEQUENCE "cargos-intermedios_id_seq" RESTART WITH 1`)
     
     const datos: CreateCargoIntermedioDto[] = [
-      {
-        id: 1,
-        nombre: 'Decando de la carrera de Derecho',
-        descripcion: 'Decano',
-        nivel_jerarquico: 1,
-        id_unidad: 1,
-      },
-      {
-        id: 2,
-        nombre: 'Director de la carrera de Derecho',
-        descripcion: 'Director',
-        nivel_jerarquico: 2,
-        id_unidad: 2,
-      },
-      {
-        id: 3,
-        nombre: 'Director/a de Servicios academicos',
-        descripcion: 'Director/a',
-        nivel_jerarquico: 3,
-        id_unidad: 2,
-      }
+      { nombre: 'Rector', descripcion: 'Rector', nivel_jerarquico: 1, id_unidad: 1,},
+      { nombre: 'Vicerrector', descripcion: 'Vicerrector', nivel_jerarquico: 1, id_unidad: 20,},
+      { nombre: 'Secretaria', descripcion: 'Secretaria', nivel_jerarquico: 2, id_unidad: 2, },
+      { nombre: 'Director de Relaciones Nacionales e Internacionales ', descripcion: 'director', nivel_jerarquico: 1, id_unidad: 18,},
+      { nombre: 'Director/a de Servicios academicos', descripcion: 'Director/a', nivel_jerarquico: 3, id_unidad: 22, },
+      { nombre: 'Director/a de Planificación Universitaria ', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad: 7, },
+      { nombre: 'Director/a Administrativo Financiero', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad: 10, },
+      { nombre: 'Director/a de Investigación Científica y Tecnológica', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad: 21, },
+      { nombre: 'Director/a de Interacción Social y Extensión Universitaria', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad: 24, },
+      { nombre: 'Director/a de Evaluación y Acreditación', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad:6 , },
+      { nombre: 'Director/a de Postgrado', descripcion: 'Director/a', nivel_jerarquico:2 , id_unidad: 23, },
+      { nombre: 'Decano de la Facultad de Derecho', descripcion: 'Decano', nivel_jerarquico:2 , id_unidad:31 , },
+      { nombre: 'Decano de la Facultad de Ingeniería', descripcion: 'Decano', nivel_jerarquico:2 , id_unidad: 39, },
+      { nombre: 'Decano de la Facultad de Ingeniería Minera', descripcion: 'Decano', nivel_jerarquico:2 , id_unidad: 43, },
+      { nombre: 'Decano de la Facultad de Ciencias Puras', descripcion: 'Decano', nivel_jerarquico:2 , id_unidad: 46, },
+      { nombre: 'Decano de la Facultad de Ciencias Sociales y Humanísticas', descripcion: 'Decano', nivel_jerarquico:2 , id_unidad: 52, },
+      { nombre: 'Decano de la Facultad de Medicina', descripcion: 'Decano', nivel_jerarquico: 2, id_unidad: 57, },
+      { nombre: 'Director de la carrera de Derecho', descripcion: 'Director', nivel_jerarquico: 3, id_unidad: 32,},
+      { nombre: 'Director de la Carrera de Ingeniería Civil', descripcion: 'Director', nivel_jerarquico: 3, id_unidad:40 , },
+      { nombre: 'Director de la Carrera de Estadística', descripcion: 'Director', nivel_jerarquico: 3, id_unidad:47 , },
+      { nombre: 'Director de la Carrera de Turismo', descripcion: 'Director', nivel_jerarquico:3 , id_unidad:53 , },
+      { nombre: 'Director de la Carrera de Medicina ', descripcion: 'Director', nivel_jerarquico: 3, id_unidad: 58, },
+      { nombre: 'Encargado Data Center', descripcion: 'Encargado', nivel_jerarquico: 2, id_unidad: 19, },
+
     ]
             const mapeados = datos.map((e)=> this.cargoIntermedioRepository.create(e))
         return await this.cargoIntermedioRepository.save(mapeados)

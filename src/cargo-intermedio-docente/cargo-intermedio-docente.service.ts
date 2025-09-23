@@ -4,23 +4,57 @@ import { CargoIntermedioDocente } from './entities/cargo-intermedio-docente.enti
 import { CreateCargoIntermedioDocenteDto } from './dto/create-cargo-intermedio-docente.dto';
 import { UpdateCargoIntermedioDocenteDto } from './dto/update-cargo-intermedio-docente.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Docente } from 'src/docente/entities/docente.entity';
+import { CargoIntermedio } from 'src/cargo-intermedio/entities/cargo-intermedio.entity';
+import { Unidad } from 'src/unidad/entities/unidad.entity';
 
 @Injectable()
 export class CargoIntermedioDocenteService {
 
   constructor(
-    @InjectRepository(CargoIntermedioDocente)
-    private readonly cargoIntermedioDocenteRepository: Repository<CargoIntermedioDocente>
+   @InjectRepository(CargoIntermedioDocente)
+    private readonly cargoIntermedioDocenteRepository: Repository<CargoIntermedioDocente>,
+
+    @InjectRepository(Docente)
+    private readonly docenteRepository: Repository<Docente>,
+
+    @InjectRepository(CargoIntermedio)
+    private readonly cargoRepository: Repository<CargoIntermedio>,
+
+    @InjectRepository(Unidad)
+    private readonly unidadRepository: Repository<Unidad>,
   ) {}
 
   async create(dto: CreateCargoIntermedioDocenteDto) {
-    const entity = this.cargoIntermedioDocenteRepository.create(dto);
-    return await this.cargoIntermedioDocenteRepository.save(entity);
+    const docente = await this.docenteRepository.findOne({ where: { id: dto.id_docente } });
+    if (!docente) throw new NotFoundException(`Docente no encontrado`);
+
+    const cargo = await this.cargoRepository.findOne({ where: { id: dto.id_cargo_intermedio } });
+    if (!cargo) throw new NotFoundException(`Cargo intermedio no encontrado`);
+
+    let unidad;
+    if (dto.id_unidad) {
+      unidad = await this.unidadRepository.findOne({ where: { id: dto.id_unidad } });
+      if (!unidad) throw new NotFoundException(`Unidad no encontrada`);
+    }
+
+    const asignacion = this.cargoIntermedioDocenteRepository.create({
+      docente,
+      cargo_intermedio: cargo,
+      unidad,
+      fecha_inicio: dto.fecha_inicio,
+      fecha_fin: dto.fecha_fin || undefined,
+      id_docente: dto.id_docente,
+      id_cargo_intermedio: dto.id_cargo_intermedio,
+      id_unidad: dto.id_unidad || undefined,
+    });
+
+    return this.cargoIntermedioDocenteRepository.save(asignacion);
   }
 
   async findAll() {
     return await this.cargoIntermedioDocenteRepository.find({
-      relations: ['docente', 'cargo_intermedio', 'unidad'],
+      relations: ['docente', 'docente.persona', 'cargo_intermedio', 'unidad'],
     });
   }
   async seed() {

@@ -14,8 +14,9 @@ export class Administrativo {
     @Column({ type: 'boolean', default: true})
     estado: boolean; 
 
-    @JoinColumn({ name: 'id_persona' })
+    
     @OneToOne(() => Persona, persona => persona.administrativo)
+    @JoinColumn({ name: 'id_persona' })
     persona: Persona;
 
     @OneToMany(() => AdministrativoCargoRegularUnidad, administrativo_cargo_regular_unidades => administrativo_cargo_regular_unidades.administrativo)

@@ -68,26 +68,15 @@ export class CargoRegularService {
     //await this.cargoRegularRepository.query(`ALTER SEQUENCE "cargos-regulares_id_seq" RESTART WITH 1`)
 
     const datos: CreateCargoRegularDto[] = [
-      {
-        nombre: 'Rector',
-        descripcion: 'Máxima autoridad de la Universidad Autonoma Tomas Frias',
-        nivel_jerarquico: 1,  
-      },
-      {
-        nombre: 'Vicerrector',
-        descripcion: 'Máxima autoridad de la Universidad Autonoma Tomas Frias',
-        nivel_jerarquico: 1,
-      },
-      {
-        nombre: 'secretaria/o',
-        descripcion: 'Secretario/a General',
-        nivel_jerarquico: 3,
-      },
-      {
-        nombre: 'Director de Unidad',
-        descripcion: 'Director de una unidad',
-        nivel_jerarquico: 4,
-      }
+      { nombre: 'Asesor Juridico', descripcion: 'Asesor Juridico', nivel_jerarquico: 2 },
+      { nombre: 'Jefe Auditora Interna', descripcion: 'Jefe Auditora Interna', nivel_jerarquico: 2 },
+      { nombre: 'Encargado de Titulos', descripcion: 'Encargado de Titulos', nivel_jerarquico: 3 },
+      { nombre: 'Responsable de planeamiento Organico', descripcion: 'Responsable de planeamiento Organico', nivel_jerarquico: 3,},
+      { nombre: 'Encargado de Proyectos y obras', descripcion: 'Encargado de Proyectos y obras', nivel_jerarquico:3 ,},
+      { nombre: 'Jefe del Depto. de Personal', descripcion: 'Jefe del Depto. de Personal', nivel_jerarquico:3 ,},
+      { nombre: 'Encargado de Registros y Admiciones', descripcion: 'Encargado de Registros y Admiciones', nivel_jerarquico:3 ,},
+      { nombre: 'Auxiliar Bienestar y S.D.A.', descripcion: 'Auxiliar Bienestar y S.D.A.', nivel_jerarquico: 3,},
+      { nombre: 'Bibliotecario', descripcion: 'Bibliotecario', nivel_jerarquico: 3,},
     ]
 
     for (const cargo of datos) {

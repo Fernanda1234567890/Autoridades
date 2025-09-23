@@ -5,35 +5,35 @@ import { UpdateAdministrativoCargoRegularUnidadDto } from './dto/update-administ
 
 @Controller('administrativo-cargo-regular-unidad')
 export class AdministrativoCargoRegularUnidadController {
-  constructor(private readonly administrativoCargoRegularUnidadService: AdministrativoCargoRegularUnidadService) {}
+  constructor(private readonly service: AdministrativoCargoRegularUnidadService) {}
 
   @Post()
-  create(@Body() createAdministrativoCargoRegularUnidadDto: CreateAdministrativoCargoRegularUnidadDto) {
-    return this.administrativoCargoRegularUnidadService.create(createAdministrativoCargoRegularUnidadDto);
+  create(@Body() dto: CreateAdministrativoCargoRegularUnidadDto) {
+    return this.service.create(dto);
   }
 
   @Get()
   findAll() {
-    return this.administrativoCargoRegularUnidadService.findAll();
-  }
-  @Get('/seed')
-  seed() {
-    return this.administrativoCargoRegularUnidadService.seed();
+    return this.service.findAll();
   }
 
+  @Get('/seed')
+  seed() {
+    return this.service.seed();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.administrativoCargoRegularUnidadService.findOne(+id);
+    return this.service.findOne(+id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateAdministrativoCargoRegularUnidadDto: UpdateAdministrativoCargoRegularUnidadDto) {
-    return this.administrativoCargoRegularUnidadService.update(+id, updateAdministrativoCargoRegularUnidadDto);
+  update(@Param('id') id: string, @Body() dto: UpdateAdministrativoCargoRegularUnidadDto) {
+    return this.service.update(+id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.administrativoCargoRegularUnidadService.remove(+id);
+    return this.service.remove(+id);
   }
 }

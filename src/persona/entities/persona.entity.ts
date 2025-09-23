@@ -19,13 +19,13 @@ export class Persona {
     @Column({ type: 'varchar', length: 12, unique: true })
     ci: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
+    @Column({ type: 'varchar', length: 255, nullable: true}) //unique: true 
     email: string;
 
     @Column({ type: 'integer', nullable: true })
     telefono: number;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column({ type: 'varchar', length: 255,nullable: true })
     direccion: string;
 
     @Column({ type: 'date' })

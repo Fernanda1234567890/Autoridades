@@ -1,4 +1,5 @@
 import { AdministrativoCargoRegularUnidad } from "src/administrativo-cargo-regular-unidad/entities/administrativo-cargo-regular-unidad.entity";
+import { CargoIntermedioDocente } from "src/cargo-intermedio-docente/entities/cargo-intermedio-docente.entity";
 import { CargoIntermedio } from "src/cargo-intermedio/entities/cargo-intermedio.entity";
 import { TipoUnidad } from "src/tipo-unidad/entities/tipo-unidad.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -45,5 +46,9 @@ export class Unidad {
 
     @OneToMany(() => AdministrativoCargoRegularUnidad, administrativo_cargo_regular_unidades => administrativo_cargo_regular_unidades.unidad)
     administrativo_cargo_regular_unidades: AdministrativoCargoRegularUnidad[];
-    
+
+    @OneToMany(() => CargoIntermedioDocente,(cargoIntermedioDocente) => cargoIntermedioDocente.unidad,
+    { onDelete: 'SET NULL', nullable: true }
+  )
+  cargoIntermedioDocente: CargoIntermedioDocente[];
 }

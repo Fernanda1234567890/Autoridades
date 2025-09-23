@@ -95,8 +95,8 @@ export class AdministrativoService {
 
   async seed() {
     const datos: CreateAdministrativoDto[] = [
-      { id: 1, id_persona: 4, estado: true },
-      { id: 2, id_persona: 3, estado: true },
+      { id_persona: 4, estado: true },
+      { id_persona: 9, estado: true },
     ];
 
     const mapeados = datos.map((e) =>

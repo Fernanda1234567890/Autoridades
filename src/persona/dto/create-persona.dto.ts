@@ -6,13 +6,13 @@ export class CreatePersonaDto {
     apellidos: string;
     ci: string;
     email: string;
-    telefono: number;
-    direccion: string;
+    telefono?: number;
+    direccion?: string;
 
     @IsOptional()
     @IsString()
     img?: string;
-    
+
     @IsDateString()
     fecha_nac: string;
 }

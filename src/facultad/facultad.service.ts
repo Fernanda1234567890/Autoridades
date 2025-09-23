@@ -135,10 +135,18 @@ export class FacultadService {
 
   async seed() {
     const datos: CreateFacultadDto[] = [
-      { nombre: 'Facultad de Ingeniería', sigla: 'FING' },
-      { nombre: 'Facultad de Ingeniería Minera', sigla: 'FINGM' },
-      { nombre: 'Facultad de Ciencias Puras', sigla: 'FCP' },
-      { nombre: 'Facultad de Ciencias Sociales y Humanísticas', sigla: 'FCSH' },
+      { nombre: 'Facultad de Derecho', sigla: 'FCD' },
+      { nombre: 'Facultad de CC EE. FF. y AA.', sigla: 'FCCEEFFAA' },
+      { nombre: 'Facultad de Ingeniería', sigla: 'FCI' },
+      { nombre: 'Facultad de Ingeniería Minera', sigla: 'FCIM' },
+      { nombre: 'Facultad de Ciencias Puras', sigla:'FCCP' },
+      { nombre: 'Facultad de Ciencias Sociales y Humanísticas', sigla:'FCCSM' },
+      { nombre: 'Facultad de Medicina', sigla:'FCM' },
+      { nombre: 'Facultad de Ciencias Agrícolas y Pecuarias ', sigla:'FCCAP' },
+      { nombre: 'Facultad de Ingeniería Geológica', sigla:'FCG' },
+      { nombre: 'Facultad de Ingeniería Tecnológica', sigla:'FCT' },
+      { nombre: 'Facultad de Artes', sigla:'FCA' },
+      { nombre: 'Facultad de Ciencias de la Salud', sigla:'FCCS' },
     ];
 
     const existentes = await this.facultadRepository.count();

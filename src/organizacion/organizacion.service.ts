@@ -100,7 +100,7 @@ async seed() {
     }
 
     const datos = [
-      { tipo: 'FUD', descripcion: 'Federacion Universitaria DEpartamental', estado: true },
+      { tipo: 'FUD', descripcion: 'Federacion Universitaria Departamental', estado: true },
       { tipo: 'FUL', descripcion: 'Federacion universitaria Local', estado: true },
       { tipo: 'STU', descripcion: 'Sistema de Trabajo Universitario', estado: true }
     ];

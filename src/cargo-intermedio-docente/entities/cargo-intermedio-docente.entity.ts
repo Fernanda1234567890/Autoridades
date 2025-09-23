@@ -1,5 +1,6 @@
 import { CargoIntermedio } from "src/cargo-intermedio/entities/cargo-intermedio.entity";
 import { Docente } from "src/docente/entities/docente.entity";
+import { Unidad } from "src/unidad/entities/unidad.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('cargo-intermedio-docentes')
@@ -13,6 +14,9 @@ export class CargoIntermedioDocente {
     @Column({ type: 'integer' })
     id_cargo_intermedio: number;
 
+    @Column({ type: 'integer', nullable: true })
+    id_unidad: number;    
+
     @Column({ type: 'date' })
     fecha_inicio: Date;
 
@@ -25,4 +29,7 @@ export class CargoIntermedioDocente {
     
     @ManyToOne(() => CargoIntermedio, cargo_intermedio => cargo_intermedio.cargo_intermedio_docente,{onDelete:'CASCADE'})
     cargo_intermedio: CargoIntermedio;
+
+     @ManyToOne(() => Unidad, unidad => unidad.cargoIntermedioDocente, { onDelete: 'SET NULL', nullable: true })
+    unidad: Unidad; 
 }
