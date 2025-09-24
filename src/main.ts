@@ -11,8 +11,8 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api')
   app.enableCors({
-  origin:'*', // tus dos frontends
-  credentials: true, // si usas cookies o headers de autorización
+  origin:'*', 
+  credentials: true, 
 });
 
   await app.listen(3000);

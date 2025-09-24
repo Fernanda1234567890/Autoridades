@@ -56,7 +56,7 @@ export class UnidadController {
     @Query('estado') estado: 'activo' | 'inactivo' | 'todos' = 'activo',
   ) {
     const pageNum = isNaN(Number(page)) ? 1 : Number(page);
-    const limitNum = isNaN(Number(limit)) ? 10 : Number(limit);
+    const limitNum = isNaN(Number(limit)) ? 100: Number(limit);
     return this.unidadService.findAll(pageNum, limitNum, { nombre, responsable, id_tipo_unidad, estado });
   }
 

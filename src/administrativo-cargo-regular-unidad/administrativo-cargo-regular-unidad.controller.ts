@@ -11,10 +11,13 @@ export class AdministrativoCargoRegularUnidadController {
   create(@Body() dto: CreateAdministrativoCargoRegularUnidadDto) {
     return this.service.create(dto);
   }
-
   @Get()
-  findAll() {
-    return this.service.findAll();
+  async findAll() {
+    const data = await this.service.findAll();
+    return {
+      data,          
+      total: data.length,  
+    };
   }
 
   @Get('/seed')
