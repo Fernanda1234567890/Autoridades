@@ -91,18 +91,18 @@ export class EstudianteService {
 
   async seed() {
     const datos: CreateEstudianteDto[] = [
-      {
-        carrera: 'Carrera de Odontología ',
-        ru: 123450,
-        id_persona: 46,
-        estado: true,
-      },
-      {
-        carrera: 'Carrera de Arquitectura',
-        ru: 654321,
-        id_persona: 47,
-        estado: true,
-      },
+      // {
+      //   carrera: 'Carrera de Odontología ',
+      //   ru: 123450,
+      //   id_persona: 46,
+      //   estado: true,
+      // },
+      // {
+      //   carrera: 'Carrera de Arquitectura',
+      //   ru: 654321,
+      //   id_persona: 47,
+      //   estado: true,
+      // },
     ];
 
     const mapeados = datos.map((e) =>

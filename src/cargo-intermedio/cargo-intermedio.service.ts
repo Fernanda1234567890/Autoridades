@@ -34,6 +34,7 @@ export class CargoIntermedioService {
       skip: (page - 1) * limit,
       take: limit,
       relations: ['unidad'],
+      order: { id: 'ASC' },
     });
 
     return {

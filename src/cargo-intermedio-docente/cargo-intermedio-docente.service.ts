@@ -64,20 +64,20 @@ export class CargoIntermedioDocenteService {
     //await this.cargoIntermedioDocenteRepository.query(`ALTER SEQUENCE "cargo-intermadio-docente_id_seq" RESTART WITH 1`)
     
     const datos: CreateCargoIntermedioDocenteDto[] = [
-      {
-        id: 1,
-        id_docente: 1,
-        id_cargo_intermedio: 1,
-        fecha_inicio: new Date('2023-01-01'),
-        fecha_fin: new Date('2023-12-31')
-      },
-      {
-        id: 2,
-        id_docente: 2,
-        id_cargo_intermedio: 2,
-        fecha_inicio: new Date('2023-02-01'),
-        fecha_fin: new Date('2023-12-31')
-      }
+      // {
+      //   id: 1,
+      //   id_docente: 1,
+      //   id_cargo_intermedio: 1,
+      //   fecha_inicio: new Date('2023-01-01'),
+      //   fecha_fin: new Date('2023-12-31')
+      // },
+      // {
+      //   id: 2,
+      //   id_docente: 2,
+      //   id_cargo_intermedio: 2,
+      //   fecha_inicio: new Date('2023-02-01'),
+      //   fecha_fin: new Date('2023-12-31')
+      // }
     ];
      const mapeados = datos.map((e) => this.cargoIntermedioDocenteRepository.create(e));
     return await this.cargoIntermedioDocenteRepository.save(mapeados);

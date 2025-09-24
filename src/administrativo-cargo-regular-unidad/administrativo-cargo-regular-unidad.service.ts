@@ -50,11 +50,15 @@ export class AdministrativoCargoRegularUnidadService {
 
   // Obtener todas las asignaciones con relaciones
   async findAll() {
-    return await this.administrativoCargoRegularUnidadRepository.find({
-      relations: ['administrativo', 'administrativo.persona', 'cargo_regular', 'unidad'],
-      order: { id: 'DESC' },
-    });
-  }
+  const asignaciones = await this.administrativoCargoRegularUnidadRepository.find({
+    relations: ['administrativo', 'administrativo.persona', 'cargo_regular', 'unidad'],
+  });
+
+  return {
+    success: true,
+    data: asignaciones,
+  };
+}
 
 
   async seed(){
@@ -64,18 +68,18 @@ export class AdministrativoCargoRegularUnidadService {
     //await this.adimnistrativoCargoRegularUnidadRepository.query(`ALTER SEQUENCE "administrativo-cargo-regular-unidad_id_seq" RESTART WITH 1`)
     
     const datos: CreateAdministrativoCargoRegularUnidadDto[] = [
-      {
-        id_cargo: 1,
-        id_unidad: 1,
-        id_administrativo: 1,
-        fecha_ingreso: new Date('2023-01-01'),
-      },
-      {
-        id_cargo: 2,
-        id_unidad: 2,
-        id_administrativo: 2,
-        fecha_ingreso: new Date('2023-02-01'),
-      }
+      // {
+      //   id_cargo: 1,
+      //   id_unidad: 1,
+      //   id_administrativo: 1,
+      //   fecha_ingreso: new Date('2023-01-01'),
+      // },
+      // {
+      //   id_cargo: 2,
+      //   id_unidad: 2,
+      //   id_administrativo: 2,
+      //   fecha_ingreso: new Date('2023-02-01'),
+      // }
     ];
      const mapeados = datos.map((e) => this.administrativoCargoRegularUnidadRepository.create(e));
     return await this.administrativoCargoRegularUnidadRepository.save(mapeados);

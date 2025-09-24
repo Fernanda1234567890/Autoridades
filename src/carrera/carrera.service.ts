@@ -54,24 +54,27 @@ async findAll({
   search?: string;
   estado?: 'activo' | 'inactivo' | 'todos';
 }) {
-  const query = this.carreraRepository.createQueryBuilder('carr');
+  const query = this.carreraRepository
+    .createQueryBuilder('carr')
+    .leftJoinAndSelect('carr.facultad', 'fac'); // 🔹 cargar la facultad
 
+  // Filtro de búsqueda
   if (search) {
     query.andWhere(
-      'carr.nombre ILIKE :search OR carr.sigla ILIKE :search',
+      '(carr.nombre ILIKE :search OR carr.sigla ILIKE :search OR fac.nombre ILIKE :search)',
       { search: `%${search}%` },
     );
   }
 
+  // Filtro de estado
   if (estado !== 'todos') {
     query.andWhere('carr.estado = :estado', { estado: estado === 'activo' });
   }
 
-  query.leftJoinAndSelect('carr.facultad', 'fac');
-
-
+  // Orden descendente por ID
   query.orderBy('carr.id', 'DESC');
 
+  // Paginación
   const [data, total] = await query
     .skip((page - 1) * limit)
     .take(limit)
@@ -83,7 +86,6 @@ async findAll({
     meta: { total, page, limit },
   };
 }
-
 
   async findOne(id: number) {
     const carrera = await this.carreraRepository.findOne({

@@ -67,12 +67,12 @@ export class DocenteService {
 
     async seed() {
       const datos = [
-      { ci_persona: '12345008', id_carrera: 3},
-      { ci_persona: '8700000-a', id_carrera: 5 },
-      { ci_persona: '12345000', id_carrera: 3 },
-      { ci_persona: '8704298', id_carrera: 3 },
-      { ci_persona: '4566324', id_carrera: 1 },
-      { ci_persona: '23456787', id_carrera: 1 },
+      // { ci_persona: '12345008', id_carrera: 3},
+      // { ci_persona: '8700000-a', id_carrera: 5 },
+      // { ci_persona: '12345000', id_carrera: 3 },
+      // { ci_persona: '8704298', id_carrera: 3 },
+      // { ci_persona: '4566324', id_carrera: 1 },
+      // { ci_persona: '23456787', id_carrera: 1 },
       ];
 
       for (const d of datos) {
