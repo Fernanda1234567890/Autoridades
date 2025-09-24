@@ -13,12 +13,13 @@ export class AdministrativoCargoRegularUnidadController {
   }
   @Get()
   async findAll() {
-    const data = await this.service.findAll();
+    const { data } = await this.service.findAll();
     return {
-      data,          
-      total: data.length,  
+      data,
+      total: data.length,
     };
   }
+
 
   @Get('/seed')
   seed() {
