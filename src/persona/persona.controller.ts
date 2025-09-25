@@ -49,34 +49,47 @@ export class PersonaController {
     }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('img', {
-      storage: diskStorage({
-        destination: './uploads/personas',
-        filename: (req, file, cb) => {
-          const uniqueName =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, uniqueName + extname(file.originalname));
+    @UseInterceptors(
+      FileInterceptor('img', {
+        storage: diskStorage({
+          destination: './uploads/personas', // aquí se guardan las fotos
+          filename: (req, file, cb) => {
+            const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            cb(null, uniqueName + extname(file.originalname));
+          },
+        }),
+        fileFilter: (req, file, cb) => {
+          // solo aceptar imágenes
+          if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+            cb(new Error('Solo se permiten imágenes'), false);
+          } else {
+            cb(null, true);
+          }
         },
+        limits: { fileSize: 2 * 1024 * 1024 }, // límite 2MB
       }),
-    }),
-  )
-
-  async create(
-    @Body() createPersonaDto: CreatePersonaDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (file) {
-      createPersonaDto.img = `uploads/personas/${file.filename}`;
+    )
+    async create(
+      @Body() createPersonaDto: CreatePersonaDto,
+      @UploadedFile() file: Express.Multer.File,
+        ) {
+        if (file) {
+            // Si sube archivo, usamos la ruta del archivo
+            createPersonaDto.img = `uploads/personas/${file.filename}`;
+          } else {
+            // Si no sube imagen, asignamos la imagen por defecto
+            createPersonaDto.img = 'uploads/personas/default.png';
+          }
+          
+      const persona = await this.personaService.create(createPersonaDto);
+      return {
+        success: true,
+        message: 'Persona creada correctamente',
+        data: persona,
+      };
     }
 
-    const persona = await this.personaService.create(createPersonaDto);
-    return {
-      success: true,
-      message: 'Persona creada correctamente',
-      data: persona,
-    };
-  }
+
 
   @Get('/seed')
   seed() {

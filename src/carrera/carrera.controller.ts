@@ -43,6 +43,13 @@ export class CarreraController {
     return this.carreraService.seed();
   }
 
+ 
+  @Get(':id/director')
+  async getDirector(@Param('id') id: number) {
+    return this.carreraService.getDirectorByCarrera(id);
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.carreraService.findOne(+id);

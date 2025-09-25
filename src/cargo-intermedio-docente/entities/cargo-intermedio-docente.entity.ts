@@ -25,7 +25,6 @@ export class CargoIntermedioDocente {
 
     @ManyToOne(() => Docente, docente => docente.cargo_intermedio_docente,{onDelete:'CASCADE'})
     docente: Docente;
-
     
     @ManyToOne(() => CargoIntermedio, cargo_intermedio => cargo_intermedio.cargo_intermedio_docente,{onDelete:'CASCADE'})
     cargo_intermedio: CargoIntermedio;

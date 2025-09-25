@@ -23,7 +23,11 @@ export class AdministrativoCargoRegularUnidadService {
 
     @InjectRepository(Unidad)
     private readonly unidadRepository: Repository<Unidad>,
+
+     @InjectRepository(AdministrativoCargoRegularUnidad)
+    private readonly asignacionRepo: Repository<AdministrativoCargoRegularUnidad>,
   ) {}
+  
 
   
   async create(dto: CreateAdministrativoCargoRegularUnidadDto) {
@@ -50,15 +54,23 @@ export class AdministrativoCargoRegularUnidadService {
 
   // Obtener todas las asignaciones con relaciones
   async findAll() {
-  const asignaciones = await this.administrativoCargoRegularUnidadRepository.find({
-    relations: ['administrativo', 'administrativo.persona', 'cargo_regular', 'unidad'],
-  });
+    const asignaciones = await this.administrativoCargoRegularUnidadRepository.find({
+      relations: ['administrativo', 'administrativo.persona', 'cargo_regular', 'unidad'],
+    });
 
-  return {
-    success: true,
-    data: asignaciones,
-  };
-}
+    return {
+      success: true,
+      data: asignaciones,
+    };
+  }
+
+async getAutoridadesAdministrativos() {
+    return await this.asignacionRepo.find({
+      relations: ['administrativo', 'administrativo.persona', 'unidad'],
+      order: { id: 'ASC' }, // primero registrado -> último
+      where: { activo: true }, // opcional: solo activos
+    });
+  }
 
 
   async seed(){

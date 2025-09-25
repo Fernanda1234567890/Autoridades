@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static'; 
+import { join } from 'path';
+
 import { OrganizacionModule } from './organizacion/organizacion.module';
 import { CargoRegularModule } from './cargo-regular/cargo-regular.module';
 import { TipoUnidadModule } from './tipo-unidad/tipo-unidad.module';
@@ -37,11 +40,18 @@ import { Facultad } from './facultad/entities/facultad.entity';
 import { Carrera } from './carrera/entities/carrera.entity';
 import { ActividadModule } from './actividad/actividad.module';
 import { Actividad } from './actividad/entities/actividad.entity';
+import { AutoridadesModule } from './autoridades/autoridades.module';
+
 
 
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), 
+      serveRoot: '/uploads',                      
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -68,7 +78,8 @@ import { Actividad } from './actividad/entities/actividad.entity';
         Usuario,
         Facultad,
         Carrera,
-        Actividad
+        Actividad,
+        
       ],
       synchronize: true,
     }),
@@ -89,7 +100,8 @@ import { Actividad } from './actividad/entities/actividad.entity';
     UsuarioModule,
     FacultadModule,
     CarreraModule,
-    ActividadModule
+    ActividadModule,
+    AutoridadesModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -97,20 +97,32 @@ async findAll({
   }
 
   async findByNombreOrSigla(texto: string) {
-  const carreras = await this.carreraRepository.find({
-    where: [
-      { nombre: ILike(`%${texto}%`) },
-      { sigla: ILike(`%${texto}%`) },
-    ],
-    relations: ['facultad'], 
-  });
+    const carreras = await this.carreraRepository.find({
+      where: [
+        { nombre: ILike(`%${texto}%`) },
+        { sigla: ILike(`%${texto}%`) },
+      ],
+      relations: ['facultad'], 
+    });
 
-  return {
-    success: true,
-    message: carreras.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
-    data: carreras,
-  };
-}
+    return {
+      success: true,
+      message: carreras.length > 0 ? 'Resultados encontrados' : 'No se encontraron coincidencias',
+      data: carreras,
+    };
+  }
+
+ 
+  async getDirectorByCarrera(id: number) {
+    return this.carreraRepository.findOne({
+      where: { id },
+      relations: [
+        'director', // relación con docente
+        'director.persona', // persona del docente
+      ],
+    });
+  }
+
 
 
   async update(id: number, updateCarreraDto: UpdateCarreraDto) {

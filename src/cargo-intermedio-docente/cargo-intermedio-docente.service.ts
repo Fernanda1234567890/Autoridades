@@ -12,7 +12,7 @@ import { Unidad } from 'src/unidad/entities/unidad.entity';
 export class CargoIntermedioDocenteService {
 
   constructor(
-   @InjectRepository(CargoIntermedioDocente)
+    @InjectRepository(CargoIntermedioDocente)
     private readonly cargoIntermedioDocenteRepository: Repository<CargoIntermedioDocente>,
 
     @InjectRepository(Docente)
@@ -23,7 +23,10 @@ export class CargoIntermedioDocenteService {
 
     @InjectRepository(Unidad)
     private readonly unidadRepository: Repository<Unidad>,
-  ) {}
+
+    @InjectRepository(CargoIntermedioDocente)
+    private readonly docenteRepo: Repository<CargoIntermedioDocente>,
+  ) { }
 
   async create(dto: CreateCargoIntermedioDocenteDto) {
     const docente = await this.docenteRepository.findOne({ where: { id: dto.id_docente } });
@@ -49,7 +52,7 @@ export class CargoIntermedioDocenteService {
       id_unidad: dto.id_unidad || undefined,
     });
 
-    return this.cargoIntermedioDocenteRepository.save(asignacion);
+    return await this.cargoIntermedioDocenteRepository.save(asignacion);
   }
 
   async findAll() {
@@ -57,12 +60,30 @@ export class CargoIntermedioDocenteService {
       relations: ['docente', 'docente.persona', 'cargo_intermedio', 'unidad'],
     });
   }
+
+  async getAutoridadActiva(cargo: string) {
+    return await this.cargoIntermedioDocenteRepository.find({
+      relations: ['docente', 'docente.persona', 'cargo_intermedio', 'unidad'],
+    });
+  }
+
+
+
+  async getAutoridadesDocentes() {
+    return await this.docenteRepo.find({
+      relations: ['docente', 'docente.persona', 'cargo_intermedio', 'cargo_intermedio.unidad'],
+      order: { id: 'ASC' },
+      // where: { activo: true },
+    });
+  }
+
+
   async seed() {
 
     //await this.cargoIntermedioDocenteRepository.query(`TRUNCATE TABLE cargo-intermadio-docente CASCADE`);
     //await this.cargoIntermedioDocenteRepository.clear()
     //await this.cargoIntermedioDocenteRepository.query(`ALTER SEQUENCE "cargo-intermadio-docente_id_seq" RESTART WITH 1`)
-    
+
     const datos: CreateCargoIntermedioDocenteDto[] = [
       // {
       //   id: 1,
@@ -79,9 +100,9 @@ export class CargoIntermedioDocenteService {
       //   fecha_fin: new Date('2023-12-31')
       // }
     ];
-     const mapeados = datos.map((e) => this.cargoIntermedioDocenteRepository.create(e));
+    const mapeados = datos.map((e) => this.cargoIntermedioDocenteRepository.create(e));
     return await this.cargoIntermedioDocenteRepository.save(mapeados);
- 
+
   }
 
   findOne(id: number) {
